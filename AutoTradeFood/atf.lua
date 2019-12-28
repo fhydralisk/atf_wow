@@ -2,18 +2,18 @@ local addonName, addon = ...
 
 local frame = CreateFrame("FRAME", "ATFFrame")
 frame:RegisterEvent("CHAT_MSG_WHISPER")
+frame:RegisterEvent("ADDON_LOADED")
 
 
 local water_name = "魔法晶水"
 local food_name = "魔法甜面包"
-local last_atf = 0
 local retrieve_position = "pos"
 local scale_cmd = "查看比例"
 local help_cmd = "help"
 local invite_cmd = "水水水"
 local last_trade_player = ""
 local last_trade_player_count = 0
-local last_scale = {"water", "food", "player"}
+local atfr_run = false
 
 
 local tclass_food = {
@@ -48,6 +48,7 @@ local trade_count_words = {
 SLASH_ATFCmd1 = "/atf"
 SLASH_ATFR_REPORT1 = "/atfr"
 SLASH_ATFR_CLEAN1= "/atfc"
+SLASH_ATFR_SWITCH1 = "/atfs"
 
 local function get_water_count()
   return math.modf(GetItemCount(water_name)/20)
@@ -139,13 +140,15 @@ local function wf_parser2(msg)
 end
 
 local function do_set_scale(water, food, author)
-  last_scale["water"] = water
-  last_scale["food"] = food
-  last_scale["player"] = author
+  print("enter")
+  PlayerDefinedScale[author] = {
+    ["water"] = water,
+    ["food"] = food
+  }
+  print("ok")
   SendChatMessage(
-    string.format("配比成功，将交易您%d组水，%d组面包。"..
-        "如果和预期的不同，请按如下例子进行定制：“4组水，2组面包”。"..
-        "该配比将在下一个玩家进行配置后失效，请抓紧时间交易哦", water, food),
+    string.format("配比成功，您在交易我时，将获得%d组水，%d组面包（如果库存充足）。"..
+        "如果和预期的不同，请按如下例子进行定制：“4组水，2组面包”。", water, food),
     "WHISPER", "Common", author
   )
 end
@@ -166,6 +169,9 @@ local function may_set_scale(msg, author)
     if water + food > 6 then
       if water == 45 or water == 35 then
         SendChatMessage("暂时无法提供小号食品，请您求助其他法师，抱歉", "WHISPER", "Common", author)
+      elseif water == 20 then
+        -- 自动交易提醒，不予回复
+        return true
       else
         SendChatMessage("定制面包和水的数量，请确保水和面包加和不要大于6哦，不然我怎么交易给您？", "WHISPER", "Common", author)
       end
@@ -179,9 +185,9 @@ local function may_set_scale(msg, author)
 end
 
 local function eventHandler(self, event, msg, author, ...)
-  local author = string.match(author, "([^-]+)")
   if event == "CHAT_MSG_WHISPER" then
-    if GetTime() - last_atf < 30 then
+    author = string.match(author, "([^-]+)")
+    if atfr_run then
       if string.lower(msg) == help_cmd then
         say_help(author)
       elseif string.lower(msg) == retrieve_position then
@@ -206,6 +212,11 @@ local function eventHandler(self, event, msg, author, ...)
           )
         end
       end
+    end
+  elseif event == "ADDON_LOADED" and msg == "AutoTradeFood" then
+    print(PlayerDefinedScale)
+    if PlayerDefinedScale == nil then
+      PlayerDefinedScale = {}
     end
   end
 end
@@ -237,10 +248,9 @@ end
 
 local function do_trade_feed(tclass, npc_name)
   local w, f
-  local last_player = last_scale["player"]
-  if last_player == npc_name then
-    w = last_scale["water"]
-    f = last_scale["food"]
+  if PlayerDefinedScale[npc_name] then
+    w = PlayerDefinedScale[npc_name]["water"]
+    f = PlayerDefinedScale[npc_name]["food"]
   else
     w = tclass_food[tclass][1]
     f = tclass_food[tclass][2]
@@ -315,7 +325,6 @@ local function check_and_accept_trade()
 end
 
 function SlashCmdList.ATFCmd(msg)
-  last_atf = GetTime()
   if TradeFrame:IsShown() then
     if TradeFrame.acceptState == 0 then
       local ils = GetTradePlayerItemLink(1)
@@ -377,6 +386,17 @@ local function do_real_cleanup()
   delete_groups()
 end
 
+local function do_clean_all()
+  for b = 0, 4 do
+    for l = 1, 32 do
+      local _, _, _, _, _, _, link = GetContainerItemInfo(b, l)
+      if link and (link:find(water_name) or link:find(food_name)) then
+          delete_item_at(b, l)
+      end
+    end
+  end
+end
+
 function SlashCmdList.ATFR_CLEAN(msg)
   local free_slots = 0
   for b = 0, 4 do
@@ -384,5 +404,16 @@ function SlashCmdList.ATFR_CLEAN(msg)
   end
   if free_slots == 0 or msg == "force" then
     do_real_cleanup()
+  elseif msg == "clean all" then
+    do_clean_all()
+  end
+end
+
+function SlashCmdList.ATFR_SWITCH(msg)
+  if msg == "on" then
+    atfr_run = true
+  else
+    SendChatMessage("自动模式已关闭，人工介入")
+    atfr_run = false
   end
 end
