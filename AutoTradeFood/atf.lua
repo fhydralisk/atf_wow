@@ -337,9 +337,9 @@ local function auto_bind_make()
   local w = get_water_count(1)
   local b = get_bread_count(1)
   if w * 0.8 > b then
-    SetBindingSpell("SHIFT-I", "造食术")
+    SetBindingSpell("CTRL-I", "造食术")
   else
-    SetBindingSpell("SHIFT-I", "造水术")
+    SetBindingSpell("CTRL-I", "造水术")
   end
 end
 
