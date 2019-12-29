@@ -46,16 +46,25 @@ local trade_count_words = {
 }
 
 SLASH_ATFCmd1 = "/atf"
-SLASH_ATFR_REPORT1 = "/atfr"
-SLASH_ATFR_CLEAN1= "/atfc"
-SLASH_ATFR_SWITCH1 = "/atfs"
+SLASH_ATF_REPORT1 = "/atfr"
+SLASH_ATF_CLEAN1= "/atfc"
+SLASH_ATF_SWITCH1 = "/atfs"
+SLASH_ATF_DEBUG1 = "/atfd"
 
-local function get_water_count()
-  return math.modf(GetItemCount(water_name)/20)
+local function get_water_count(identity)
+  if identity then
+    return GetItemCount(water_name)
+  else
+    return math.modf(GetItemCount(water_name)/20)
+  end
 end
 
-local function get_bread_count()
-  return math.modf(GetItemCount(food_name)/20)
+local function get_bread_count(identity)
+  if identity then
+    return GetItemCount(food_name)
+  else
+    return math.modf(GetItemCount(food_name)/20)
+  end
 end
 
 local function delete_item_at(b, s)
@@ -324,7 +333,18 @@ local function check_and_accept_trade()
   end
 end
 
+local function auto_bind_make()
+  local w = get_water_count(1)
+  local b = get_bread_count(1)
+  if w * 0.8 > b then
+    SetBindingSpell("SHIFT-I", "造食术")
+  else
+    SetBindingSpell("SHIFT-I", "造水术")
+  end
+end
+
 function SlashCmdList.ATFCmd(msg)
+  auto_bind_make()
   if TradeFrame:IsShown() then
     if TradeFrame.acceptState == 0 then
       local ils = GetTradePlayerItemLink(1)
@@ -337,7 +357,7 @@ function SlashCmdList.ATFCmd(msg)
   end
 end
 
-function SlashCmdList.ATFR_REPORT(msg)
+function SlashCmdList.ATF_REPORT(msg)
   local water = get_water_count()
   local bread = get_bread_count()
   SendChatMessage("存货：【大水】"..water.."组，【面包】"..bread.."组","say","Common")
@@ -397,7 +417,7 @@ local function do_clean_all()
   end
 end
 
-function SlashCmdList.ATFR_CLEAN(msg)
+function SlashCmdList.ATF_CLEAN(msg)
   local free_slots = 0
   for b = 0, 4 do
     free_slots = free_slots + GetContainerNumFreeSlots(b)
@@ -409,11 +429,20 @@ function SlashCmdList.ATFR_CLEAN(msg)
   end
 end
 
-function SlashCmdList.ATFR_SWITCH(msg)
+function SlashCmdList.ATF_SWITCH(msg)
   if msg == "on" then
     atfr_run = true
   else
     SendChatMessage("自动模式已关闭，人工介入")
     atfr_run = false
+  end
+end
+
+function SlashCmdList.ATF_DEBUG(msg)
+  if string.match(msg, "bind ([^%s]*) ([^%s]*)") then
+    local bind, spell = string.match(msg, "bind ([^%s]*) ([^%s]*)")
+    print(bind)
+    print(spell)
+    SetBinding(bind, "SPELL "..spell)
   end
 end
