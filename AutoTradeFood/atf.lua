@@ -4,6 +4,7 @@ local frame = CreateFrame("FRAME", "ATFFrame")
 frame:RegisterEvent("CHAT_MSG_WHISPER")
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("TRADE_ACCEPT_UPDATE")
+frame:RegisterEvent("PARTY_INVITE_REQUEST")
 
 
 local water_name = "魔法晶水"
@@ -20,8 +21,8 @@ local min_mana = 780
 local state = 1
 -- states: 1 making, 2 watering? 3 gating
 local interact_key = "CTRL-I"
-local gating_context = {"spell", "requester", "request_ts", "cast_ts", "step"}
-local gate_request_timeout = 60
+local gating_context = {"spell", "requester", "request_ts", "cast_ts", "step", "city"}
+local gate_request_timeout = 20
 -- step: 0 none, 1 request_start, 2 stone_received, 3 casting
 
 
@@ -76,6 +77,13 @@ local function get_bread_count(identity)
   end
 end
 
+local function get_free_slots()
+  local free_slots = 0
+  for b = 0, 4 do
+    free_slots = free_slots + GetContainerNumFreeSlots(b)
+  end
+  return free_slots
+end
 local function delete_item_at(b, s)
   PickupContainerItem(b, s)
   DeleteCursorItem()
@@ -111,7 +119,7 @@ local function say_help(to_player)
     "请勿交易金币和物品，否则可能无法正常交易。如有有建议或希望捐赠，请使用魔兽邮箱，谢谢支持！", "WHISPER", "Common", to_player
   )
   SendChatMessage(
-    "小号暂不提供食物，暂不提供开门服务！", "WHISPER", "Common", to_player
+    "小号暂不提供食物！开门服务试运行！如果不小心黑了您的石头，请给我发邮件", "WHISPER", "Common", to_player
   )
   SendChatMessage(
     "=========我目前支持如下命令：", "WHISPER", "Common", to_player
@@ -133,7 +141,7 @@ local function say_help(to_player)
     "WHISPER", "Common", to_player
   )
   SendChatMessage(
-    string.format("4.【%s】查看开门步骤(Beta)", gate_help_cmd), "WHISPER", "Common", to_player
+    string.format("6.【%s】查看开门步骤(Beta)", gate_help_cmd), "WHISPER", "Common", to_player
   )
 
 end
@@ -215,23 +223,22 @@ local function may_set_scale(msg, author)
 end
 
 local function parse_and_set_city(player, msg)
-  local city
   if msg:find("暴风城") then
     gating_context["spell"] = "传送门：暴风城"
-    city = "暴风城"
+    gating_context["city"] = "暴风城"
   elseif msg:find("达纳苏斯") then
     gating_context["spell"] = "传送门：达纳苏斯"
-    city = "达纳苏斯"
+    gating_context["city"] = "达纳苏斯"
   elseif msg:find("铁炉堡") then
     gating_context["spell"] = "传送门：铁炉堡"
-    city = "铁炉堡"
+    gating_context["city"] = "铁炉堡"
   else
     print("这里不应该到达")
     return false
   end
   SendChatMessage(
-          "传送门指定成功，请于"..gate_request_timeout.."秒内交易我【1】枚【传送门符文】。请于施法材料商购买该材料。",
-          "WHISPER", "Common", player
+    gating_context["city"].."传送门指定成功，请于"..gate_request_timeout.."秒内交易我【1】枚【传送门符文】。请于施法材料商购买该材料。",
+    "WHISPER", "Common", player
   )
   return true
 end
@@ -244,6 +251,9 @@ local function gate_request(player, msg)
     gating_context["requester"] = player
     gating_context["step"] = 1
     gating_context["request_ts"] = GetTime()
+    if GetNumGroupMembers() >= 5 then
+      LeaveParty()
+    end
   elseif gating_context["step"] == 1 and gating_context["requester"] == player then
     if not parse_and_set_city(player, msg) then
       return
@@ -278,7 +288,7 @@ local function eventHandler(self, event, msg, author, ...)
       else
         if not(author == UnitName("player")) then
           SendChatMessage(
-            "【【【【渴了饿了找米豪！请直接交易我！坐标"..my_position().."，需要帮助，请M我help】】】",
+            "【【【【渴了？饿了？经济舱？找米豪！请直接交易我！坐标"..my_position().."，需要帮助，请M我help】】】",
             "WHISPER", "Common", author
           )
         end
@@ -288,6 +298,11 @@ local function eventHandler(self, event, msg, author, ...)
     print(PlayerDefinedScale)
     if PlayerDefinedScale == nil then
       PlayerDefinedScale = {}
+    end
+  elseif event == "PARTY_INVITE_REQUEST" then
+    if atfr_run then
+      DeclineGroup()
+      StaticPopup_Hide("PARTY_INVITE")
     end
   end
 end
@@ -374,7 +389,7 @@ local function post_check_oppside_trade(npc_name, allow_trade)
   local accepted_item
   for t_index = 1, 6 do
     local name, _, cnt = GetTradeTargetItemInfo(t_index)
-    if name and not(name==allow_trade["item"] and cnt==allow_trade["cnt"]) then
+    if name and not(allow_trade and name==allow_trade["item"] and cnt==allow_trade["cnt"]) then
       if allow_trade then
         SendChatMessage(npc_name.."，背包有限，请勿交易我任何物品，感谢支持！"
                 ..allow_trade["item"].."仅需交易"..allow_trade["cnt"].."个", "say", "Common")
@@ -413,30 +428,36 @@ local function check_and_accept_trade()
   end
 end
 
+local function check_buff(buff_name, remain)
+  local i = 1;
+  while true do
+    local buff, _, _,   _, dur, ts = UnitBuff("player", i);
+    if buff == nil then
+      return false
+    elseif buff == buff_name then
+      local remaining = ts - GetTime()
+      return remaining > remain
+    end
+    i = i + 1;
+  end;
+end
+
 local function bind_make_food_or_water()
-  local w = get_water_count(1)
-  local b = get_bread_count(1)
-  if w * 0.8 > b then
-    SetBindingSpell(interact_key, "造食术")
+  if check_buff("喝水", 0) then
+    SetBinding(interact_key, "JUMP")
+  elseif get_free_slots() == 0 then
+    SetBindingSpell(interact_key, "魔爆术")
   else
-    SetBindingSpell(interact_key, "造水术")
+    local w = get_water_count(1)
+    local b = get_bread_count(1)
+    if w * 0.8 > b then
+      SetBindingSpell(interact_key, "造食术")
+    else
+      SetBindingSpell(interact_key, "造水术")
+    end
   end
 end
 
-local function check_buff(buff_name, remain)
-  local i = 1;
-  local ts, dur;
-  local buff = UnitBuff("player", i);
-  while buff do
-    i = i + 1;
-    buff, _, _, _, dur, ts = UnitBuff("player", i);
-    remaining = dur - (GetTime() - ts)
-    if buff == buff_name and dur < remain then
-      return true
-    end
-  end;
-  return false
-end
 
 local function bind_drink()
   if check_buff("喝水", 3) then
@@ -468,8 +489,6 @@ local function drive_gate()
       gating_context["step"] = 0
     end
   end
-  print("gate step is "..gating_context["step"])
-
 end
 
 local function bind_gate()
@@ -514,6 +533,7 @@ local function trade_stone()
       state = 3
       SendChatMessage(
               "符文石交易成功，请接受组队邀请。稍等几秒将为您开门...若未邀请成功，请M我水水水进组", "WHISPER", "Common", npc_name)
+      SendChatMessage(npc_name.."，"..gating_context["city"].."传送程序已载入，请坐稳扶好！想搭便车的朋友，M我【水水水】进组")
       InviteUnit(npc_name)
     end
   end
@@ -533,7 +553,6 @@ local function drive_state()
       state = 1
     end
   end
-  print("state is "..state)
 end
 
 function SlashCmdList.ATFCmd(msg)
@@ -543,10 +562,8 @@ function SlashCmdList.ATFCmd(msg)
   if TradeFrame:IsShown() then
     local npc_name = UnitName("NPC")
     if gating_context["step"] == 1 and npc_name == gating_context["requester"] then
-      print("trade stone")
       trade_stone()
     else
-      print("trade food")
       trade_food()
     end
   end
@@ -613,10 +630,7 @@ local function do_clean_all()
 end
 
 function SlashCmdList.ATF_CLEAN(msg)
-  local free_slots = 0
-  for b = 0, 4 do
-    free_slots = free_slots + GetContainerNumFreeSlots(b)
-  end
+  local free_slots = get_free_slots()
   if free_slots == 0 or msg == "force" then
     do_real_cleanup()
   elseif msg == "clean all" then
