@@ -62,6 +62,7 @@ SLASH_ATF_REPORT1 = "/atfr"
 SLASH_ATF_CLEAN1= "/atfc"
 SLASH_ATF_SWITCH1 = "/atfs"
 SLASH_ATF_DEBUG1 = "/atfd"
+SLASH_ATG_WHITELIST1 = "/atgwl"
 
 local function create_macro_button(button_name, macro_text)
   local cframe = CreateFrame("Button", button_name, UIParent, "SecureActionButtonTemplate");
@@ -162,6 +163,7 @@ end
 local function say_gate_help(to_player)
   SendChatMessage("4步便捷开门！请花1分钟仔细阅读，简单高效无需求人开门即可达成！", "WHISPER", "Common", to_player)
   SendChatMessage("1. 在材料NPC处购买传【送门符文】1枚，也可以AH购买，我原价放了许多。", "WHISPER", "Common", to_player)
+--  SendChatMessage("**！！！请注意！！！，原价是20银！！！认准我的名字【米豪】或【米豪的维修师】**", "WHISPER", "Common", to_player)
   SendChatMessage("2. 【先】M我主城的名字，“暴风城”、“铁炉堡”或“达纳苏斯”", "WHISPER", "Common", to_player)
   SendChatMessage("3. 【然后】将石头主动交易给我：【传送门符文】【1枚】", "WHISPER", "Common", to_player)
   SendChatMessage("4. 【交易成功后】，我将【自动】向您发起组队邀请，并在短时间内释放传送门法术，请确保您已退组哈", "WHISPER", "Common", to_player)
@@ -250,12 +252,15 @@ local function parse_and_set_city(player, msg)
     print("这里不应该到达")
     return false
   end
-  SendChatMessage(
-    gating_context["city"].."传送门指定成功，请于"..gate_request_timeout..
-        "秒内交易我【1】枚【传送门符文】。请于施法材料商或AH原价从我手中购买该材料。",
-    "WHISPER", "Common", player
-  )
   return true
+end
+
+local function transist_to_gate_state(player)
+  state = 3
+  InviteUnit(npc_name)
+  gating_context["cast_ts"] = GetTime()
+  gating_context["step"] = 3
+  InviteUnit(player)
 end
 
 local function gate_request(player, msg)
@@ -263,12 +268,26 @@ local function gate_request(player, msg)
     if not parse_and_set_city(player, msg) then
       return
     end
-    gating_context["requester"] = player
-    gating_context["step"] = 1
-    gating_context["request_ts"] = GetTime()
     if GetNumGroupMembers() >= 5 then
       LeaveParty()
     end
+    gating_context["request_ts"] = GetTime()
+    gating_context["requester"] = player
+    if GateWhiteList[player] then
+      if GetItemCount("传送门符文") > 0 then
+        transist_to_gate_state(player)
+        SendChatMessage("贵宾驾到，马上起航！", "WHISPER", "Common", player)
+        return
+      else
+        SendChatMessage("贵宾您好，我已无油，请交易我施法材料【传送门符文】【1枚】来为我补充油料", "WHISPER", "Common", player)
+      end
+    end
+    SendChatMessage(
+      gating_context["city"].."传送门指定成功，请于"..gate_request_timeout..
+          "秒内交易我【1】枚【传送门符文】。请于施法材料商或AH原价从我手中购买该材料。请注意，原价为20Y，如果没有这个价格的，请寻找材料NPC！",
+      "WHISPER", "Common", player
+    )
+    gating_context["step"] = 1
   elseif gating_context["step"] == 1 and gating_context["requester"] == player then
     if not parse_and_set_city(player, msg) then
       return
@@ -316,9 +335,11 @@ local function eventHandler(self, event, msg, author, ...)
       end
     end
   elseif event == "ADDON_LOADED" and msg == "AutoTradeFood" then
-    print(PlayerDefinedScale)
     if PlayerDefinedScale == nil then
       PlayerDefinedScale = {}
+    end
+    if GateWhiteList == nil then
+      GateWhiteList = {}
     end
   elseif event == "PARTY_INVITE_REQUEST" then
     if atfr_run then
@@ -487,10 +508,15 @@ end
 
 
 local function bind_drink()
-  if check_buff("喝水", 3) then
+  if check_buff("喝水", 3) or check_buff("唤醒", 0.5) then
     SetBinding(interact_key, "")
   else
-    SetBindingItem(interact_key, "魔法晶水")
+    local weakup_cooldown = GetSpellCooldown("唤醒", "BOOKTYPE_SPELL")
+    if weakup_cooldown > 0 then
+      SetBindingItem(interact_key, "魔法晶水")
+    else
+      SetBindingSpell(interact_key, "唤醒")
+    end
   end
 end
 
@@ -529,6 +555,8 @@ end
 local function bind_buff()
   if UnitPower("player") < 2000 then
     SetBindingItem(interact_key, "魔法晶水")
+  elseif not(UnitName("target") == UnitName("player")) then
+    SetBinding(interact_key, "TARGETSELF")
   elseif not check_buff("魔甲术", 300) then
     SetBindingSpell(interact_key, "魔甲术")
   elseif not check_buff("奥术智慧", 300) then
@@ -567,13 +595,10 @@ local function trade_stone()
     feed(food_name, 1)
   elseif post_check_oppside_trade(npc_name, {["item"]="传送门符文", ["cnt"]=1}) == "传送门符文" then
     if do_accept_trade(true) then
-      gating_context["cast_ts"] = GetTime()
-      gating_context["step"] = 3
-      state = 3
       SendChatMessage(
               "符文石交易成功，请接受组队邀请。稍等几秒将为您开门...若未邀请成功，请M我水水水进组", "WHISPER", "Common", npc_name)
       SendChatMessage(npc_name.."，"..gating_context["city"].."传送程序已载入，请坐稳扶好！想搭便车的朋友，M我【水水水】进组")
-      InviteUnit(npc_name)
+      transist_to_gate_state(npc_name)
     end
   else
     CloseTrade()
@@ -691,7 +716,6 @@ function SlashCmdList.ATF_SWITCH(msg)
     atfr_run = true
     SetBindingClick(atf_key, "ATFButton")
     SetBindingClick(atfr_key, "ATFRButton")
-    print("ok")
   else
     SendChatMessage("自动模式已关闭，人工介入")
     atfr_run = false
@@ -704,5 +728,19 @@ function SlashCmdList.ATF_DEBUG(msg)
     print(bind)
     print(spell)
     SetBinding(bind, "SPELL "..spell)
+  end
+end
+
+function SlashCmdList.ATG_WHITELIST(msg)
+  if not(msg=="") then
+    print("msg"..msg)
+    GateWhiteList[msg] = true
+  else
+    local vip = UnitName("target")
+    print("1"..vip)
+    if vip then
+      GateWhiteList[vip] = true
+      print(vip)
+    end
   end
 end
