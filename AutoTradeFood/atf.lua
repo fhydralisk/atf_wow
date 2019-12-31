@@ -23,7 +23,7 @@ local state = 1
 local interact_key = "CTRL-I"
 local atf_key = "CTRL-Y"
 local atfr_key = "ALT-CTRL-Y"
-local gating_context = {["spell"]="", ["requester"]="", ["cast_ts"]=0, ["city"]=""}
+local gating_context = {["spell"]="", ["requester"]="", ["cooldown_ts"]=0, ["city"]=""}
 local gating_contexts = {}
 local gate_request_timeout = 90
 
@@ -270,13 +270,13 @@ local function transit_to_gate_state(player)
   gating_contexts[player] = nil
   invalidate_requests(player, gating_context["city"])
   state = 3
-  gating_context["cast_ts"] = GetTime()
+  gating_context["cooldown_ts"] = GetTime() + 60
   InviteUnit(player)
 end
 
 local function gate_request(player, msg)
-  if GetTime() - gating_context["cast_ts"] < 65 then
-    local cooldown_last = math.modf(65 - GetTime() + gating_context['cast_ts'])
+  if GetTime() < gating_context["cooldown_ts"] then
+    local cooldown_last = math.modf( gating_context["cooldown_ts"] - GetTime())
     SendChatMessage("传送门法术正在冷却，请"..cooldown_last.."秒后重新请求", "WHISPER", "Common", player)
     return
   end
@@ -625,6 +625,7 @@ local function drive_state()
   elseif state == 3 then
     local cd_gate = GetSpellCooldown(gating_context["spell"])
     if cd_gate > 0 then
+      gating_context['cooldown_ts'] = cd_gate
       state = 1
     end
   elseif state == 4 then
