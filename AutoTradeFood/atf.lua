@@ -19,10 +19,12 @@ local last_trade_player_count = 0
 local atfr_run = false
 local min_mana = 780
 local state = 1
--- states: 1 making, 2 watering? 3 gating
+-- states: 1 making, 2 watering? 3 gating, 4 buff
 local interact_key = "CTRL-I"
+local atf_key = "CTRL-Y"
+local atfr_key = "ALT-CTRL-Y"
 local gating_context = {"spell", "requester", "request_ts", "cast_ts", "step", "city"}
-local gate_request_timeout = 20
+local gate_request_timeout = 90
 -- step: 0 none, 1 request_start, 2 stone_received, 3 casting
 
 
@@ -60,6 +62,17 @@ SLASH_ATF_REPORT1 = "/atfr"
 SLASH_ATF_CLEAN1= "/atfc"
 SLASH_ATF_SWITCH1 = "/atfs"
 SLASH_ATF_DEBUG1 = "/atfd"
+
+local function create_macro_button(button_name, macro_text)
+  local cframe = CreateFrame("Button", button_name, UIParent, "SecureActionButtonTemplate");
+--  cframe:RegisterForClicks("AnyUp");
+  cframe:SetAttribute("type", "macro");
+  cframe:SetAttribute("macrotext", macro_text);
+  return cframe
+end
+
+local AtfFrame = create_macro_button("ATFButton", "/atf")
+local AtfReportFrame = create_macro_button("ATFRButton", "/atfr")
 
 local function get_water_count(identity)
   if identity then
@@ -147,11 +160,12 @@ local function say_help(to_player)
 end
 
 local function say_gate_help(to_player)
-  SendChatMessage("请严格按照如下步骤和我进行互动，我将为您开启去各大主城的便捷通道！", "WHISPER", "Common", to_player)
-  SendChatMessage("1. M我主城的名字，严格使用“暴风城”、“铁炉堡”、“达纳苏斯”", "WHISPER", "Common", to_player)
-  SendChatMessage("2. 收到我的确认回复密语后，交易我施法材料【传送门符文】【1枚】", "WHISPER", "Common", to_player)
-  SendChatMessage("3. 交易成功后，我将自动向您发起组队邀请，并在短时间内释放传送门法术", "WHISPER", "Common", to_player)
-  SendChatMessage("4. 请您使用传送门后自行离队，祝您旅途愉快！", "WHISPER", "Common", to_player)
+  SendChatMessage("4步便捷开门！请花1分钟仔细阅读，简单高效无需求人开门即可达成！", "WHISPER", "Common", to_player)
+  SendChatMessage("1. 在材料NPC处购买传【送门符文】1枚，也可以AH购买，我原价放了许多。", "WHISPER", "Common", to_player)
+  SendChatMessage("2. 【先】M我主城的名字，“暴风城”、“铁炉堡”或“达纳苏斯”", "WHISPER", "Common", to_player)
+  SendChatMessage("3. 【然后】将石头主动交易给我：【传送门符文】【1枚】", "WHISPER", "Common", to_player)
+  SendChatMessage("4. 【交易成功后】，我将【自动】向您发起组队邀请，并在短时间内释放传送门法术，请确保您已退组哈", "WHISPER", "Common", to_player)
+  SendChatMessage("请您使用传送门后自行离队，祝您旅途愉快！", "WHISPER", "Common", to_player)
 end
 
 local function say_scale(to_player)
@@ -237,7 +251,8 @@ local function parse_and_set_city(player, msg)
     return false
   end
   SendChatMessage(
-    gating_context["city"].."传送门指定成功，请于"..gate_request_timeout.."秒内交易我【1】枚【传送门符文】。请于施法材料商购买该材料。",
+    gating_context["city"].."传送门指定成功，请于"..gate_request_timeout..
+        "秒内交易我【1】枚【传送门符文】。请于施法材料商或AH原价从我手中购买该材料。",
     "WHISPER", "Common", player
   )
   return true
@@ -267,21 +282,27 @@ local function eventHandler(self, event, msg, author, ...)
   if event == "CHAT_MSG_WHISPER" then
     author = string.match(author, "([^-]+)")
     if atfr_run then
-      if string.lower(msg) == help_cmd then
+      if string.lower(msg) == help_cmd or msg == "1" then
         say_help(author)
-      elseif string.lower(msg) == retrieve_position then
+      elseif string.lower(msg) == retrieve_position or msg == "2" then
         say_pos(author)
       elseif msg == invite_cmd then
         InviteUnit(author)
-      elseif msg == scale_cmd then
+      elseif msg == "3" then
+        SendChatMessage("请M我【水水水】进组，而不是M我3，zu，组，谢谢", "WHISPER", "Common", author)
+      elseif msg == scale_cmd or msg == "4" then
         say_scale(author)
       elseif may_set_scale(msg, author) then
         -- do nothing
+      elseif msg == "5" then
+        SendChatMessage(
+          "请这样M我来设置比例： 【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】或者，【2水】，等等，然后交易我。",
+          "WHISPER", "Common", author)
       elseif search_str_contains(msg, {"暴风城", "铁炉堡", "达纳苏斯"}) then
         gate_request(author, msg)
-      elseif search_str_contains(msg, {"门", "们", "暴风", "铁", "精灵", gate_help_cmd}) then
+      elseif search_str_contains(msg, {"门", "们", "暴风", "铁", "精灵", gate_help_cmd}) or msg == "6" then
         say_gate_help(author)
-      elseif search_str_contains(msg, {"脚本", "外挂", "机器", "自动"}) then
+      elseif search_str_contains(msg, {"脚本", "外挂", "机器", "自动", "宏"}) then
         SendChatMessage("是的，我是纯公益机器人，请亲手下留情，爱你哦！", "WHISPER", "Common", author)
       elseif search_str_contains(msg, {"谢", "蟹", "xie", "3q"}) then
         SendChatMessage("小事不言谢，欢迎随时回来薅羊毛！", "WHISPER", "Common", author)
@@ -341,9 +362,6 @@ local function do_trade_feed(tclass, npc_name)
     w = tclass_food[tclass][1]
     f = tclass_food[tclass][2]
   end
-  if tclass == "法师" then
-    SendChatMessage("法师交易我都是有思想的", "say", "Common")
-  end
   feed(water_name, w)
   feed(food_name, f)
 end
@@ -379,6 +397,12 @@ end
 
 local function maybe_say_some()
   local pname = UnitName("NPC")
+  local pclass = UnitClass("NPC")
+  if search_str_contains(pclass, {"牧师", "圣骑士", "德鲁伊"}) then
+    SendChatMessage(pname..",".."智慧祝福、王者祝福、爪子、精神可以提高我的制作效率，如果您方便，就强化我一下，谢谢！", "say", "Common")
+  elseif pclass == "法师" then
+    SendChatMessage("法爷需自强，不当伸手党，嘿嘿嘿...", "say", "Common")
+  end
   local words = trade_count_words[set_last_trade_player(pname)]
   if words then
     SendChatMessage(pname..","..words, "say", "Common")
@@ -430,6 +454,9 @@ end
 
 local function check_buff(buff_name, remain)
   local i = 1;
+  if remain == nil then
+    remain = 0
+  end
   while true do
     local buff, _, _,   _, dur, ts = UnitBuff("player", i);
     if buff == nil then
@@ -499,6 +526,16 @@ local function bind_gate()
   end
 end
 
+local function bind_buff()
+  if UnitPower("player") < 2000 then
+    SetBindingItem(interact_key, "魔法晶水")
+  elseif not check_buff("魔甲术", 300) then
+    SetBindingSpell(interact_key, "魔甲术")
+  elseif not check_buff("奥术智慧", 300) then
+    SetBindingSpell(interact_key, "奥术智慧")
+  end
+end
+
 local function auto_bind()
   if state == 1 then
     bind_make_food_or_water()
@@ -507,6 +544,8 @@ local function auto_bind()
   elseif state == 3 then
     bind_gate()
     finish_bind_gate()
+  elseif state == 4 then
+    bind_buff()
   end
 end
 
@@ -536,6 +575,8 @@ local function trade_stone()
       SendChatMessage(npc_name.."，"..gating_context["city"].."传送程序已载入，请坐稳扶好！想搭便车的朋友，M我【水水水】进组")
       InviteUnit(npc_name)
     end
+  else
+    CloseTrade()
   end
 end
 
@@ -543,6 +584,8 @@ local function drive_state()
   if state == 1 then
     if UnitPower("player") < min_mana then
       state = 2
+    elseif not (check_buff("奥术智慧", 10) and check_buff("魔甲术", 10)) then
+      state = 4
     end
   elseif state == 2 then
     if UnitPower("player") == UnitPowerMax("player") then
@@ -551,6 +594,10 @@ local function drive_state()
   elseif state == 3 then
     if GetTime() - gating_context["cast_ts"] > 20 then
       state = 1
+    end
+  elseif state == 4 then
+    if check_buff("奥术智慧", 100) and check_buff("魔甲术", 100) then
+      state = 2
     end
   end
 end
@@ -573,6 +620,7 @@ function SlashCmdList.ATF_REPORT(msg)
   local water = get_water_count()
   local bread = get_bread_count()
   SendChatMessage("存货：【大水】"..water.."组，【面包】"..bread.."组","say","Common")
+  SendChatMessage("要吃喝？免手续费开门？找米豪！55级以上直接交易，自动供给，【免费！免费！免费！】M我“help”可以获取帮助。","say","Common")
 end
 
 local function do_delete_groups(item_name, groups)
@@ -641,6 +689,9 @@ end
 function SlashCmdList.ATF_SWITCH(msg)
   if msg == "on" then
     atfr_run = true
+    SetBindingClick(atf_key, "ATFButton")
+    SetBindingClick(atfr_key, "ATFRButton")
+    print("ok")
   else
     SendChatMessage("自动模式已关闭，人工介入")
     atfr_run = false
