@@ -625,7 +625,7 @@ local function drive_state()
   elseif state == 3 then
     local cd_gate = GetSpellCooldown(gating_context["spell"])
     if cd_gate > 0 then
-      gating_context['cooldown_ts'] = cd_gate
+      gating_context['cooldown_ts'] = cd_gate + 60
       state = 1
     end
   elseif state == 4 then
