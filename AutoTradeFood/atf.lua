@@ -276,11 +276,12 @@ end
 
 local function gate_request(player, msg)
   if GetTime() - gating_context["cast_ts"] < 65 then
-    cooldown_last = math.modf(65 - GetTime() + gating_context['cast_ts'])
+    local cooldown_last = math.modf(65 - GetTime() + gating_context['cast_ts'])
     SendChatMessage("传送门法术正在冷却，请"..cooldown_last.."秒后重新请求", "WHISPER", "Common", player)
     return
   end
-  local spell, city = parse_and_set_city(player, msg)
+  local spell, city = parse_and_set_city(msg)
+  print(spell, city)
   if not spell then
     return
   end
