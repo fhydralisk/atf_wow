@@ -748,8 +748,13 @@ function SlashCmdList.ATG_WHITELIST(msg)
     local vip = UnitName("target")
     print("1"..vip)
     if vip then
-      GateWhiteList[vip] = true
-      print(vip)
+      if GateWhiteList[vip] then
+        GateWhiteList[vip] = nil
+        print("移除"..vip)
+      else
+        GateWhiteList[vip] = true
+        print("添加"..vip)
+      end
     end
   end
 end
