@@ -256,7 +256,7 @@ end
 local function eventHandler(self, event, msg, author, ...)
   if event == "CHAT_MSG_WHISPER" then
     author = string.match(author, "([^-]+)")
-    if atfr_run then
+    if atfr_run == true then
       if string.lower(msg) == help_cmd then
         say_help(author)
       elseif string.lower(msg) == retrieve_position then
@@ -283,6 +283,8 @@ local function eventHandler(self, event, msg, author, ...)
           )
         end
       end
+    elseif atfr_run == "maintain" then
+      SendChatMessage("米豪正在停机维护，暂时无法为您提供服务……", "WHISPER", "Common", author)
     end
   elseif event == "ADDON_LOADED" and msg == "AutoTradeFood" then
     print(PlayerDefinedScale)
@@ -627,9 +629,11 @@ end
 function SlashCmdList.ATF_SWITCH(msg)
   if msg == "on" then
     atfr_run = true
-  else
+  elseif msg == "off" then
     SendChatMessage("自动模式已关闭，人工介入")
     atfr_run = false
+  elseif msg == "maintain" then
+    atfr_run = "maintain"
   end
 end
 
