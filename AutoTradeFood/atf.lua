@@ -307,7 +307,7 @@ local function gate_request(player, msg)
     ["spell"]=spell,
   }
   SendChatMessage(
-    gating_context["city"].."传送门指定成功，请于"..gate_request_timeout..
+    city.."传送门指定成功，请于"..gate_request_timeout..
         "秒内交易我【1】枚【传送门符文】。请于施法材料商或AH原价从我手中购买该材料。请注意，原价为20Y，如果没有这个价格的，请寻找材料NPC！",
     "WHISPER", "Common", player
   )
