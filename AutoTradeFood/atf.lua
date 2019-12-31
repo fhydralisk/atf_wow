@@ -592,9 +592,10 @@ end
 
 local function trade_stone(npc_name)
   local ils = GetTradePlayerItemLink(1)
+  local post_check = post_check_oppside_trade(npc_name, {["item"]="传送门符文", ["cnt"]=1})
   if ils == nil then
     feed(food_name, 1)
-  elseif post_check_oppside_trade(npc_name, {["item"]="传送门符文", ["cnt"]=1}) == "传送门符文" then
+  elseif post_check == "传送门符文" then
     if do_accept_trade(true) then
       local city = gating_contexts[npc_name]["city"]
       local spell = gating_contexts[npc_name]["spell"]
@@ -606,6 +607,8 @@ local function trade_stone(npc_name)
       gating_context["requester"] = npc_name
       transit_to_gate_state(npc_name)
     end
+  elseif post_check == true then
+    -- do nothing
   else
     CloseTrade()
   end
