@@ -23,9 +23,9 @@ local state = 1
 local interact_key = "CTRL-I"
 local atf_key = "CTRL-Y"
 local atfr_key = "ALT-CTRL-Y"
-local gating_context = {"spell", "requester", "request_ts", "cast_ts", "step", "city"}
+local gating_context = {["spell"]="", ["requester"]="", ["cast_ts"]=0, ["city"]=""}
+local gating_contexts = {}
 local gate_request_timeout = 90
--- step: 0 none, 1 request_start, 2 stone_received, 3 casting
 
 
 local tclass_food = {
@@ -238,63 +238,78 @@ local function may_set_scale(msg, author)
   return false
 end
 
-local function parse_and_set_city(player, msg)
+local function parse_and_set_city(msg)
+  local spell, city
   if msg:find("暴风城") then
-    gating_context["spell"] = "传送门：暴风城"
-    gating_context["city"] = "暴风城"
+    spell = "传送门：暴风城"
+    city = "暴风城"
   elseif msg:find("达纳苏斯") then
-    gating_context["spell"] = "传送门：达纳苏斯"
-    gating_context["city"] = "达纳苏斯"
+    spell = "传送门：达纳苏斯"
+    city = "达纳苏斯"
   elseif msg:find("铁炉堡") then
-    gating_context["spell"] = "传送门：铁炉堡"
-    gating_context["city"] = "铁炉堡"
+    spell = "传送门：铁炉堡"
+    city = "铁炉堡"
   else
     print("这里不应该到达")
-    return false
+    return nil, nil
   end
-  return true
+  return spell, city
 end
 
-local function transist_to_gate_state(player)
+local function invalidate_requests(winner, city)
+  for player, _ in pairs(gating_contexts) do
+    SendChatMessage(winner..
+            "抢先一步交易了我【传送门符文】，您的请求已取消。我将为其施放通往"..city.."的传送门，若果顺路，请M我【水水水】进组",
+            "WHISPER", "Common", player
+    )
+  end
+  gating_contexts = {}
+end
+
+local function transit_to_gate_state(player)
+  gating_contexts[player] = nil
+  invalidate_requests(player, gating_context["city"])
   state = 3
-  InviteUnit(npc_name)
   gating_context["cast_ts"] = GetTime()
-  gating_context["step"] = 3
   InviteUnit(player)
 end
 
 local function gate_request(player, msg)
-  if gating_context["step"] == 0 then
-    if not parse_and_set_city(player, msg) then
-      return
-    end
-    if GetNumGroupMembers() >= 5 then
-      LeaveParty()
-    end
-    gating_context["request_ts"] = GetTime()
-    gating_context["requester"] = player
-    if GateWhiteList[player] then
-      if GetItemCount("传送门符文") > 0 then
-        transist_to_gate_state(player)
-        SendChatMessage("贵宾驾到，马上起航！", "WHISPER", "Common", player)
-        return
-      else
-        SendChatMessage("贵宾您好，我已无油，请交易我施法材料【传送门符文】【1枚】来为我补充油料", "WHISPER", "Common", player)
-      end
-    end
-    SendChatMessage(
-      gating_context["city"].."传送门指定成功，请于"..gate_request_timeout..
-          "秒内交易我【1】枚【传送门符文】。请于施法材料商或AH原价从我手中购买该材料。请注意，原价为20Y，如果没有这个价格的，请寻找材料NPC！",
-      "WHISPER", "Common", player
-    )
-    gating_context["step"] = 1
-  elseif gating_context["step"] == 1 and gating_context["requester"] == player then
-    if not parse_and_set_city(player, msg) then
-      return
-    end
-  else
-    SendChatMessage("正在有人请求开门，或者传送门正在冷却，请您稍后", "WHISPER", "Common", player)
+  if GetTime() - gating_context["cast_ts"] < 65 then
+    cooldown_last = math.modf(65 - GetTime() + gating_context['cast_ts'])
+    SendChatMessage("传送门法术正在冷却，请"..cooldown_last.."秒后重新请求", "WHISPER", "Common", player)
+    return
   end
+  local spell, city = parse_and_set_city(player, msg)
+  if not spell then
+    return
+  end
+  if GetNumGroupMembers() >= 5 then
+    LeaveParty()
+  end
+  if GateWhiteList[player] then
+    if GetItemCount("传送门符文") > 0 then
+      gating_context["spell"] = spell
+      gating_context["city"] = city
+      gating_context["requester"] = player
+      transit_to_gate_state(player)
+      SendChatMessage("贵宾驾到，马上起航！", "WHISPER", "Common", player)
+      return
+    else
+      SendChatMessage("贵宾您好，我已无油，请交易我施法材料【传送门符文】【1枚】来为我补充油料", "WHISPER", "Common", player)
+    end
+  end
+
+  gating_contexts[player] = {
+    ["request_ts"]=GetTime(),
+    ["city"]=city,
+    ["spell"]=spell,
+  }
+  SendChatMessage(
+    gating_context["city"].."传送门指定成功，请于"..gate_request_timeout..
+        "秒内交易我【1】枚【传送门符文】。请于施法材料商或AH原价从我手中购买该材料。请注意，原价为20Y，如果没有这个价格的，请寻找材料NPC！",
+    "WHISPER", "Common", player
+  )
 end
 
 local function eventHandler(self, event, msg, author, ...)
@@ -522,26 +537,11 @@ local function bind_drink()
   end
 end
 
-local function finish_bind_gate()
-  if gating_context["step"] == 2 then
-    gating_context["step"] = 3
-    gating_context["cast_ts"] = GetTime()
-  end
-end
-
 local function drive_gate()
-  if gating_context["step"] == nil then
-    gating_context["step"] = 0
-  elseif gating_context["step"] == 1 then
-    if GetTime() - gating_context["request_ts"] > gate_request_timeout then
-      SendChatMessage("传送门未能成功开启，未收到符文石", "WHISPER", "Common", gating_context["requester"])
-      gating_context["step"] = 0
-    end
-  elseif gating_context["step"] == 2 then
-    -- driven by trade to 3
-  elseif gating_context["step"] == 3 then
-    if GetTime() - gating_context["cast_ts"] > 60 then
-      gating_context["step"] = 0
+  for player, gc in pairs(gating_contexts) do
+    if GetTime() - gc["request_ts"] > gate_request_timeout then
+      SendChatMessage("传送门未能成功开启，未收到符文石", "WHISPER", "Common", player)
+      gating_contexts[player] = nil
     end
   end
 end
@@ -573,7 +573,6 @@ local function auto_bind()
     bind_drink()
   elseif state == 3 then
     bind_gate()
-    finish_bind_gate()
   elseif state == 4 then
     bind_buff()
   end
@@ -590,17 +589,21 @@ local function trade_food()
     end
 end
 
-local function trade_stone()
-  local npc_name = UnitName("NPC")
+local function trade_stone(npc_name)
   local ils = GetTradePlayerItemLink(1)
   if ils == nil then
     feed(food_name, 1)
   elseif post_check_oppside_trade(npc_name, {["item"]="传送门符文", ["cnt"]=1}) == "传送门符文" then
     if do_accept_trade(true) then
+      local city = gating_contexts[npc_name]["city"]
+      local spell = gating_contexts[npc_name]["spell"]
       SendChatMessage(
               "符文石交易成功，请接受组队邀请。稍等几秒将为您开门...若未邀请成功，请M我水水水进组", "WHISPER", "Common", npc_name)
-      SendChatMessage(npc_name.."，"..gating_context["city"].."传送程序已载入，请坐稳扶好！想搭便车的朋友，M我【水水水】进组")
-      transist_to_gate_state(npc_name)
+      SendChatMessage(npc_name.."，"..city.."传送程序已载入，请坐稳扶好！想搭便车的朋友，M我【水水水】进组")
+      gating_context["spell"] = spell
+      gating_context["city"] = city
+      gating_context["requester"] = npc_name
+      transit_to_gate_state(npc_name)
     end
   else
     CloseTrade()
@@ -619,7 +622,8 @@ local function drive_state()
       state = 1
     end
   elseif state == 3 then
-    if GetTime() - gating_context["cast_ts"] > 20 then
+    local cd_gate = GetSpellCooldown(gating_context["spell"])
+    if cd_gate > 0 then
       state = 1
     end
   elseif state == 4 then
@@ -635,8 +639,8 @@ function SlashCmdList.ATFCmd(msg)
   auto_bind()
   if TradeFrame:IsShown() then
     local npc_name = UnitName("NPC")
-    if gating_context["step"] == 1 and npc_name == gating_context["requester"] then
-      trade_stone()
+    if gating_contexts[npc_name] then
+      trade_stone(npc_name)
     else
       trade_food()
     end
