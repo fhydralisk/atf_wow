@@ -180,17 +180,23 @@ end
 local function wf_parser1(msg)
   local water_pattern = "(%d+)[^%d]*水"
   local food_pattern = "(%d+)[^%d]*面包"
-  local w_s = string.match(msg, water_pattern) or 0
-  local f_s = string.match(msg, food_pattern) or 0
-  return tonumber(w_s), tonumber(f_s)
+  local matched = 0
+  local w_s = string.match(msg, water_pattern)
+  if not(w_s == nil) then matched = matched + 1 else w_s = 0 end
+  local f_s = string.match(msg, food_pattern)
+  if not(f_s == nil) then matched = matched + 1 else f_s = 0 end
+  return tonumber(w_s), tonumber(f_s), matched
 end
 
 local function wf_parser2(msg)
   local water_pattern = "水[^%d]*(%d+)"
   local food_pattern = "面包[^%d]*(%d+)"
-  local w_s = string.match(msg, water_pattern) or 0
-  local f_s = string.match(msg, food_pattern) or 0
-  return tonumber(w_s), tonumber(f_s)
+  local matched = 0
+  local w_s = string.match(msg, water_pattern)
+  if not (w_s == nil) then matched = matched + 1 else w_s = 0 end
+  local f_s = string.match(msg, food_pattern)
+  if not (f_s == nil) then matched = matched + 1 else f_s = 0 end
+  return tonumber(w_s), tonumber(f_s), matched
 end
 
 local function do_set_scale(water, food, author)
@@ -208,10 +214,10 @@ local function do_set_scale(water, food, author)
 end
 
 local function may_set_scale(msg, author)
-  local ws1, fs1 = wf_parser1(msg)
-  local ws2, fs2 = wf_parser2(msg)
+  local ws1, fs1, matched1 = wf_parser1(msg)
+  local ws2, fs2, matched2 = wf_parser2(msg)
   local water, food
-  if ws1 + fs1 > ws2 + fs2 then
+  if matched1 > matched2 then
     water = ws1
     food = fs1
   else
