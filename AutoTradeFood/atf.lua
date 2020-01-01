@@ -155,7 +155,7 @@ local function say_help(to_player)
     "WHISPER", "Common", to_player
   )
   SendChatMessage(
-    string.format("6.【%s】查看开门步骤(Beta)", gate_help_cmd), "WHISPER", "Common", to_player
+    string.format("6.【%s】查看开门步骤", gate_help_cmd), "WHISPER", "Common", to_player
   )
 
 end
