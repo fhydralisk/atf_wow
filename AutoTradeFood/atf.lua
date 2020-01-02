@@ -570,6 +570,10 @@ local function drive_gate()
     if UnitInParty(gating_context["requester"]) then
       gating_context["invited"] = true
     else
+      SendChatMessage(
+              "上次邀请未成功！请您确认离队，我会在传送门消失前重复尝试邀请您！",
+              "WHISPER", "Common", gating_context["requester"]
+      )
       InviteUnit(gating_context["requester"])
     end
   end
