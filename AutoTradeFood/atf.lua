@@ -23,7 +23,7 @@ local state = 1
 local interact_key = "CTRL-I"
 local atf_key = "CTRL-Y"
 local atfr_key = "ALT-CTRL-Y"
-local gating_context = {["spell"]="", ["requester"]="", ["cooldown_ts"]=0, ["city"]=""}
+local gating_context = {["spell"]="", ["requester"]="", ["cooldown_ts"]=0, ["city"]="", ["invited"]=false}
 local gating_contexts = {}
 local gate_request_timeout = 90
 local ad_msg = {
@@ -288,6 +288,7 @@ local function transit_to_gate_state(player)
   invalidate_requests(player, gating_context["city"])
   state = 3
   gating_context["cooldown_ts"] = GetTime() + 60
+  gating_context["invited"] = false
   InviteUnit(player)
 end
 
@@ -563,6 +564,13 @@ local function drive_gate()
     if GetTime() - gc["request_ts"] > gate_request_timeout then
       SendChatMessage("传送门未能成功开启，未收到符文石", "WHISPER", "Common", player)
       gating_contexts[player] = nil
+    end
+  end
+  if GetTime() < gating_context["cooldown_ts"] and gating_context['invited'] == false then
+    if UnitInParty(gating_context[gating_context["requester"]]) then
+      gating_context["invited"] = true
+    else
+      InviteUnit(gating_context["requester"])
     end
   end
 end
