@@ -11,7 +11,7 @@ local water_name = "魔法晶水"
 local food_name = "魔法甜面包"
 local retrieve_position = "pos"
 local scale_cmd = "查看比例"
-local help_cmd = "help"
+local help_cmd = "帮助"
 local invite_cmd = "水水水"
 local gate_help_cmd = "传送门"
 local last_trade_player = ""
@@ -350,7 +350,7 @@ local function eventHandler(self, event, msg, author, ...)
       else
         if not(author == UnitName("player")) then
           SendChatMessage(
-            "【【【【渴了？饿了？经济舱？找米豪！请直接交易我！坐标"..my_position().."，需要帮助，请M我help】】】",
+            "【【【【渴了？饿了？经济舱？找米豪！请直接交易我！坐标"..my_position().."，需要帮助，请M我“"..help_cmd.."”】】】",
             "WHISPER", "Common", author
           )
         end
@@ -417,7 +417,7 @@ local function pre_check_startup(npc_name)
   else
     local water = get_water_count()
     local bread = get_bread_count()
-    SendChatMessage(npc_name.."，库存不足，请稍等一小会儿...当前存货：【大水】"..water.."组，【面包】"..bread.."组", "say", "Common")
+    SendChatMessage("库存不足，请稍等一小会儿...当前存货：【大水】"..water.."组，【面包】"..bread.."组", "WHISPER", "Common", npc_name)
     return false
   end
 end
@@ -570,7 +570,7 @@ local function bind_buff()
     SetBinding(interact_key, "TARGETSELF")
   elseif not check_buff("魔甲术", 300) then
     SetBindingSpell(interact_key, "魔甲术")
-  elseif not check_buff("奥术智慧", 300) then
+  elseif not (check_buff("奥术智慧", 300) or check_buff("奥术光辉", 300))then
     SetBindingSpell(interact_key, "奥术智慧")
   end
 end
@@ -626,7 +626,7 @@ local function drive_state()
   if state == 1 then
     if UnitPower("player") < min_mana then
       state = 2
-    elseif not (check_buff("奥术智慧", 10) and check_buff("魔甲术", 10)) then
+    elseif not ((check_buff("奥术智慧", 10) or check_buff("奥术光辉", 10)) and check_buff("魔甲术", 10)) then
       state = 4
     end
   elseif state == 2 then
@@ -640,7 +640,7 @@ local function drive_state()
       state = 1
     end
   elseif state == 4 then
-    if check_buff("奥术智慧", 100) and check_buff("魔甲术", 100) then
+    if (check_buff("奥术智慧", 100) or check_buff("奥术光辉", 100)) and check_buff("魔甲术", 100) then
       state = 2
     end
   end
@@ -663,8 +663,9 @@ end
 function SlashCmdList.ATF_REPORT(msg)
   local water = get_water_count()
   local bread = get_bread_count()
-  SendChatMessage("存货：【大水】"..water.."组，【面包】"..bread.."组","say","Common")
-  SendChatMessage("免费餐饮、免手续费传送门！找米豪。今晚19:40-23:00提升装备，暂停服务","say","Common")
+--  SendChatMessage("存货：【大水】"..water.."组，【面包】"..bread.."组","say","Common")
+--  SendChatMessage("今晚19:40-23:00提升装备，暂停服务。","say","Common")
+--  SendChatMessage("免费餐饮、免手续费传送门！找米豪，请M我“"..help_cmd.."”获取说明。","say","Common")
 end
 
 local function do_delete_groups(item_name, groups)
@@ -749,6 +750,9 @@ function SlashCmdList.ATF_DEBUG(msg)
     print(bind)
     print(spell)
     SetBinding(bind, "SPELL "..spell)
+  end
+  if msg == "showstate" then
+    print(state)
   end
 end
 
