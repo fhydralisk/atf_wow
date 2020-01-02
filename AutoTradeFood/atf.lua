@@ -664,7 +664,7 @@ function SlashCmdList.ATF_REPORT(msg)
   local water = get_water_count()
   local bread = get_bread_count()
   SendChatMessage("存货：【大水】"..water.."组，【面包】"..bread.."组","say","Common")
-  SendChatMessage("要吃喝？免手续费开门？找米豪！55级以上直接交易，自动供给，【免费！免费！免费！】M我“help”可以获取帮助。","say","Common")
+  SendChatMessage("免费餐饮、免手续费传送门！找米豪。今晚19:40-23:00提升装备，暂停服务","say","Common")
 end
 
 local function do_delete_groups(item_name, groups)
