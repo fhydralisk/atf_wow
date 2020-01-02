@@ -683,8 +683,8 @@ end
 function SlashCmdList.ATF_REPORT(msg)
   local water = get_water_count()
   local bread = get_bread_count()
-  SendChatMessage(os.date("%X").."存货：【大水】"..water.."组，【面包】"..bread.."组","say","Common")
-  SendChatMessage(os.date("%X")..ad_msg[math.random(1, #ad_msg)], "say", "Common")
+  SendChatMessage(date("%X").."存货：【大水】"..water.."组，【面包】"..bread.."组","say","Common")
+  SendChatMessage(date("%X")..ad_msg[math.random(1, #ad_msg)], "say", "Common")
 end
 
 local function do_delete_groups(item_name, groups)
