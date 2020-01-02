@@ -567,7 +567,7 @@ local function drive_gate()
     end
   end
   if GetTime() < gating_context["cooldown_ts"] and gating_context['invited'] == false then
-    if UnitInParty(gating_context[gating_context["requester"]]) then
+    if UnitInParty(gating_context["requester"]) then
       gating_context["invited"] = true
     else
       InviteUnit(gating_context["requester"])
