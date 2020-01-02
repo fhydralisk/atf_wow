@@ -415,7 +415,9 @@ local function pre_check_startup(npc_name)
   if get_water_count() >= 4 and get_bread_count() >= 4 then
     return true
   else
-    SendChatMessage(npc_name.."，我正在热身，兜兜里也很空荡，请稍等一小会儿...", "say", "Common")
+    local water = get_water_count()
+    local bread = get_bread_count()
+    SendChatMessage(npc_name.."，库存不足，请稍等一小会儿...当前存货：【大水】"..water.."组，【面包】"..bread.."组", "say", "Common")
     return false
   end
 end
