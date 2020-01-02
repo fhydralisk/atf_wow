@@ -26,6 +26,17 @@ local atfr_key = "ALT-CTRL-Y"
 local gating_context = {["spell"]="", ["requester"]="", ["cooldown_ts"]=0, ["city"]=""}
 local gating_contexts = {}
 local gate_request_timeout = 90
+local ad_msg = {
+  "【米豪公益】需要55级水、45级面包，请直接交易“米豪”自动售货柜！免费提供！",
+  "【米豪公益】需要打开去主城的捷径，请与我私聊“传送门”！，牢记程序，免一切手续费！",
+  "【米豪公益】如果亲觉得米豪公益好用，请奔走相告，米豪力争24小时为各位提供免费食水传送服务！",
+  "【米豪公益】TIPs: 如遇高峰时期，请各位勤拿少取，需要多少水，多少面包，可以私聊我进行定制！例如“我要1水2面包”。路过的各位，请给点BUFF给我加速，例如激活、精神、王者、智慧",
+  "【米豪公益】TIPs: 米豪开门只收【传送门符文】不收金币！！！详情M我【传送门】",
+  "【米豪公益】TIPs: 如果米豪开始奥暴，并非米豪在划水，而是米豪食水充足无比！欢迎各种交易！完全免费！",
+  "【米豪公益】TIPs: 如果您和米豪不在一个位面，请M我唯一有效咒语【"..invite_cmd.."】进组！",
+  "【米豪公益】TIPs: 米豪平时无人值守，需要食物的请直接交易！需要传送请M我【传送门】，并认真按照开门程序操作，简单便捷！",
+  "【米豪公益】米豪每天会升级维护，维护期间不能提供服务，敬请谅解！有关米豪的使用帮助，请M我【"..help_cmd.."】！",
+}
 
 
 local tclass_food = {
@@ -323,7 +334,7 @@ local function eventHandler(self, event, msg, author, ...)
   if event == "CHAT_MSG_WHISPER" then
     author = string.match(author, "([^-]+)")
     if atfr_run == true then
-      if string.lower(msg) == help_cmd or msg == "1" then
+      if string.lower(msg) == help_cmd or msg == "1" or string.lower(msg) == "help" then
         say_help(author)
       elseif string.lower(msg) == retrieve_position or msg == "2" then
         say_pos(author)
@@ -369,6 +380,7 @@ local function eventHandler(self, event, msg, author, ...)
     if atfr_run then
       DeclineGroup()
       StaticPopup_Hide("PARTY_INVITE")
+      SendChatMessage("请勿邀请我进组，您可以M我【"..invite_cmd.."】进组，谢谢！", "WHISPER", "Common", msg)
     end
   end
 end
@@ -663,9 +675,8 @@ end
 function SlashCmdList.ATF_REPORT(msg)
   local water = get_water_count()
   local bread = get_bread_count()
---  SendChatMessage("存货：【大水】"..water.."组，【面包】"..bread.."组","say","Common")
---  SendChatMessage("今晚19:40-23:00提升装备，暂停服务。","say","Common")
---  SendChatMessage("免费餐饮、免手续费传送门！找米豪，请M我“"..help_cmd.."”获取说明。","say","Common")
+  SendChatMessage(os.date("%X").."存货：【大水】"..water.."组，【面包】"..bread.."组","say","Common")
+  SendChatMessage(os.date("%X")..ad_msg[math.random(1, #ad_msg)], "say", "Common")
 end
 
 local function do_delete_groups(item_name, groups)
