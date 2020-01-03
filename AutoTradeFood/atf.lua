@@ -565,8 +565,8 @@ local function bind_drink()
   if check_buff("喝水", 3) or check_buff("唤醒", 0.5) then
     SetBinding(interact_key, "")
   else
-    local weakup_cooldown = GetSpellCooldown("唤醒", "BOOKTYPE_SPELL")
-    if weakup_cooldown > 0 then
+    local wakeup_cd = GetSpellCooldown("唤醒", "BOOKTYPE_SPELL")
+    if wakeup_cd > 0 or UnitPower("player") > UnitPowerMax("player") * 0.5 then
       SetBindingItem(interact_key, "魔法晶水")
     else
       SetBindingSpell(interact_key, "唤醒")
