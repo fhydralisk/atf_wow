@@ -696,21 +696,25 @@ function SlashCmdList.ATFCmd(msg)
   drive_state()
   drive_gate()
   auto_bind()
-  if TradeFrame:IsShown() then
-    local npc_name = UnitName("NPC")
-    if gating_contexts[npc_name] then
-      trade_stone(npc_name)
-    else
-      trade_food()
+  if atfr_run == true or msg == "force" then
+    if TradeFrame:IsShown() then
+      local npc_name = UnitName("NPC")
+      if gating_contexts[npc_name] then
+        trade_stone(npc_name)
+      else
+        trade_food()
+      end
     end
   end
 end
 
 function SlashCmdList.ATF_REPORT(msg)
-  local water = get_water_count()
-  local bread = get_bread_count()
-  SendChatMessage(date("%X").."存货：【大水】"..water.."组，【面包】"..bread.."组","say","Common")
-  SendChatMessage(date("%X")..ad_msg[math.random(1, #ad_msg)], "say", "Common")
+  if atfr_run == true or msg == "force" then
+    local water = get_water_count()
+    local bread = get_bread_count()
+    SendChatMessage(date("%X").."存货：【大水】"..water.."组，【面包】"..bread.."组。","say","Common")
+    SendChatMessage(date("%X")..ad_msg[math.random(1, #ad_msg)], "say", "Common")
+  end
 end
 
 local function do_delete_groups(item_name, groups)
@@ -782,7 +786,9 @@ function SlashCmdList.ATF_SWITCH(msg)
     SetBindingClick(atf_key, "ATFButton")
     SetBindingClick(atfr_key, "ATFRButton")
   elseif msg == "off" then
-    SendChatMessage("自动模式已关闭，人工介入")
+    if atfr_run then
+      SendChatMessage("自动模式已关闭，人工介入")
+    end
     atfr_run = false
   elseif msg == "maintain" then
     atfr_run = "maintain"
