@@ -469,29 +469,25 @@ local function maybe_say_some()
   end
 end
 
-local function post_check_oppside_trade(npc_name, allow_trade)
-  local accepted_item
+local function post_check_opposite_trade()
+  local target_items = {} local table_cnt = 0
   for t_index = 1, 6 do
     local name, _, cnt = GetTradeTargetItemInfo(t_index)
-    if name and not(allow_trade and name==allow_trade["item"] and cnt==allow_trade["cnt"]) then
-      if allow_trade then
-        SendChatMessage(npc_name.."，背包有限，请勿交易我任何物品，感谢支持！"
-                ..allow_trade["item"].."仅需交易"..allow_trade["cnt"].."个", "say", "Common")
-      else
-        SendChatMessage(npc_name.."，背包有限，请勿交易我任何物品，感谢支持！", "say", "Common")
-      end
-      return false
-    end
     if name then
-      accepted_item = name
+      if target_items[name] == nil then
+        target_items[name] = 0
+      end
+      target_items[name] = target_items[name] + cnt
+      table_cnt = table_cnt + 1
     end
   end
 
   if GetTargetTradeMoney() > 0 then
-    SendChatMessage(npc_name.."，餐饮完全免费，请勿交易我任何金币，谢谢您的鼓励！", "say", "Common")
-    return false
+    target_items["Gold"] = GetTargetTradeMoney()
+    table_cnt = table_cnt + 1
   end
-  return accepted_item or true
+
+  return target_items, table_cnt
 end
 
 local function do_accept_trade(dont_say)
@@ -505,9 +501,27 @@ end
 
 local function check_and_accept_trade()
   local npc_name = UnitName("NPC")
-  if post_check_oppside_trade(npc_name) then
+  local items, cnt = post_check_opposite_trade()
+  if cnt == 0 then
     do_accept_trade()
   else
+    if items["传送门符文"] then
+      SendChatMessage(
+              npc_name.."，需要开门服务，请首先M我需要去的城市名称，例如“达纳苏斯”，收到确认后，再交易我【传送门符文】，谢谢！",
+              "say", "Common"
+      )
+    elseif items["魔法晶水"] or items["魔法甜面包"] then
+      SendChatMessage(
+              npc_name.."，餐饮一经送出，不再回收。"..
+                      "如果您觉得水或面包多余，请在交易我之前M我配比情况，例如“我要3组水，1组面包”，然后再进行交易。",
+              "say", "Common"
+      )
+
+    elseif items["Gold"] then
+      SendChatMessage(npc_name.."，餐饮完全免费，请勿交易我任何金币，谢谢您的鼓励！", "say", "Common")
+    else
+      SendChatMessage(npc_name.."，背包有限，请勿交易我任何物品，感谢支持！", "say", "Common")
+    end
     CloseTrade()
   end
 end
@@ -624,10 +638,12 @@ end
 
 local function trade_stone(npc_name)
   local ils = GetTradePlayerItemLink(1)
-  local post_check = post_check_oppside_trade(npc_name, {["item"]="传送门符文", ["cnt"]=1})
+  local items, tbl_cnt = post_check_opposite_trade()
   if ils == nil then
     feed(food_name, 1)
-  elseif post_check == "传送门符文" then
+  elseif tbl_cnt == 0 then
+      -- do nothing
+  elseif items["传送门符文"] == 1 and tbl_cnt == 1 then
     if do_accept_trade(true) then
       local city = gating_contexts[npc_name]["city"]
       local spell = gating_contexts[npc_name]["spell"]
@@ -639,9 +655,14 @@ local function trade_stone(npc_name)
       gating_context["requester"] = npc_name
       transit_to_gate_state(npc_name)
     end
-  elseif post_check == true then
-    -- do nothing
   else
+    if items["Gold"] and items["Gold"] > 0 then
+      SendChatMessage(npc_name.."，开门服务只收【传送门符文】，不收金币，详情烦请M我【传送门】，仅需1分钟，轻松开门！", "say", "Common")
+    elseif items["传送门符文"] and items["传送门符文"] > 1 then
+      SendChatMessage(npc_name.."，请交易我【1枚】传送门符文，多余的请您保留以备后用，谢谢！", "say", "Common")
+    else
+      SendChatMessage(npc_name.."，请勿交易我额外的物品，谢谢！", "say", "Common")
+    end
     CloseTrade()
   end
 end
