@@ -507,7 +507,8 @@ local function check_and_accept_trade()
   else
     if items["传送门符文"] then
       SendChatMessage(
-              npc_name.."，需要开门服务，请首先M我需要去的城市名称，例如“达纳苏斯”，收到确认后，再交易我【传送门符文】，谢谢！",
+              npc_name.."，请首先M我需要去的城市名称，例如“达纳苏斯”，再交易我【传送门符文】！"..
+                      "如果您已经M过我，可能已经过期，请重试，谢谢！",
               "say", "Common"
       )
     elseif items["魔法晶水"] or items["魔法甜面包"] then
