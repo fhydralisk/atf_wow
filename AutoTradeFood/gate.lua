@@ -5,15 +5,13 @@
 ---
 local addonName, L = ...
 
-local gating_context = {["spell"]="", ["requester"]="", ["cooldown_ts"]=0, ["city"]="", ["invited"]=false}
-local gating_contexts = {}
 local gate_request_timeout = 90
 local min_mana = L.min_mana
 local interact_key = L.hotkeys.interact_key
 
 L.gate = {}
-L.gate.gating_context = gating_context
-L.gate.gating_contexts = gating_contexts
+L.gate.gating_context = {["spell"]="", ["requester"]="", ["cooldown_ts"]=0, ["city"]="", ["invited"]=false}
+L.gate.gating_contexts = {}
 
 
 function L.F.say_gate_help(to_player)
@@ -47,29 +45,29 @@ end
 
 
 local function invalidate_requests(winner, city)
-  for player, _ in pairs(gating_contexts) do
+  for player, _ in pairs(L.gate.gating_contexts) do
     SendChatMessage(winner..
             "抢先一步交易了我【传送门符文】，您的请求已取消。我将为其施放通往"..city.."的传送门，如若顺路，请M我【水水水】进组",
             "WHISPER", "Common", player
     )
   end
-  gating_contexts = {}
+  L.gate.gating_contexts = {}
 end
 
 
 local function transit_to_gate_state(player)
-  gating_contexts[player] = nil
-  invalidate_requests(player, gating_context["city"])
+  L.gate.gating_contexts[player] = nil
+  invalidate_requests(player, L.gate.gating_context["city"])
   L.state = 3
-  gating_context["cooldown_ts"] = GetTime() + 60
-  gating_context["invited"] = false
+  L.gategating_context["cooldown_ts"] = GetTime() + 60
+  L.gate.gating_context["invited"] = false
   InviteUnit(player)
 end
 
 
 function L.F.gate_request(player, msg)
-  if GetTime() < gating_context["cooldown_ts"] then
-    local cooldown_last = math.modf( gating_context["cooldown_ts"] - GetTime())
+  if GetTime() < L.gate.gating_context["cooldown_ts"] then
+    local cooldown_last = math.modf( L.gate.gating_context["cooldown_ts"] - GetTime())
     SendChatMessage("传送门法术正在冷却，请"..cooldown_last.."秒后重新请求", "WHISPER", "Common", player)
     return
   end
@@ -83,9 +81,9 @@ function L.F.gate_request(player, msg)
   end
   if GateWhiteList[player] then
     if GetItemCount(L.items.stone_name) > 0 then
-      gating_context["spell"] = spell
-      gating_context["city"] = city
-      gating_context["requester"] = player
+      L.gate.gating_context["spell"] = spell
+      L.gate.gating_context["city"] = city
+      L.gate.gating_context["requester"] = player
       transit_to_gate_state(player)
       SendChatMessage("贵宾驾到，马上起航！", "WHISPER", "Common", player)
       return
@@ -94,7 +92,7 @@ function L.F.gate_request(player, msg)
     end
   end
 
-  gating_contexts[player] = {
+  L.gate.gating_contexts[player] = {
     ["request_ts"]=GetTime(),
     ["city"]=city,
     ["spell"]=spell,
@@ -108,21 +106,21 @@ end
 
 
 function L.F.drive_gate()
-  for player, gc in pairs(gating_contexts) do
+  for player, gc in pairs(L.gate.gating_contexts) do
     if GetTime() - gc["request_ts"] > gate_request_timeout then
       SendChatMessage("传送门未能成功开启，未收到符文石", "WHISPER", "Common", player)
-      gating_contexts[player] = nil
+      L.gate.gating_contexts[player] = nil
     end
   end
-  if GetTime() < gating_context["cooldown_ts"] and gating_context['invited'] == false then
-    if UnitInParty(gating_context["requester"]) then
-      gating_context["invited"] = true
+  if GetTime() < L.gate.gating_context["cooldown_ts"] and L.gate.gating_context['invited'] == false then
+    if UnitInParty(L.gate.gating_context["requester"]) then
+      L.gate.gating_context["invited"] = true
     else
       SendChatMessage(
               "上次邀请未成功！请您确认离队，我会在传送门消失前重复尝试邀请您！",
-              "WHISPER", "Common", gating_context["requester"]
+              "WHISPER", "Common", L.gate.gating_context["requester"]
       )
-      InviteUnit(gating_context["requester"])
+      InviteUnit(L.gate.gating_context["requester"])
     end
   end
 end
@@ -132,7 +130,7 @@ function L.F.bind_gate()
   if UnitPower("player") < min_mana then
     SetBindingItem(interact_key, "魔法晶水")
   else
-    SetBindingSpell(interact_key, gating_context["spell"])
+    SetBindingSpell(interact_key, L.gate.gating_context["spell"])
   end
 end
 
@@ -146,14 +144,14 @@ function L.F.trade_stone(npc_name)
       -- do nothing
   elseif items[L.items.stone_name] == 1 and tbl_cnt == 1 then
     if L.F.do_accept_trade() then
-      local city = gating_contexts[npc_name]["city"]
-      local spell = gating_contexts[npc_name]["spell"]
+      local city = L.gate.gating_contexts[npc_name]["city"]
+      local spell = L.gate.gating_contexts[npc_name]["spell"]
       SendChatMessage(
               "符文石交易成功，请接受组队邀请。稍等几秒将为您开门...若未邀请成功，请M我水水水进组", "WHISPER", "Common", npc_name)
       SendChatMessage(npc_name.."，"..city.."传送程序已载入，请坐稳扶好！想搭便车的朋友，M我【水水水】进组")
-      gating_context["spell"] = spell
-      gating_context["city"] = city
-      gating_context["requester"] = npc_name
+      L.gate.gating_context["spell"] = spell
+      L.gate.gating_context["city"] = city
+      L.gate.gating_context["requester"] = npc_name
       transit_to_gate_state(npc_name)
     end
   else
