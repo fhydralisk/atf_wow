@@ -18,6 +18,15 @@ local ad_msg = {
   "【米豪公益】米豪每天会升级维护，维护期间不能提供服务，敬请谅解！有关米豪的使用帮助，请M我【"..L.cmds.help_cmd.."】！",
 }
 
+local ad_msg_busy = {
+  "【米豪公益：用餐高峰】需要55级水、45级面包，请直接交易“米豪”货仓！免费提供！",
+  "【米豪公益：用餐高峰】需要打开去主城的捷径，请与我私聊“传送门”！，牢记程序，免一切手续费！",
+  "【米豪公益：用餐高峰】TIPs：用餐高峰期间，米豪每次交易供应减半，阻止相同角色连续交易，阻止60级FS交易，敬请谅解！",
+  "【米豪公益：用餐高峰】TIPs：米豪在喝水期间，货存不会增长，如果库存不足，请不要在米豪喝水期间重复交易哦！",
+  "【米豪公益：用餐高峰】TIPs：用餐高峰期间，请各位亲保持有序，不要争抢，谢谢大家支持与配合！",
+  "【米豪公益：用餐高峰】TIPs：米豪在面包与水均高于4组的情况下才允许交易，请亲关注库存！",
+}
+
 function L.F.say_help(to_player)
   SendChatMessage(
     "我会自动根据您的职业分配食物与水的比例。", "WHISPER", "Common", to_player
@@ -56,5 +65,11 @@ function L.F.send_ad()
   local water = L.F.get_water_count()
   local bread = L.F.get_bread_count()
   SendChatMessage(date("%X").."存货：【大水】"..water.."组，【面包】"..bread.."组。。。米豪刚刚做过结构变更，工作可能会失常，请谅解！","say","Common")
-  SendChatMessage(date("%X")..ad_msg[math.random(1, #ad_msg)], "say", "Common")
+  local admsgs;
+  if L.F.get_busy_state() then
+    admsgs = ad_msg_busy
+  else
+    admsgs = ad_msg
+  end
+  SendChatMessage(date("%X")..admsgs[math.random(1, #admsgs)], "say", "Common")
 end

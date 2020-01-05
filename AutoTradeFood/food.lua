@@ -45,9 +45,13 @@ local water_name = L.items.water_name
 local food_name = L.items.food_name
 
 local last_trade_player = ""
+local last_fail_player_is_trade_player = true
 local last_trade_player_count = 0
+local last_trade_success_ts = 0
 
 local function set_last_trade_player(pname)
+  last_fail_player_is_trade_player = true
+  last_trade_success_ts = GetTime()
   if last_trade_player == pname then
     last_trade_player_count = last_trade_player_count + 1
   else
@@ -57,7 +61,7 @@ local function set_last_trade_player(pname)
   return last_trade_player_count
 end
 
-local function do_trade_feed(tclass, npc_name)
+local function do_trade_feed(tclass, npc_name, scale)
   local w, f
   if PlayerDefinedScale[npc_name] then
     w = PlayerDefinedScale[npc_name]["water"]
@@ -66,6 +70,8 @@ local function do_trade_feed(tclass, npc_name)
     w = tclass_food[tclass][1]
     f = tclass_food[tclass][2]
   end
+  w = math.ceil(w * scale)
+  f = math.ceil(f * scale)
   L.F.feed(water_name, w, 20)
   L.F.feed(food_name, f, 20)
 end
@@ -76,7 +82,15 @@ local function pre_check_startup(npc_name)
   else
     local water = L.F.get_water_count()
     local bread = L.F.get_bread_count()
-    SendChatMessage("库存不足，请稍等一小会儿...当前存货：【大水】"..water.."组，【面包】"..bread.."组", "WHISPER", "Common", npc_name)
+    SendChatMessage(
+      "库存不足，请稍等一小会儿...当前存货：【大水】"..water.."组，【面包】"..bread.."组", "WHISPER",
+      "Common", npc_name
+    )
+    if npc_name == last_trade_player then
+      last_fail_player_is_trade_player = true
+    else
+      last_fail_player_is_trade_player = false
+    end
     return false
   end
 end
@@ -93,9 +107,26 @@ local function check_and_do_feed()
   local tclass = UnitClass("NPC")
   local tlevel = UnitLevel("NPC")
   local npc_name = UnitName("NPC")
+  local scale = 1
+
+  if L.F.get_busy_state() then
+    scale = 0.5
+  end
+
+  if L.F.get_busy_state() then
+    if tclass == "法师" and tlevel == 60 then
+      SendChatMessage("当前为用餐高峰时间，请60级法爷自行解决食水问题，谢谢支持！", "WHISPER", "Common", npc_name)
+      CloseTrade()
+      return
+    elseif npc_name == last_trade_player and not(last_fail_player_is_trade_player) and GetTime() - last_trade_success_ts < 120 then
+      SendChatMessage("当前为用餐高峰时间，请勿连续取用食物，给其他朋友些机会哦，谢谢支持！", "WHISPER", "Common", npc_name)
+      CloseTrade()
+      return
+    end
+  end
 
   if pre_check_startup(npc_name) and pre_check_role(tlevel, tclass, npc_name) then
-    do_trade_feed(tclass, npc_name)
+    do_trade_feed(tclass, npc_name, scale)
   else
     CloseTrade()
   end
@@ -109,7 +140,7 @@ local function maybe_say_some()
   elseif pclass == "法师" then
     SendChatMessage("法爷需自强，不当伸手党，嘿嘿嘿...", "say", "Common")
   end
-  local words = trade_count_words[set_last_trade_player(pname)]
+  local words = trade_count_words[last_trade_player_count]
   if words then
     SendChatMessage(pname..","..words, "say", "Common")
   end
@@ -120,6 +151,7 @@ local function check_and_accept_trade()
   local items, cnt = L.F.post_check_opposite_trade()
   if cnt == 0 then
     if L.F.do_accept_trade() then
+      set_last_trade_player(npc_name)
       maybe_say_some()
     end
   else
