@@ -5,6 +5,8 @@
 ---
 
 local addonName, L = ...
+local water_name = L.items.water_name
+local food_name = L.items.food_name
 
 function L.F.get_water_count(identity)
   if identity then
