@@ -11,7 +11,7 @@ local interact_key = L.hotkeys.interact_key
 
 local tclass_food = {
   ["战士"]={0, 6},
-  ["法师"]={2, 2},
+  ["法师"]={2, 0},
   ["猎人"]={4, 2},
   ["圣骑士"]={4, 2},
   ["潜行者"]={0, 6},
