@@ -3,4 +3,13 @@
 ## Notes: 食物交易助手
 ## SavedVariables: PlayerDefinedScale, GateWhiteList
 
+init.lua
+utils.lua
+container.lua
+help.lua
+trade.lua
+gate.lua
+busy_check.lua
+food.lua
+event.lua
 atf.lua
