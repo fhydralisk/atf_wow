@@ -64,7 +64,7 @@ end
 function L.F.send_ad()
   local water = L.F.get_water_count()
   local bread = L.F.get_bread_count()
-  SendChatMessage(date("%X").."存货：【大水】"..water.."组，【面包】"..bread.."组。。。米豪刚刚做过结构变更，工作可能会失常，请谅解！","say","Common")
+  SendChatMessage(date("%X").."存货：【大水】"..water.."组，【面包】"..bread.."组。","say","Common")
   local admsgs;
   if L.F.get_busy_state() then
     admsgs = ad_msg_busy

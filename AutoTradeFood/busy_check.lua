@@ -12,9 +12,9 @@ local busy_state_context = {
   ["is_busy"] = false,
 }
 
-local threshold_busy_low = 8
+local threshold_busy_low = 12
 local threshold_busy_high = 20
-local sample_interval = 60
+local sample_interval = 45
 local sample_size = 5
 
 
@@ -58,6 +58,7 @@ function L.F.drive_busy_state()
             -- all water+bread >= threshold_busy_high
             print("Exit busy state")
             busy_state_context.is_busy = false
+            table.insert(BusyHistory, {["busy"]=false, ["time"]=date("%x %X")})
         else
             for _, value in ipairs(busy_state_context.samples) do
                 if value.water + value.bread > threshold_busy_low then
@@ -67,6 +68,7 @@ function L.F.drive_busy_state()
             -- all water+bread <= threshold_busy_low
             print("Enter busy state")
             busy_state_context.is_busy = true
+            table.insert(BusyHistory, {["busy"]=true, ["time"]=date("%x %X")})
         end
     end
 end

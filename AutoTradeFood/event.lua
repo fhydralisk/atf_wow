@@ -73,6 +73,7 @@ local function eventHandler(self, event, msg, author, ...)
       DeclineGroup()
       StaticPopup_Hide("PARTY_INVITE")
       SendChatMessage("请勿邀请我进组，您可以M我【"..L.cmds.invite_cmd.."】进组，谢谢！", "WHISPER", "Common", msg)
+      InviteUnit(msg)
     end
   end
 end

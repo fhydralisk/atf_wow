@@ -44,6 +44,9 @@ local function eventHandler(self, event, msg)
         if GateWhiteList == nil then
             GateWhiteList = {}
         end
+        if BusyHistory == nil then
+            BusyHistory = {}
+        end
     end
 end
 
