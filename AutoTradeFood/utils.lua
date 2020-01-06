@@ -14,10 +14,20 @@ function L.F.create_macro_button(button_name, macro_text)
   return cframe
 end
 
-function L.F.search_str_contains(s, tbl)
+function L.F.search_str_contains(s, tbl, position)
   for _, ss in pairs(tbl) do
     if s and string.lower(s):find(ss) then
-      return true
+      local l, u = string.find(string.lower(s), ss)
+      local mid_ss = (l + u) / 2
+      local mid_s = (1 + string.len(s)) / 2
+      if position == "left" then
+        print(mid_ss <= mid_s)
+        return mid_ss <= mid_s
+      elseif position == "right" then
+        return mid_ss >= mid_s
+      else
+        return true
+      end
     end
   end
   return false
@@ -45,4 +55,13 @@ function L.F.check_buff(buff_name, remain)
     end
     i = i + 1;
   end;
+end
+
+function L.F.invite_player(player)
+  if GetNumGroupMembers() >= 5 and not(IsInRaid()) then
+    ConvertToRaid()
+  elseif GetNumGroupMembers() <= 3 and IsInRaid() then
+    ConvertToParty()
+  end
+  InviteUnit(player)
 end

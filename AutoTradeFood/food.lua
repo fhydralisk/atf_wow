@@ -136,7 +136,7 @@ local function maybe_say_some()
   local pname = UnitName("NPC")
   local pclass = UnitClass("NPC")
   if L.F.search_str_contains(pclass, {"牧师", "圣骑士", "德鲁伊"}) then
-    SendChatMessage(pname..",".."智慧祝福、王者祝福、爪子、精神可以提高我的制作效率，如果您方便，就强化我一下，谢谢！", "say", "Common")
+    SendChatMessage(pname..",".."智慧祝福、王者祝福、爪子、激活、精神可以提高我的制作效率，如果您方便，就强化我一下，谢谢！", "say", "Common")
   elseif pclass == "法师" then
     SendChatMessage("法爷需自强，不当伸手党，嘿嘿嘿...", "say", "Common")
   end
@@ -215,11 +215,20 @@ local function do_set_scale(water, food, author)
     ["water"] = water,
     ["food"] = food
   }
-  SendChatMessage(
-    string.format("配比成功，您在交易我时，将获得%d组水，%d组面包（如果库存充足）。"..
-        "如果和预期的不同，请按如下例子进行定制：“4组水，2组面包”。", water, food),
-    "WHISPER", "Common", author
-  )
+  if L.F.get_busy_state() then
+    SendChatMessage(
+            string.format("配比成功，您在交易我时，将获得%d组水，%d组面包（如果库存充足）。"..
+                    "【当前为高峰期，交易数量将减半。】”。", water, food),
+            "WHISPER", "Common", author
+    )
+  else
+    SendChatMessage(
+            string.format("配比成功，您在交易我时，将获得%d组水，%d组面包（如果库存充足）。" ..
+                    "如果和预期的不同，请按如下例子进行定制：“4组水，2组面包”。", water, food),
+            "WHISPER", "Common", author
+    )
+  end
+
 end
 
 function L.F.may_set_scale(msg, author)

@@ -61,7 +61,7 @@ local function transit_to_gate_state(player)
   L.state = 3
   L.gate.gating_context["cooldown_ts"] = GetTime() + 60
   L.gate.gating_context["invited"] = false
-  InviteUnit(player)
+  L.F.invite_player(player)
 end
 
 
@@ -75,9 +75,6 @@ function L.F.gate_request(player, msg)
   print(spell, city)
   if not spell then
     return
-  end
-  if GetNumGroupMembers() >= 5 then
-    LeaveParty()
   end
   if GateWhiteList[player] then
     if GetItemCount(L.items.stone_name) > 0 then
@@ -120,7 +117,7 @@ function L.F.drive_gate()
               "上次邀请未成功！请您确认离队，我会在传送门消失前重复尝试邀请您！",
               "WHISPER", "Common", L.gate.gating_context["requester"]
       )
-      InviteUnit(L.gate.gating_context["requester"])
+      L.F.invite_player(L.gate.gating_context["requester"])
     end
   end
 end
@@ -138,7 +135,7 @@ end
 function L.F.trade_stone(npc_name)
   local ils = GetTradePlayerItemLink(1)
   local items, tbl_cnt = L.F.post_check_opposite_trade()
-  if ils == nil then
+  if ils == nil and L.F.get_free_slots() < 6 then
     L.F.feed(L.items.food_name, 1)
   elseif tbl_cnt == 0 then
       -- do nothing

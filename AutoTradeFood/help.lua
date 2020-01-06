@@ -10,7 +10,6 @@ local ad_msg = {
   "【米豪公益】需要55级水、45级面包，请直接交易“米豪”货仓！免费提供！",
   "【米豪公益】需要打开去主城的捷径，请与我私聊“传送门”！，牢记程序，免一切手续费！",
   "【米豪公益】如果亲觉得米豪公益好用，请奔走相告，米豪力争24小时为各位提供免费食水传送服务！",
-  "【米豪公益】TIPs: 如遇高峰时期，请各位勤拿少取，需要多少水，多少面包，可以私聊我进行定制！例如“我要1水2面包”。路过的各位，请给点BUFF给我加速，例如激活、精神、王者、智慧",
   "【米豪公益】TIPs: 米豪开门只收【传送门符文】不收金币！！！详情M我【传送门】",
   "【米豪公益】TIPs: 如果米豪开始奥暴，并非米豪在划水，而是米豪食水充足无比！欢迎各种交易！完全免费！",
   "【米豪公益】TIPs: 如果您和米豪不在一个位面，请M我唯一有效咒语【"..L.cmds.invite_cmd.."】进组！",
@@ -25,6 +24,7 @@ local ad_msg_busy = {
   "【米豪公益：用餐高峰】TIPs：米豪在喝水期间，货存不会增长，如果库存不足，请不要在米豪喝水期间重复交易哦！",
   "【米豪公益：用餐高峰】TIPs：用餐高峰期间，请各位亲保持有序，不要争抢，谢谢大家支持与配合！",
   "【米豪公益：用餐高峰】TIPs：米豪在面包与水均高于4组的情况下才允许交易，请亲关注库存！",
+  "【米豪公益：用餐高峰】TIPs：【激活】法术会【大幅提升】米豪制作效率，如果米豪正在制作中，请德爷们赏个激活吧！！",
 }
 
 function L.F.say_help(to_player)
@@ -44,7 +44,7 @@ function L.F.say_help(to_player)
     string.format("1.【%s】打印本命令列表", L.cmds.help_cmd), "WHISPER", "Common", to_player
   )
   SendChatMessage(
-    string.format("2.【%s】获取我的坐标", L.cmds.retrieve_position), "WHISPER", "Common", to_player
+    string.format("2. 【%s】查看高峰时期规则", L.cmds.busy_cmd), "WHISPER", "Common", to_player
   )
   SendChatMessage(
     string.format("3.【%s】向您发起组队邀请，以便发送位置、跨位面", L.cmds.invite_cmd), "WHISPER", "Common", to_player

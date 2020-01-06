@@ -59,25 +59,25 @@ end
 
 
 local function drive_state()
-  if L.state == 1 then
+  if L.state == 1 then  -- working -> resting or buffing
     if UnitPower("player") < min_mana then
       L.state = 2
     elseif not ((check_buff("奥术智慧", 10) or check_buff("奥术光辉", 10)) and check_buff("魔甲术", 10)) then
       L.state = 4
     end
-  elseif L.state == 2 then
+  elseif L.state == 2 then  -- resting -> working
     if UnitPower("player") == UnitPowerMax("player") then
       L.state = 1
     end
-  elseif L.state == 3 then
+  elseif L.state == 3 then  -- gating -> working
     local cd_gate = GetSpellCooldown(L.gate.gating_context["spell"])
     if cd_gate > 0 then
       L.gate.gating_context['cooldown_ts'] = cd_gate + 60
       L.state = 1
     end
-  elseif L.state == 4 then
+  elseif L.state == 4 then -- buffing -> working
     if (check_buff("奥术智慧", 100) or check_buff("奥术光辉", 100)) and check_buff("魔甲术", 100) then
-      L.state = 2
+      L.state = 1
     end
   end
 end
@@ -206,6 +206,12 @@ function SlashCmdList.ATF_DEBUG(msg)
   if msg == "showframe" then
     print(AtfFrame)
     print(AtfReportFrame)
+  end
+  if msg == "forcebusy" then
+    L.F.set_busy(true)
+  end
+  if msg == "forceunbusy" then
+    L.F.set_busy(false)
   end
 end
 

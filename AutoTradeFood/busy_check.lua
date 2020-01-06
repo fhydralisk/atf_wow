@@ -77,3 +77,9 @@ end
 function L.F.get_busy_state()
     return busy_state_context.is_busy
 end
+
+
+function L.F.set_busy(state)
+    busy_state_context.is_busy = state
+    busy_state_context.samples = {}
+end

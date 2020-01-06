@@ -15,6 +15,7 @@ L.cmds.scale_cmd = "查看比例"
 L.cmds.help_cmd = "帮助"
 L.cmds.invite_cmd = "水水水"
 L.cmds.gate_help_cmd = "传送门"
+L.cmds.busy_cmd = "高峰"
 
 L.items = {}
 L.items.water_name = "魔法晶水"

@@ -29,16 +29,33 @@ local function say_scale(to_player)
 end
 
 
+local function say_busy(to_player)
+  if L.F.get_busy_state() then
+    SendChatMessage("【当前正处于用餐高峰！】", "WHISPER", "Common", to_player)
+  else
+    SendChatMessage("【当前处于非用餐高峰。】", "WHISPER", "Common", to_player)
+  end
+  SendChatMessage("米豪将在库存持续紧张的情况下自动切换为用餐高峰模式，将在库存不紧张时切换为非用餐高峰模式。", "WHISPER", "Common", to_player)
+  SendChatMessage("用餐高峰模式下，米豪将自动进行如下限制：", "WHISPER", "Common", to_player)
+  SendChatMessage("1. 每次交易时，供应餐饮数量减半。", "WHISPER", "Common", to_player)
+  SendChatMessage("2. 在多个角色同时交易时，将阻止某一玩家连续（成功的）交易。", "WHISPER", "Common", to_player)
+  SendChatMessage("3. 阻止60级法师进行交易。", "WHISPER", "Common", to_player)
+  SendChatMessage("谢谢您的理解与支持，如有任何建议，请邮件与我联系哈！", "WHISPER", "Common", to_player)
+end
+
+
 local function eventHandler(self, event, msg, author, ...)
   if event == "CHAT_MSG_WHISPER" then
     author = string.match(author, "([^-]+)")
     if L.atfr_run == true then
       if string.lower(msg) == L.cmds.help_cmd or msg == "1" or string.lower(msg) == "help" then
         L.F.say_help(author)
-      elseif string.lower(msg) == L.cmds.retrieve_position or msg == "2" then
+      elseif string.lower(msg) == L.cmds.retrieve_position then
         say_pos(author)
+      elseif msg == L.cmds.busy_cmd or msg == "2" then
+        say_busy(author)
       elseif msg == L.cmds.invite_cmd then
-        InviteUnit(author)
+        L.F.invite_player(author)
       elseif msg == "3" then
         SendChatMessage("请M我【"..L.cmds.invite_cmd.."】进组，而不是M我3，zu，组，谢谢", "WHISPER", "Common", author)
       elseif msg == L.cmds.scale_cmd or msg == "4" then
@@ -55,12 +72,16 @@ local function eventHandler(self, event, msg, author, ...)
         L.F.say_gate_help(author)
       elseif L.F.search_str_contains(msg, {"脚本", "外挂", "机器", "自动", "宏"}) then
         SendChatMessage("是的，我是纯公益机器人，请亲手下留情，爱你哦！", "WHISPER", "Common", author)
-      elseif L.F.search_str_contains(msg, {"谢", "蟹", "xie", "3q"}) then
+      elseif L.F.search_str_contains(msg, {"谢", "蟹", "xie", "3q"}, "left") then
         SendChatMessage("小事不言谢，欢迎随时回来薅羊毛！", "WHISPER", "Common", author)
+      elseif L.F.search_str_contains(msg, {"交易"}) then
+        -- do nothing, auto sent by BurningTrade addons.
       else
         if not(author == UnitName("player")) then
           SendChatMessage(
-            "【【【【渴了？饿了？经济舱？找米豪！请直接交易我！坐标"..L.F.my_position().."，需要帮助，请M我“"..L.cmds.help_cmd.."”】】】",
+            "【渴了？饿了？经济舱？找米豪！请直接交易我！需要帮助，请M我“"
+                    ..L.cmds.help_cmd.."”需要进组，请M我【"
+                    ..L.cmds.invite_cmd.."】】",
             "WHISPER", "Common", author
           )
         end
@@ -73,7 +94,7 @@ local function eventHandler(self, event, msg, author, ...)
       DeclineGroup()
       StaticPopup_Hide("PARTY_INVITE")
       SendChatMessage("请勿邀请我进组，您可以M我【"..L.cmds.invite_cmd.."】进组，谢谢！", "WHISPER", "Common", msg)
-      InviteUnit(msg)
+      L.F.invite_player(msg)
     end
   end
 end
