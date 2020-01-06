@@ -20,9 +20,7 @@ function L.F.refill_request(player)
         refill_context.refillers[player] = {
             ["refill_request_ts"] = GetTime()
         }
-        SendChatMessage("补货请求成功，我将在"..L.refill_timeout..
-                "秒内接受您下一次交易的【"..L.items.water_name..
-                "】与【"..L.items.bread_name.."】，感谢支持！",
+        SendChatMessage("补货请求成功，我将在"..L.refill_timeout.."秒内接受您的补货，感谢支持！",
                 "WHISPER", "Common", player
         )
     else
@@ -45,7 +43,7 @@ local function check_refill_scale()
         local water = L.F.get_water_count()
         if bread > water * 1.6 then
             return "bread"
-        elseif water > bread * 2 then
+        elseif water > bread * 1.6 then
             return "water"
         else
             return "ok"
@@ -66,12 +64,14 @@ function L.F.trade_refill(player)
         if cnt == 0 then
             SendChatMessage("未收到任何补货，为您取消补货请求。", "WHISPER", "Common", player)
             remove_refiller(player)
+            CloseTrade()
+            return
         else
             local water, bread = 0, 0
             for item_name, c in pairs(items) do
                 if item_name == L.items.water_name then
                     water = water + c
-                elseif item_name == L.items.bread_name then
+                elseif item_name == L.items.food_name then
                     bread = bread + c
                 else
                     SendChatMessage(
@@ -84,7 +84,7 @@ function L.F.trade_refill(player)
                 local refill_check_result = check_refill_scale()
                 local item_too_many
                 if refill_check_result == "bread" and bread > 0 then
-                    item_too_many = L.items.bread_name
+                    item_too_many = L.items.food_name
                 elseif refill_check_result == "water" and water > 0 then
                     item_too_many = L.items.water_name
                 elseif refill_check_result == "full" then
@@ -100,13 +100,17 @@ function L.F.trade_refill(player)
                 end
 
                 local s = L.F.do_accept_trade()
-                if not(s) then
+                if not s then
                     print("Should not arrive")
                 else
+                    local msg = string.format(
+                        "感谢%s为我补货。M我【%s】查看贡献方法",
+                        player,
+                        L.cmds.refill_help_cmd
+                    )
+                    print(msg)
                     SendChatMessage(
-                        "感谢"..player.."为我补充【"..L.items.water_name.."】"..math.modf(water / 20).."组，【"
-                                ..L.items.bread_name.."】"..math.modf(bread / 20).."组。M我【"
-                                ..L.cmds.refill_help_cmd.."】查看贡献方式。",
+                        msg,
                         "say", "Common"
                     )
                 end
@@ -139,6 +143,5 @@ function L.F.refill_help(to_player)
     SendChatMessage("2. 然后请在"..L.refill_timeout.."秒内与我进行交易，将食水放至您的交易栏内，并点击交易", "WHISPER", "Common", to_player)
     SendChatMessage("3. 我将对您的补货内容进行验证，接受合法的补货，并广播致谢信息。", "WHISPER", "Common", to_player)
     SendChatMessage("注1，每次提交补货申请，有效期内可以一直补货，如需取消补货，请对我进行一次空的交易。", "WHISPER", "Common", to_player)
-    SendChatMessage("注2，请勿交易我除了【"..L.items.water_name.."】与【"..L.items.bread_name..
-            "】之外的任何物品或金币哦，谢谢支持！", "WHISPER", "Common", to_player)
+    SendChatMessage("注2，请勿交易我除了大水大面包之外的任何物品或金币哦，谢谢支持！", "WHISPER", "Common", to_player)
 end

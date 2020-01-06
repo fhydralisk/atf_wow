@@ -24,7 +24,7 @@ end
 
 
 local function sample_busy()
-    if GetTime() - get_last_sample().sample_ts >= sample_interval then
+    if get_last_sample() == nil or GetTime() - get_last_sample().sample_ts >= sample_interval then
         table.insert(busy_state_context.samples, {
             ["sample_ts"] = GetTime(),
             ["water"] = L.F.get_water_count(),

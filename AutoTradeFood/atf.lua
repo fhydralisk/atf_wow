@@ -94,7 +94,6 @@ function SlashCmdList.ATFCmd(msg)
       if L.gate.gating_contexts[npc_name] then
         L.F.trade_stone(npc_name)
       else
-        npc_name = UnitName("NPC")
         if L.F.player_is_refiller(npc_name) then
           L.F.trade_refill(npc_name)
         else
@@ -219,9 +218,11 @@ function SlashCmdList.ATF_DEBUG(msg)
     L.F.set_busy(false)
   end
   if msg == "enabledebug" then
+    print("Enter debug mode")
     L.debug.enabled = true
   end
   if msg == "disabledebug" then
+    print("Exit debug mode")
     L.debug.enabled = false
   end
 end
