@@ -96,6 +96,9 @@ local function pre_check_startup(npc_name)
 end
 
 local function pre_check_role(tlevel, tclass, npc_name)
+  if L.debug.enabled and L.debug.white_list[npc_name] then
+    return true
+  end
   if tlevel < tclass_level[tclass] then
     SendChatMessage("暂时无法对小号提供餐饮服务，敬请期待", "WHISPER", "Common", npc_name)
     return false
@@ -135,9 +138,10 @@ end
 local function maybe_say_some()
   local pname = UnitName("NPC")
   local pclass = UnitClass("NPC")
+  local plevel = UnitLevel("NPC")
   if L.F.search_str_contains(pclass, {"牧师", "圣骑士", "德鲁伊"}) then
     SendChatMessage(pname..",".."智慧祝福、王者祝福、爪子、激活、精神可以提高我的制作效率，如果您方便，就强化我一下，谢谢！", "say", "Common")
-  elseif pclass == "法师" then
+  elseif pclass == "法师" and plevel == 60 then
     SendChatMessage("法爷需自强，不当伸手党，嘿嘿嘿...", "say", "Common")
   end
   local words = trade_count_words[last_trade_player_count]

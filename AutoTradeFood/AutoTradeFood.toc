@@ -11,5 +11,6 @@ help.lua
 trade.lua
 gate.lua
 food.lua
+refill.lua
 event.lua
 atf.lua

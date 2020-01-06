@@ -20,7 +20,7 @@ function L.F.say_gate_help(to_player)
 --  SendChatMessage("**！！！请注意！！！，原价是20银！！！认准我的名字【米豪】或【米豪的维修师】**", "WHISPER", "Common", to_player)
   SendChatMessage("2. 【先】M我主城的名字，“暴风城”、“铁炉堡”或“达纳苏斯”", "WHISPER", "Common", to_player)
   SendChatMessage("3. 【然后】将石头主动交易给我：【传送门符文】【1枚】", "WHISPER", "Common", to_player)
-  SendChatMessage("4. 【交易成功后】，我将【自动】向您发起组队邀请，并在短时间内释放传送门法术，请确保您已退组哈", "WHISPER", "Common", to_player)
+  SendChatMessage("4. 【交易成功后】，我将【自动】向您发起组队邀请，并在短时间内施放传送门法术，请确保您已退组哈", "WHISPER", "Common", to_player)
   SendChatMessage("请您使用传送门后自行离队，祝您旅途愉快！", "WHISPER", "Common", to_player)
 end
 

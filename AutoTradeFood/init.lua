@@ -16,6 +16,8 @@ L.cmds.help_cmd = "帮助"
 L.cmds.invite_cmd = "水水水"
 L.cmds.gate_help_cmd = "传送门"
 L.cmds.busy_cmd = "高峰"
+L.cmds.refill_cmd = "我要补货"
+L.cmds.refill_help_cmd = "补货"
 
 L.items = {}
 L.items.water_name = "魔法晶水"
@@ -32,6 +34,14 @@ L.hotkeys.atfr_key = "ALT-CTRL-Y"
 
 L.min_mana = 780
 L.atfr_run = false
+
+L.refill_timeout = 120
+
+L.debug = {}
+L.debug.white_list = {
+    ["米豪的维修师"] = true
+}
+L.debug.enabled = false
 
 
 local frame = CreateFrame("FRAME", "InitFrame")

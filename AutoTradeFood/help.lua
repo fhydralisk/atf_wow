@@ -25,6 +25,7 @@ local ad_msg_busy = {
   "【米豪公益：用餐高峰】TIPs：用餐高峰期间，请各位亲保持有序，不要争抢，谢谢大家支持与配合！",
   "【米豪公益：用餐高峰】TIPs：米豪在面包与水均高于4组的情况下才允许交易，请亲关注库存！",
   "【米豪公益：用餐高峰】TIPs：【激活】法术会【大幅提升】米豪制作效率，如果米豪正在制作中，请德爷们赏个激活吧！！",
+  "【米豪公益：用餐高峰】TIPs：用餐高峰期，米豪支持志同道合朋友们的补货！请M米豪【补货】查看详情，谢谢！",
 }
 
 function L.F.say_help(to_player)
@@ -33,9 +34,6 @@ function L.F.say_help(to_player)
   )
   SendChatMessage(
     "请勿交易金币和物品，否则可能无法正常交易。如有有建议或希望捐赠，请使用魔兽邮箱，谢谢支持！", "WHISPER", "Common", to_player
-  )
-  SendChatMessage(
-    "小号暂不提供食物！开门服务试运行！如果不小心黑了您的石头，请给我发邮件", "WHISPER", "Common", to_player
   )
   SendChatMessage(
     "=========我目前支持如下命令：", "WHISPER", "Common", to_player
@@ -50,7 +48,7 @@ function L.F.say_help(to_player)
     string.format("3.【%s】向您发起组队邀请，以便发送位置、跨位面", L.cmds.invite_cmd), "WHISPER", "Common", to_player
   )
   SendChatMessage(
-    string.format("4.【%s】查看不同职业水和面包比例", L.cmds.scale_cmd), "WHISPER", "Common", to_player
+    string.format("4.【%s】查看高峰期补货方式", L.cmds.refill_help_cmd), "WHISPER", "Common", to_player
   )
   SendChatMessage(
     "5.【自定义分配】为您定制水和面包比例，例如您可说“4水2面包”",
