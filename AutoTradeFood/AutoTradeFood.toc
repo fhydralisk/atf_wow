@@ -10,6 +10,7 @@ busy_check.lua
 help.lua
 trade.lua
 gate.lua
+low_level_food.lua
 food.lua
 refill.lua
 event.lua

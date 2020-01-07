@@ -32,24 +32,6 @@ local tclass_level = {
 }
 
 
-local acquire_level_frame = L.F.create_macro_button("AcquireLevel", "/target targetname\n/atal")
-
-local low_level_to_spell = {
-  {["level_min"] = 25, ["level_max"] = 34, ["spell_bread"] = "造食术（等级4）", ["spell_water"] = "造水术（等级4）"},
-}
-
-local low_level_trade_context = {
-
-}
-
-
-local player_levels = {
-  ["米豪的咨询师"] = {
-    ["level"] = 1,
-    ["acquire_ts"] = 0,
-  }
-}
-
 local trade_count_words = {
   [2]="听说胃口好的人身体都好！",
   [3]="继续努力……我的背包很大很大！",
@@ -69,20 +51,6 @@ local last_trade_player_count = 0
 local last_trade_success_ts = 0
 
 
-SLASH_AcquireLevelCmd1 = "/atal"
-
-
-function SlashCmdList.AcquireLevelCmd(msg)
-  local unit_name = UnitName("target")
-  if unit_name == msg then
-    player_levels[unit_name] = {
-      ["level"] = UnitLevel("target"),
-      ["acquire_ts"] = GetTime()
-    }
-  end
-end
-
-
 local function set_last_trade_player(pname)
   last_fail_player_is_trade_player = true
   last_trade_success_ts = GetTime()
@@ -95,7 +63,8 @@ local function set_last_trade_player(pname)
   return last_trade_player_count
 end
 
-local function do_trade_feed(tclass, npc_name, scale)
+
+function L.F.get_feed_count(tclass, npc_name)
   local w, f
   if PlayerDefinedScale[npc_name] then
     w = PlayerDefinedScale[npc_name]["water"]
@@ -104,6 +73,12 @@ local function do_trade_feed(tclass, npc_name, scale)
     w = tclass_food[tclass][1]
     f = tclass_food[tclass][2]
   end
+  return w, f
+end
+
+
+local function do_trade_feed(tclass, npc_name, scale)
+  local w, f = L.F.get_feed_count(tclass, npc_name)
   w = math.ceil(w * scale)
   f = math.ceil(f * scale)
   L.F.feed(water_name, w, 20)
@@ -114,12 +89,6 @@ local function pre_check_startup(npc_name)
   if L.F.get_water_count() >= 4 and L.F.get_bread_count() >= 4 then
     return true
   else
-    local water = L.F.get_water_count()
-    local bread = L.F.get_bread_count()
-    SendChatMessage(
-      "库存不足，请稍等一小会儿...当前存货：【大水】"..water.."组，【面包】"..bread.."组", "WHISPER",
-      "Common", npc_name
-    )
     if npc_name == last_trade_player then
       last_fail_player_is_trade_player = true
     else
@@ -134,7 +103,6 @@ local function pre_check_role(tlevel, tclass, npc_name)
     return true
   end
   if tlevel < tclass_level[tclass] then
-    SendChatMessage("暂时无法对小号提供餐饮服务，敬请期待", "WHISPER", "Common", npc_name)
     return false
   end
   return true
@@ -161,10 +129,28 @@ local function check_and_do_feed()
       return
     end
   end
-
-  if pre_check_startup(npc_name) and pre_check_role(tlevel, tclass, npc_name) then
+  if L.F.player_is_low_level_requester() then
+    if L.F.low_level_food_is_cooked() then
+      L.F.feed_low_level_food()
+    else
+      SendChatMessage("您的小号食品还未烹饪完成，请您收到完成通知后再来取餐，谢谢！", "WHISPER", "Common", npc_name)
+      CloseTrade()
+    end
+  elseif not pre_check_startup() then
+    local water = L.F.get_water_count()
+    local bread = L.F.get_bread_count()
+    SendChatMessage(
+            "库存不足，请稍等一小会儿...当前存货：【大水】"..water.."组，【面包】"..bread.."组", "WHISPER",
+            "Common", npc_name
+    )
+    CloseTrade()
+  elseif pre_check_role(tlevel, tclass, npc_name) then
     do_trade_feed(tclass, npc_name, scale)
   else
+    SendChatMessage(
+            "米豪目前可在非高峰时段为【25-54】级小号烹饪小号食品，但需要预约。请M我【"..L.cmds.low_level_help_cmd.."】查询预约流程",
+            "WHISPER", "Common", npc_name
+    )
     CloseTrade()
   end
 end
@@ -226,6 +212,30 @@ function L.F.trade_food()
     end
 end
 
+
+local hans_num_map = {
+  {"一"},
+  {"二", "两"},
+  {"三"},
+  {"四"},
+  {"五"},
+  {"六"},
+  {"七"},
+  {"八"},
+  {"九"},
+}
+
+
+local function wf_preprocess(msg)
+  for num, hans in ipairs(hans_num_map) do
+    for _, han in ipairs(hans) do
+      msg = string.gsub(msg, num, han)
+    end
+  end
+  return " "..msg.." "
+end
+
+
 local function wf_parser1(msg)
   local water_pattern = "[^%d]*(%d)[^%d]*水"
   local food_pattern = "[^%d]*(%d)[^%d]*面包"
@@ -238,7 +248,7 @@ local function wf_parser1(msg)
 end
 
 local function wf_parser2(msg)
-  local water_pattern = "水[^%d]*(%d)[^%d]"
+  local water_pattern = "水[^%d]*(%d)[^%d]*"
   local food_pattern = "面包[^%d]*(%d)[^%d]"
   local matched = 0
   local w_s = string.match(msg, water_pattern)
@@ -270,6 +280,7 @@ local function do_set_scale(water, food, author)
 end
 
 function L.F.may_set_scale(msg, author)
+  msg = wf_preprocess(msg)
   local ws1, fs1, matched1 = wf_parser1(msg)
   local ws2, fs2, matched2 = wf_parser2(msg)
   local water, food
@@ -301,8 +312,12 @@ function L.F.may_set_scale(msg, author)
 end
 
 function L.F.bind_make_food_or_water()
-  if check_buff("喝水", 0) then
+  if L.F.target_level_to_acquire() then
+    L.F.bind_acquire_target_level()
+  elseif check_buff("喝水", 0) then
     SetBinding(interact_key, "JUMP")
+  elseif L.F.should_cook_low_level_food() then
+    L.F.bind_low_level_cook()
   elseif L.F.get_free_slots() == 0 then
     SetBindingSpell(interact_key, "魔爆术")
   else

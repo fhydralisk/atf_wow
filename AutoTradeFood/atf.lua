@@ -88,6 +88,7 @@ function SlashCmdList.ATFCmd(msg)
   L.F.drive_gate()
   auto_bind()
   L.F.drive_busy_state()
+  L.F.check_low_level_food()
   if L.atfr_run == true or msg == "force" then
     if TradeFrame:IsShown() then
       local npc_name = UnitName("NPC")
