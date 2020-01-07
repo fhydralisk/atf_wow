@@ -134,7 +134,7 @@ end
 
 
 function L.F.refill_help(to_player)
-    SendChatMessage("【在用货存不足时】，米豪将接受其他有共同志向玩家的补货救急，降低食客等待时间。", "WHISPER", "Common", to_player)
+    SendChatMessage("【在货存不足时】，米豪将接受其他有共同志向玩家的补货救急，降低食客等待时间。", "WHISPER", "Common", to_player)
     SendChatMessage("1. 如需补货，请首先M我【"..L.cmds.refill_cmd.."】，如果成功，我会向您回复消息。", "WHISPER", "Common", to_player)
     SendChatMessage("2. 然后请在"..L.refill_timeout.."秒内与我进行交易，将食水放至您的交易栏内，并点击交易", "WHISPER", "Common", to_player)
     SendChatMessage("3. 我将对您的补货内容进行验证，接受合法的补货，并广播致谢信息。", "WHISPER", "Common", to_player)
