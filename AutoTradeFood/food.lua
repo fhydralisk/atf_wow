@@ -129,7 +129,7 @@ local function check_and_do_feed()
       return
     end
   end
-  if L.F.player_is_low_level_requester() then
+  if L.F.player_is_low_level_requester(npc_name) then
     if L.F.low_level_food_is_cooked() then
       L.F.feed_low_level_food()
     else

@@ -52,7 +52,7 @@ local function level_acquire_success(player, class, level, w, b, info)
     low_level_trade_context.player = player
     low_level_trade_context.level = level
     low_level_trade_context.class = class
-    low_level_trade_context.spell_info = info
+    low_level_trade_context.info = info
     low_level_trade_context.count = {
         ["water"] = w,
         ["bread"] = b,
@@ -136,9 +136,8 @@ function L.F.bind_low_level_cook()
         table.insert(sequence, info.spell_bread)
     end
     local macrotext = "/castsequence "..table.concat(sequence, ",")
-    print(macrotext)
     cook_frame:SetAttribute("macrotext", macrotext)
-    SetBindingClick(L.F.hotkeys.interact_key, "CookLowLevel")
+    SetBindingClick(L.hotkeys.interact_key, "CookLowLevel")
 end
 
 
@@ -230,8 +229,10 @@ function L.F.check_low_level_food()
         prepare_low_level_food()
         change_state("cooking")
     elseif low_level_trade_context.state == "cooking" then
-        if GetItemCount(low_level_trade_context.info.bread_name) >= low_level_trade_context.count.bread * 20 and
-                GetItemCount(low_level_trade_context.info.water_name) >= low_level_trade_context.class.water * 20 then
+        local low_level_bread_count = GetItemCount(low_level_trade_context.info.bread_name)
+        local low_level_water_count = GetItemCount(low_level_trade_context.info.water_name)
+        if low_level_bread_count >= low_level_trade_context.count.bread * 20 and
+                low_level_water_count >= low_level_trade_context.count.water * 20 then
             SendChatMessage(
                     "您的小号食物已烹饪完成，请于"..L.low_level_wait_timeout.."秒内交易我，过期将自动摧毁。",
                     "WHISPER", "Common", low_level_trade_context.player
@@ -258,7 +259,7 @@ function L.F.check_low_level_food()
                     "小号食品交易完成，欢迎下次光临",
                     "WHISPER", "Common", player
             )
-        elseif timeleft < L.low_level_wait_timeout / 4 and not(low_level_trade_context.reinformed == nil) then
+        elseif timeleft < L.low_level_wait_timeout / 4 and not(low_level_trade_context.reinformed) then
             SendChatMessage(
                     "您的小号食品即将在"..math.modf(timeleft).."秒后过期，请速来米豪身边取用。",
                     "WHISPER", "Common", player
