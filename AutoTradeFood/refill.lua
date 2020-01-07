@@ -16,7 +16,7 @@ local refill_context = {
 }
 
 function L.F.refill_request(player)
-    if L.F.get_busy_state() then
+    if L.F.get_food_count() <= 50 then
         refill_context.refillers[player] = {
             ["refill_request_ts"] = GetTime()
         }
@@ -24,7 +24,7 @@ function L.F.refill_request(player)
                 "WHISPER", "Common", player
         )
     else
-        SendChatMessage("当前非高峰用餐时间，暂时无需补货，谢谢支持！", "WHISPER", "Common", player)
+        SendChatMessage("目前货寸充足，暂时无需补货，谢谢支持！", "WHISPER", "Common", player)
     end
 
 end
@@ -122,23 +122,19 @@ end
 
 
 function L.F.player_is_refiller(player)
-    if L.F.get_busy_state() then
-        local refiller_ctx = refill_context.refillers[player]
-        if refiller_ctx and
-                (refiller_ctx["preserve"] or GetTime() - refiller_ctx.refill_request_ts < L.refill_timeout) then
-            return true
-        else
-            refill_context.refillers[player] = nil
-            return false
-        end
+    local refiller_ctx = refill_context.refillers[player]
+    if refiller_ctx and
+            (refiller_ctx["preserve"] or GetTime() - refiller_ctx.refill_request_ts < L.refill_timeout) then
+        return true
     else
+        refill_context.refillers[player] = nil
         return false
     end
 end
 
 
 function L.F.refill_help(to_player)
-    SendChatMessage("【在用餐高峰时】，米豪将接受其他有共同志向玩家的补货救急，降低食客等待时间。M我【高峰】可查看是否在高峰状态。", "WHISPER", "Common", to_player)
+    SendChatMessage("【在用货存不足时】，米豪将接受其他有共同志向玩家的补货救急，降低食客等待时间。", "WHISPER", "Common", to_player)
     SendChatMessage("1. 如需补货，请首先M我【"..L.cmds.refill_cmd.."】，如果成功，我会向您回复消息。", "WHISPER", "Common", to_player)
     SendChatMessage("2. 然后请在"..L.refill_timeout.."秒内与我进行交易，将食水放至您的交易栏内，并点击交易", "WHISPER", "Common", to_player)
     SendChatMessage("3. 我将对您的补货内容进行验证，接受合法的补货，并广播致谢信息。", "WHISPER", "Common", to_player)

@@ -31,6 +31,25 @@ local tclass_level = {
   ["术士"]=55
 }
 
+
+local acquire_level_frame = L.F.create_macro_button("AcquireLevel", "/target targetname\n/atal")
+
+local low_level_to_spell = {
+  {["level_min"] = 25, ["level_max"] = 34, ["spell_bread"] = "造食术（等级4）", ["spell_water"] = "造水术（等级4）"},
+}
+
+local low_level_trade_context = {
+
+}
+
+
+local player_levels = {
+  ["米豪的咨询师"] = {
+    ["level"] = 1,
+    ["acquire_ts"] = 0,
+  }
+}
+
 local trade_count_words = {
   [2]="听说胃口好的人身体都好！",
   [3]="继续努力……我的背包很大很大！",
@@ -48,6 +67,21 @@ local last_trade_player = ""
 local last_fail_player_is_trade_player = true
 local last_trade_player_count = 0
 local last_trade_success_ts = 0
+
+
+SLASH_AcquireLevelCmd1 = "/atal"
+
+
+function SlashCmdList.AcquireLevelCmd(msg)
+  local unit_name = UnitName("target")
+  if unit_name == msg then
+    player_levels[unit_name] = {
+      ["level"] = UnitLevel("target"),
+      ["acquire_ts"] = GetTime()
+    }
+  end
+end
+
 
 local function set_last_trade_player(pname)
   last_fail_player_is_trade_player = true
