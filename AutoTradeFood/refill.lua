@@ -26,7 +26,7 @@ function L.F.refill_request(player)
                 "WHISPER", "Common", player
         )
     else
-        SendChatMessage("目前货寸充足，暂时无需补货，谢谢支持！", "WHISPER", "Common", player)
+        SendChatMessage("目前货存充足，暂时无需补货，谢谢支持！", "WHISPER", "Common", player)
     end
 
 end

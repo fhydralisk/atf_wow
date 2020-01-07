@@ -59,7 +59,7 @@ local function eventHandler(self, event, msg, author, ...)
                 "WHISPER", "Common", author)
       elseif msg == L.cmds.low_level_cmd then
         L.F.low_level_food_request(author)
-      elseif msg == L.cmds.low_level_help_cmd then
+      elseif msg == L.cmds.low_level_help_cmd or msg == "7" then
         L.F.say_low_level_help(author)
       elseif L.F.search_str_contains(msg, {"暴风城", "铁炉堡", "达纳苏斯"}) then
         L.F.gate_request(author, msg)

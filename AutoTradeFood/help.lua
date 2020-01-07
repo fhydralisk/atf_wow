@@ -15,6 +15,7 @@ local ad_msg = {
   "【米豪公益】TIPs: 如果您和米豪不在一个位面，请M我唯一有效咒语【"..L.cmds.invite_cmd.."】进组！",
   "【米豪公益】TIPs: 米豪平时无人值守，需要食物的请直接交易！需要传送请M我【传送门】，并认真按照开门程序操作，简单便捷！",
   "【米豪公益】米豪每天会升级维护，维护期间不能提供服务，敬请谅解！有关米豪的使用帮助，请M我【"..L.cmds.help_cmd.."】！",
+  "【米豪公益】米豪现在可以为【25-54】的小号供餐，详情请M我【"..L.cmds.low_level_help_cmd.."】",
 }
 
 local ad_msg_busy = {
@@ -30,10 +31,7 @@ local ad_msg_busy = {
 
 function L.F.say_help(to_player)
   SendChatMessage(
-    "我会自动根据您的职业分配食物与水的比例。", "WHISPER", "Common", to_player
-  )
-  SendChatMessage(
-    "请勿交易金币和物品，否则可能无法正常交易。如有有建议或希望捐赠，请使用魔兽邮箱，谢谢支持！", "WHISPER", "Common", to_player
+    "需要吃喝，直接交易。勿交易金币和物品。如有有建议或希望捐赠，请使用魔兽邮箱，谢谢支持！", "WHISPER", "Common", to_player
   )
   SendChatMessage(
     "=========我目前支持如下命令：", "WHISPER", "Common", to_player
@@ -56,6 +54,9 @@ function L.F.say_help(to_player)
   )
   SendChatMessage(
     string.format("6.【%s】查看开门步骤", L.cmds.gate_help_cmd), "WHISPER", "Common", to_player
+  )
+  SendChatMessage(
+    string.format("7.【%s】查看获取小号食物方法", L.cmds.low_level_help_cmd), "WHISPER", "Common", to_player
   )
 end
 

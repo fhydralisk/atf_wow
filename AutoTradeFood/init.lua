@@ -18,8 +18,8 @@ L.cmds.gate_help_cmd = "传送门"
 L.cmds.busy_cmd = "高峰"
 L.cmds.refill_cmd = "我要补货"
 L.cmds.refill_help_cmd = "补货"
-L.cmds.low_level_cmd = "预约小号食物"
-L.cmds.low_level_help_cmd = "小号食物"
+L.cmds.low_level_cmd = "小号食物"
+L.cmds.low_level_help_cmd = "小号"
 
 L.items = {}
 L.items.water_name = "魔法晶水"
