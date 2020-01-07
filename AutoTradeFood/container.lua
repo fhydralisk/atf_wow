@@ -24,6 +24,10 @@ function L.F.get_bread_count(identity)
   end
 end
 
+function L.F.get_food_count(identity)
+  return L.F.get_water_count(identity) + L.F.get_bread_count(identity)
+end
+
 function L.F.get_free_slots()
   local free_slots = 0
   for b = 0, 4 do
