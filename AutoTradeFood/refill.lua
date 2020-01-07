@@ -11,6 +11,7 @@ local refill_context = {
         ["米豪的维修师"] = {
             ["refill_request_ts"] = 0,
             ["preserve"] = true,
+            ["last_refill_ts"] = 0,
         }
     }
 }
@@ -18,7 +19,8 @@ local refill_context = {
 function L.F.refill_request(player)
     if L.F.get_food_count() <= 50 then
         refill_context.refillers[player] = {
-            ["refill_request_ts"] = GetTime()
+            ["refill_request_ts"] = GetTime(),
+            ["last_refill_ts"] = 0,
         }
         SendChatMessage("补货请求成功，我将在"..L.refill_timeout.."秒内接受您的补货，感谢支持！",
                 "WHISPER", "Common", player
@@ -102,17 +104,15 @@ function L.F.trade_refill(player)
                 local s = L.F.do_accept_trade()
                 if not s then
                     print("Should not arrive")
-                else
+                elseif GetTime() - refill_context.refillers[player].last_refill_ts > 10.0 then
+                    -- limit thanks message rate.
                     local msg = string.format(
                         "感谢%s为我补货。M我【%s】查看贡献方法",
                         player,
                         L.cmds.refill_help_cmd
                     )
-                    print(msg)
-                    SendChatMessage(
-                        msg,
-                        "say", "Common"
-                    )
+                    refill_context.refillers[player].last_refill_ts = GetTime()
+                    SendChatMessage(msg, "say", "Common")
                 end
             end
         end
