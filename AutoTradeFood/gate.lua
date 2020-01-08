@@ -30,7 +30,7 @@ local function parse_and_set_city(msg)
   if msg:find("暴风城") then
     spell = "传送门：暴风城"
     city = "暴风城"
-  elseif msg:find("达纳苏斯") then
+  elseif msg:find("苏斯") and msg:find("希利") == nil then  -- 广东话友好，
     spell = "传送门：达纳苏斯"
     city = "达纳苏斯"
   elseif msg:find("铁炉堡") then

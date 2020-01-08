@@ -61,7 +61,7 @@ local function eventHandler(self, event, msg, author, ...)
         SendChatMessage(
                 "请这样M我来设置比例： 【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】或者，【2水】，等等，然后交易我。",
                 "WHISPER", "Common", author)
-      elseif L.F.search_str_contains(msg, {"暴风城", "铁炉堡", "达纳苏斯"}) then
+      elseif L.F.search_str_contains(msg, {"暴风城", "铁炉堡", "苏斯"}) then
         L.F.gate_request(author, msg)
       elseif L.F.search_str_contains(msg, {"门", "们", "暴风", "铁", "精灵", L.cmds.gate_help_cmd}) or msg == "6" then
         L.F.say_gate_help(author)
