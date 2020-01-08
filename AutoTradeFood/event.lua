@@ -49,6 +49,10 @@ local function eventHandler(self, event, msg, author, ...)
         L.F.refill_request(author)
       elseif msg == L.cmds.scale_cmd then
         say_scale(author)
+      elseif msg == L.cmds.low_level_cmd or L.F.search_str_contains(msg, {"45", "35", "25", "小水", "小面包"}) then
+        L.F.low_level_food_request(author)
+      elseif msg == L.cmds.low_level_help_cmd or msg == "7" then
+        L.F.say_low_level_help(author)
       elseif L.F.search_str_contains(msg, {"交易", "收到"}) then
         -- do nothing, auto sent by BurningTrade addons.
       elseif L.F.may_set_scale(msg, author) then
@@ -57,10 +61,6 @@ local function eventHandler(self, event, msg, author, ...)
         SendChatMessage(
                 "请这样M我来设置比例： 【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】或者，【2水】，等等，然后交易我。",
                 "WHISPER", "Common", author)
-      elseif msg == L.cmds.low_level_cmd then
-        L.F.low_level_food_request(author)
-      elseif msg == L.cmds.low_level_help_cmd or msg == "7" then
-        L.F.say_low_level_help(author)
       elseif L.F.search_str_contains(msg, {"暴风城", "铁炉堡", "达纳苏斯"}) then
         L.F.gate_request(author, msg)
       elseif L.F.search_str_contains(msg, {"门", "们", "暴风", "铁", "精灵", L.cmds.gate_help_cmd}) or msg == "6" then

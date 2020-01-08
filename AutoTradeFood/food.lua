@@ -229,7 +229,7 @@ local hans_num_map = {
 local function wf_preprocess(msg)
   for num, hans in ipairs(hans_num_map) do
     for _, han in ipairs(hans) do
-      msg = string.gsub(msg, num, han)
+      msg = string.gsub(msg, han, num)
     end
   end
   return " "..msg.." "
