@@ -67,6 +67,7 @@ local function level_acquire_success(player, class, level, w, b, info)
     }
     if real_b + real_w == 0 then
         SendChatMessage("预约成功，您的需求与大号需求一致，请直接交易。", "WHISPER", "Common", player)
+        low_level_trade_context.no_inform = true
         change_state("cooked")
     else
         change_state("level_acquired")
@@ -261,27 +262,34 @@ function L.F.check_low_level_food()
         local low_level_water_count = GetItemCount(low_level_trade_context.info.water_name)
         local low_level_bread_count = GetItemCount(low_level_trade_context.info.bread_name)
 
-        if timeleft < 0  then
+        if timeleft < 0 then
             low_level_cleanup()
-            SendChatMessage(
-                    "您未在规定时间内取用小号食物，食物已摧毁。如果需要，请重新预约。",
-                    "WHISPER", "Common", player
-            )
+            if not low_level_trade_context.no_inform then
+                SendChatMessage(
+                        "您未在规定时间内取用小号食物，食物已摧毁。如果需要，请重新预约。",
+                        "WHISPER", "Common", player
+                )
+            end
         elseif low_level_water_count < low_level_trade_context.count.water * 20 or
                 low_level_bread_count < low_level_trade_context.count.bread * 20 then
             low_level_cleanup()
-            SendChatMessage(
-                    "小号食品交易完成，欢迎下次光临",
-                    "WHISPER", "Common", player
-            )
+            if not low_level_trade_context.no_inform then
+                SendChatMessage(
+                        "小号食品交易完成，欢迎下次光临",
+                        "WHISPER", "Common", player
+                )
+            end
         elseif timeleft < L.low_level_wait_timeout / 4 and not(low_level_trade_context.reinformed) then
-            SendChatMessage(
-                    "您的小号食品即将在"..math.modf(timeleft).."秒后过期，请速来米豪身边取用。",
-                    "WHISPER", "Common", player
-            )
-            SendChatMessage(
-                    player.."，您的小号食品快要过期！请速来米豪身边取餐！", "yell", "Common"
-            )
+            if not low_level_trade_context.no_inform then
+                SendChatMessage(
+                        "您的小号食品即将在"..math.modf(timeleft).."秒后过期，请速来米豪身边取用。",
+                        "WHISPER", "Common", player
+                )
+                SendChatMessage(
+                        player.."，您的小号食品快要过期！请速来米豪身边取餐！", "yell", "Common"
+                )
+            end
+
             low_level_trade_context.reinformed = true
         end
     end
