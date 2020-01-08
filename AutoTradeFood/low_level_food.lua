@@ -49,6 +49,14 @@ end
 
 
 local function level_acquire_success(player, class, level, w, b, info)
+    -- check if items are same as high level
+    local real_w, real_b = w, b
+    if info.bread_name == L.items.food_name then
+        real_b = 0
+    end
+    if info.water_name == L.items.water_name then
+        real_w = 0
+    end
     low_level_trade_context.player = player
     low_level_trade_context.level = level
     low_level_trade_context.class = class
@@ -57,15 +65,20 @@ local function level_acquire_success(player, class, level, w, b, info)
         ["water"] = w,
         ["bread"] = b,
     }
-    change_state("level_acquired")
-    SendChatMessage(
-            "预约成功，您的职业为"..class..", 等级为"..level.."。烹饪完毕后，您将收到我的密语，请您收到密语后来我身边交易我。",
-            "WHISPER", "Common", player
-    )
-    SendChatMessage(
-            "将为您烹制"..w.."组"..info.water_name.."，"..b.."组"..info.bread_name.."。",
-            "WHISPER", "Common", player
-    )
+    if real_b + real_w == 0 then
+        SendChatMessage("预约成功，您的需求与大号需求一致，请直接交易。", "WHISPER", "Common", player)
+        change_state("cooked")
+    else
+        change_state("level_acquired")
+        SendChatMessage(
+                "预约成功，您的职业为"..class..", 等级为"..level.."。烹饪完毕后，您将收到我的密语，请您收到密语后来我身边交易我。",
+                "WHISPER", "Common", player
+        )
+        SendChatMessage(
+                "将为您烹制"..w.."组"..info.water_name.."，"..b.."组"..info.bread_name.."。",
+                "WHISPER", "Common", player
+        )
+    end
 end
 
 
@@ -245,6 +258,8 @@ function L.F.check_low_level_food()
     elseif low_level_trade_context.state == "cooked" then
         local timeleft = L.low_level_wait_timeout - (GetTime() - low_level_trade_context.state_ts)
         local player = low_level_trade_context.player
+        local low_level_water_count = GetItemCount(low_level_trade_context.info.water_name)
+        local low_level_bread_count = GetItemCount(low_level_trade_context.info.bread_name)
 
         if timeleft < 0  then
             low_level_cleanup()
@@ -252,8 +267,8 @@ function L.F.check_low_level_food()
                     "您未在规定时间内取用小号食物，食物已摧毁。如果需要，请重新预约。",
                     "WHISPER", "Common", player
             )
-        elseif GetItemCount(low_level_trade_context.info.water_name) < low_level_trade_context.count.water * 20 or
-                GetItemCount(low_level_trade_context.info.bread_name) < low_level_trade_context.count.bread * 20 then
+        elseif low_level_water_count < low_level_trade_context.count.water * 20 or
+                low_level_bread_count < low_level_trade_context.count.bread * 20 then
             low_level_cleanup()
             SendChatMessage(
                     "小号食品交易完成，欢迎下次光临",
@@ -279,4 +294,8 @@ function L.F.say_low_level_help(to_player)
     SendChatMessage("2. 我将在成功获取您的等级信息后回复您，并开始烹饪。", "WHISPER", "Common", to_player)
     SendChatMessage("3. 【烹饪完毕后】，我将发送一条密语给您，请收到后立即前来取用。", "WHISPER", "Common", to_player)
     SendChatMessage("4. 我会为您保管烹饪完成的食物"..L.low_level_wait_timeout.."秒，过期将自动摧毁。", "WHISPER", "Common", to_player)
+    SendChatMessage("注：如果需要自定义需要多少水，多少面包，请先M我需要多少水和多少面包，例如“来2组水，1组面包”。")
+    if L.F.get_busy_state() then
+        SendChatMessage("**现在是用餐高峰期，因此无法提供小号食品服务。**", "WHISPER", "Common", to_player)
+    end
 end
