@@ -49,9 +49,9 @@ local function eventHandler(self, event, msg, author, ...)
         L.F.refill_request(author)
       elseif msg == L.cmds.scale_cmd then
         say_scale(author)
-      elseif msg == L.cmds.low_level_cmd or L.F.search_str_contains(msg, {"45", "35", "25", "小水", "小面包"}) then
+      elseif msg == L.cmds.low_level_cmd then
         L.F.low_level_food_request(author)
-      elseif msg == L.cmds.low_level_help_cmd or msg == "7" then
+      elseif msg == L.cmds.low_level_help_cmd or msg == "7" or L.F.search_str_contains(msg, {"45", "35", "25", "小水", "小面包"}) then
         L.F.say_low_level_help(author)
       elseif L.F.search_str_contains(msg, {"交易", "收到"}) then
         -- do nothing, auto sent by BurningTrade addons.
