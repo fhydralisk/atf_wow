@@ -29,6 +29,17 @@ local function say_scale(to_player)
 end
 
 
+local function player_want_trade_gold(msg)
+
+  msg = string.gsub(string.lower(msg), "金", "g")
+  if string.match(msg, "%dg") or string.match(msg, "给g") then
+    return true
+  else
+    return false
+  end
+end
+
+
 local function eventHandler(self, event, msg, author, ...)
   if event == "CHAT_MSG_WHISPER" then
     author = string.match(author, "([^-]+)")
@@ -55,6 +66,8 @@ local function eventHandler(self, event, msg, author, ...)
         L.F.say_low_level_help(author)
       elseif L.F.search_str_contains(msg, {"交易", "收到"}) then
         -- do nothing, auto sent by BurningTrade addons.
+      elseif player_want_trade_gold(msg) then
+        SendChatMessage("米豪不收取任何金币，需要开门，请M我【传送门】查看步骤；需要吃喝，请直接交易。详情M我【帮助】", "WHISPER", "Common", author)
       elseif L.F.may_set_scale(msg, author) then
         -- do nothing
       elseif msg == "5" then
@@ -63,7 +76,7 @@ local function eventHandler(self, event, msg, author, ...)
                 "WHISPER", "Common", author)
       elseif L.F.search_str_contains(msg, {"暴风城", "铁炉堡", "苏斯"}) then
         L.F.gate_request(author, msg)
-      elseif L.F.search_str_contains(msg, {"门", "们", "暴风", "铁", "精灵", L.cmds.gate_help_cmd}) or msg == "6" then
+      elseif L.F.search_str_contains(msg, {"门", "暴风", "铁", "精灵", L.cmds.gate_help_cmd}) or msg == "6" then
         L.F.say_gate_help(author)
       elseif L.F.search_str_contains(msg, {"脚本", "外挂", "机器", "自动", "宏"}) then
         SendChatMessage("是的，我是纯公益机器人，请亲手下留情，爱你哦！", "WHISPER", "Common", author)
