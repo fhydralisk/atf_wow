@@ -23,8 +23,7 @@ function L.F.refill_request(player)
             ["last_refill_ts"] = 0,
         }
         SendChatMessage("补货请求成功，我将在"..L.refill_timeout
-                .."秒内接受您的补货，感谢支持！查看补货流程，可M我【"
-                ..L.refill_help_cmd.."】】",
+                .."秒内接受您的补货，感谢支持！",
                 "WHISPER", "Common", player
         )
     else
