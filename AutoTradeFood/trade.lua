@@ -142,7 +142,6 @@ local function get_items(target)
     target_items["Gold"] = get_trade_money()
     table_cnt = table_cnt + 1
   end
-
   return target_items, table_cnt
 end
 
@@ -188,7 +187,7 @@ local function trade_on_event(self, event, arg1, arg2)
         current_trade.items.target =  {["count"]=target_items_count, ["items"]=target_items}
         local accept, keep
         if hook.should_accept then
-          accept, keep = hook.should_accept(trade)
+          accept, keep = hook.should_accept(current_trade)
         end
 
         if accept then
@@ -203,7 +202,8 @@ local function trade_on_event(self, event, arg1, arg2)
       end
     elseif event == "TRADE_TARGET_ITEM_CHANGED" or event == "TRADE_MONEY_CHANGED" then
       local target_items, target_items_count = get_items(true)
-      if hook.check_target_item and not(hook.check_target_item(target_items, target_items_count)) then
+      current_trade.items.target =  {["count"]=target_items_count, ["items"]=target_items}
+      if hook.check_target_item and not(hook.check_target_item(current_trade)) then
         CloseTrade()
       end
     end
