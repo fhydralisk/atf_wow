@@ -34,6 +34,7 @@ local hook_example = {
 }
 
 local current_trade = {}
+local trade_say_messages = {}
 
 
 
@@ -221,11 +222,11 @@ end
 
 
 function L.F.accept_accepted_trade()  -- HW
-  if current_trade.messages then
-    for _, message in ipairs(current_trade.messages) do
+  if trade_say_messages then
+    for _, message in ipairs(trade_say_messages) do
       SendChatMessage(message, "say")
     end
-    current_trade.messages = {}
+    trade_say_messages = {}
   end
   if current_trade.accepted then
     AcceptTrade()
@@ -233,9 +234,6 @@ function L.F.accept_accepted_trade()  -- HW
 end
 
 
-function L.F.append_trade_say_messages(trade, message)
-  if current_trade.messages == nil then
-    current_trade.messages = {}
-  end
-  table.insert(trade.messages, message)
+function L.F.append_trade_say_messages(message)
+  table.insert(trade_say_messages, message)
 end

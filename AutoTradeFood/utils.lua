@@ -21,7 +21,6 @@ function L.F.search_str_contains(s, tbl, position)
       local mid_ss = (l + u) / 2
       local mid_s = (1 + string.len(s)) / 2
       if position == "left" then
-        print(mid_ss <= mid_s)
         return mid_ss <= mid_s
       elseif position == "right" then
         return mid_ss >= mid_s

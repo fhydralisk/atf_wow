@@ -72,7 +72,6 @@ function L.F.gate_request(player, msg)
     return
   end
   local spell, city = parse_and_set_city(msg)
-  print(spell, city)
   if not spell then
     return
   end
@@ -153,11 +152,11 @@ local function on_trade_complete(trade)
   local spell = L.gate.gating_contexts[npc_name]["spell"]
   SendChatMessage(
           "符文石交易成功，请接受组队邀请。稍等几秒将为您开门...若未邀请成功，请M我水水水进组", "WHISPER", "Common", npc_name)
-  SendChatMessage(npc_name.."，"..city.."传送程序已载入，请坐稳扶好！想搭便车的朋友，M我【水水水】进组")
   L.gate.gating_context["spell"] = spell
   L.gate.gating_context["city"] = city
   L.gate.gating_context["requester"] = npc_name
   transit_to_gate_state(npc_name)
+  L.F.append_trade_say_messages(npc_name.."，"..city.."传送程序已载入，请坐稳扶好！想搭便车的朋友，M我【水水水】进组")
 end
 
 

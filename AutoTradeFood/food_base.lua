@@ -158,22 +158,22 @@ function L.F.check_food_trade_target_items(trade)
     return true
   else
     if items[L.items.stone_name] then
-      SendChatMessage(
+      L.F.append_trade_say_messages(
               npc_name.."，请首先M我需要去的城市名称，例如“达纳苏斯”，再交易我【传送门符文】！"..
                       "如果您已经M过我，可能已经过期，请重试，谢谢！",
               "say", "Common"
       )
     elseif items[L.items.water_name] or items[L.items.food_name] then
-      SendChatMessage(
+      L.F.append_trade_say_messages(
               npc_name.."，餐饮一经送出，不再回收。"..
                       "如果您觉得水或面包多余，请在交易我之前M我配比情况，例如“我要3组水，1组面包”，然后再进行交易。",
               "say", "Common"
       )
 
     elseif items["Gold"] then
-      SendChatMessage(npc_name.."，餐饮完全免费，请勿交易我任何金币，谢谢您的鼓励！", "say", "Common")
+      L.F.append_trade_say_messages(npc_name.."，餐饮完全免费，请勿交易我任何金币，谢谢您的鼓励！", "say", "Common")
     else
-      SendChatMessage(npc_name.."，背包有限，请勿交易我任何物品，感谢支持！", "say", "Common")
+      L.F.append_trade_say_messages(npc_name.."，背包有限，请勿交易我任何物品，感谢支持！", "say", "Common")
     end
     return false
   end
