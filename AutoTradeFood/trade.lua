@@ -230,6 +230,8 @@ function L.F.accept_accepted_trade()  -- HW
   end
   if current_trade.accepted then
     AcceptTrade()
+  elseif current_trade.start_ts and GetTime() - current_trade.start_ts > 30 then
+    CloseTrade()
   end
 end
 
