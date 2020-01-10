@@ -19,28 +19,28 @@ local AtfReportFrame = L.F.create_macro_button("ATFRButton", "/atfr")
 
 
 local function bind_drink()
-  if check_buff("喝水", 3) or check_buff("唤醒", 0.5) then
+  if check_buff(L.buffs.drinking, 3) or check_buff(L.buffs.wakeup, 0.5) then
     SetBinding(interact_key, "")
   else
-    local wakeup_cd = GetSpellCooldown("唤醒", "BOOKTYPE_SPELL")
+    local wakeup_cd = GetSpellCooldown(L.buffs.wakeup, "BOOKTYPE_SPELL")
     if wakeup_cd > 0 or UnitPower("player") > UnitPowerMax("player") * 0.5 then
-      SetBindingItem(interact_key, "魔法晶水")
+      SetBindingItem(interact_key, L.items.water_name)
     else
-      SetBindingSpell(interact_key, "唤醒")
+      SetBindingSpell(interact_key, L.buffs.wakeup)
     end
   end
 end
 
 
 local function bind_buff()
-  if UnitPower("player") < 2000 then
-    SetBindingItem(interact_key, "魔法晶水")
+  if UnitPower("player") < UnitPowerMax("player") / 3 then
+    SetBindingItem(interact_key, L.items.water_name)
   elseif not(UnitName("target") == UnitName("player")) then
     SetBinding(interact_key, "TARGETSELF")
-  elseif not check_buff("魔甲术", 300) then
-    SetBindingSpell(interact_key, "魔甲术")
-  elseif not (check_buff("奥术智慧", 300) or check_buff("奥术光辉", 300))then
-    SetBindingSpell(interact_key, "奥术智慧")
+  elseif not check_buff(L.buffs.armor, 300) then
+    SetBindingSpell(interact_key, L.buffs.armor)
+  elseif not (check_buff(L.buffs.intel, 300) or check_buff("奥术光辉", 300))then
+    SetBindingSpell(interact_key, L.buffs.intel)
   end
 end
 
@@ -62,7 +62,7 @@ local function drive_state()
   if L.state == 1 then  -- working -> resting or buffing
     if UnitPower("player") < min_mana then
       L.state = 2
-    elseif not ((check_buff("奥术智慧", 10) or check_buff("奥术光辉", 10)) and check_buff("魔甲术", 10)) then
+    elseif not ((check_buff(L.buffs.intel, 10) or check_buff("奥术光辉", 10)) and check_buff(L.buffs.armor, 10)) then
       L.state = 4
     end
   elseif L.state == 2 then  -- resting -> working
@@ -76,7 +76,7 @@ local function drive_state()
       L.state = 1
     end
   elseif L.state == 4 then -- buffing -> working
-    if (check_buff("奥术智慧", 100) or check_buff("奥术光辉", 100)) and check_buff("魔甲术", 100) then
+    if (check_buff(L.buffs.intel, 100) or check_buff("奥术光辉", 100)) and check_buff(L.buffs.armor, 100) then
       L.state = 1
     end
   end

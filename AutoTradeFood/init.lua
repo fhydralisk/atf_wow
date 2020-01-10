@@ -26,6 +26,12 @@ L.items.water_name = "魔法晶水"
 L.items.food_name = "魔法甜面包"
 L.items.stone_name = "传送门符文"
 
+L.buffs = {}
+L.buffs.armor = "魔甲术"
+L.buffs.intel = "奥术智慧"
+L.buffs.wakeup = "唤醒"
+L.buffs.drinking = "喝水"
+
 L.state = 1
 -- states: 1 making, 2 watering? 3 gating, 4 buff
 
@@ -46,6 +52,12 @@ L.debug.white_list = {
     ["米豪的维修师"] = true
 }
 L.debug.enabled = false
+
+--小号模式
+--L.items.water_name = "魔法纯净水"
+--L.items.food_name = "魔法黑面包"
+--L.buffs.armor = "霜甲术"
+--L.min_mana = 300
 
 
 local frame = CreateFrame("FRAME", "InitFrame")

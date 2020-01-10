@@ -120,7 +120,7 @@ local function check_and_do_feed()
 
   if L.F.get_busy_state() then
     if tclass == "法师" and tlevel == 60 then
-      SendChatMessage("当前为用餐高峰时间，请60级法爷自行解决食水问题，谢谢支持！", "WHISPER", "Common", npc_name)
+      SendChatMessage("用餐高峰，请60级法爷自行解决食水问题。如希望为我补充货源，请M我【我要补货】，谢谢！", "WHISPER", "Common", npc_name)
       CloseTrade()
       return
     elseif npc_name == last_trade_player and not(last_fail_player_is_trade_player) and GetTime() - last_trade_success_ts < 120 then
@@ -148,7 +148,7 @@ local function check_and_do_feed()
     do_trade_feed(tclass, npc_name, scale)
   else
     SendChatMessage(
-            "米豪目前可在非高峰时段为【25-54】级小号烹饪小号食品，但需要预约。请M我【"..L.cmds.low_level_help_cmd.."】查询预约流程",
+            "米豪目前可为【25-54】级小号烹饪小号食品，但需要预约。请M我【"..L.cmds.low_level_cmd.."】进行预约。",
             "WHISPER", "Common", npc_name
     )
     CloseTrade()
@@ -295,10 +295,9 @@ function L.F.may_set_scale(msg, author)
   if water + food > 0 then
     if water + food > 6 then
       if water == 45 or water == 35 then
-        SendChatMessage("暂时无法提供小号食品，请您求助其他法师，抱歉", "WHISPER", "Common", author)
-      elseif water == 20 then
-        -- 自动交易提醒，不予回复
-        return true
+        SendChatMessage("如需【25-54】小号食物，请M我【"
+                ..L.cmds.low_level_cmd.."】进行预约。查看预约流程，行M我【"
+                ..L.cmds.low_level_help_cmd.."】", "WHISPER", "Common", author)
       else
         SendChatMessage("定制面包和水的数量，请确保水和面包加和不要大于6哦，不然我怎么交易给您？", "WHISPER", "Common", author)
       end

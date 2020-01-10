@@ -156,7 +156,8 @@ end
 
 
 function L.F.low_level_food_request(player)
-    if L.F.get_busy_state() then
+    -- if L.F.get_busy_state() then
+    if false then
         SendChatMessage(
                 "用餐高峰期，暂时不能为小号烹饪，请您等待高峰期结束，或寻求其他法师的帮助，谢谢！",
                 "WHISPER", "Common", player
@@ -297,13 +298,14 @@ end
 
 
 function L.F.say_low_level_help(to_player)
-    SendChatMessage("【非用餐高峰时期】，米豪可以为【25-54】级小号烹饪符合小号等级的专属烹饪。请按如下步骤进行。", "WHISPER", "Common", to_player)
+    SendChatMessage("米豪可以为【25-54】级小号烹饪符合小号等级的专属烹饪。请按如下步骤进行。", "WHISPER", "Common", to_player)
     SendChatMessage("1. 请位于我的视线内，M我【"..L.cmds.low_level_cmd.."】。", "WHISPER", "Common", to_player)
     SendChatMessage("2. 我将在成功获取您的等级信息后回复您，并开始烹饪。", "WHISPER", "Common", to_player)
     SendChatMessage("3. 【烹饪完毕后】，我将发送一条密语给您，请收到后立即前来取用。", "WHISPER", "Common", to_player)
     SendChatMessage("4. 我会为您保管烹饪完成的食物"..L.low_level_wait_timeout.."秒，过期将自动摧毁。", "WHISPER", "Common", to_player)
     SendChatMessage("注：如果需要自定义需要多少水，多少面包，请先M我需要多少水和多少面包，例如“来2组水，1组面包”。", "WHISPER", "Common", to_player)
-    if L.F.get_busy_state() then
+    -- if L.F.get_busy_state() then
+    if false then
         SendChatMessage("**现在是用餐高峰期，因此无法提供小号食品服务。**", "WHISPER", "Common", to_player)
     end
 end

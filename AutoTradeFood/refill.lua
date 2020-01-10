@@ -22,7 +22,9 @@ function L.F.refill_request(player)
             ["refill_request_ts"] = GetTime(),
             ["last_refill_ts"] = 0,
         }
-        SendChatMessage("补货请求成功，我将在"..L.refill_timeout.."秒内接受您的补货，感谢支持！",
+        SendChatMessage("补货请求成功，我将在"..L.refill_timeout
+                .."秒内接受您的补货，感谢支持！查看补货流程，可M我【"
+                ..L.refill_help_cmd.."】】",
                 "WHISPER", "Common", player
         )
     else
@@ -107,9 +109,9 @@ function L.F.trade_refill(player)
                 elseif GetTime() - refill_context.refillers[player].last_refill_ts > 10.0 then
                     -- limit thanks message rate.
                     local msg = string.format(
-                        "感谢%s为我补货。M我【%s】查看贡献方法",
+                        "感谢%s为我补货。M我【%s】可为我补货。",
                         player,
-                        L.cmds.refill_help_cmd
+                        L.cmds.refill_cmd
                     )
                     refill_context.refillers[player].last_refill_ts = GetTime()
                     SendChatMessage(msg, "say", "Common")
