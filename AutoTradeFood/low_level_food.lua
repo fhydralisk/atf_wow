@@ -264,6 +264,7 @@ function L.F.check_low_level_food()
         local low_level_bread_count = GetItemCount(low_level_trade_context.info.bread_name)
 
         if timeleft < 0 then
+            CloseTrade()
             low_level_cleanup()
             if not low_level_trade_context.no_inform then
                 SendChatMessage(
