@@ -56,73 +56,8 @@ local function check_refill_scale()
     end
 end
 
-function L.F.trade_refill(player)
-    local items, cnt = L.F.post_check_opposite_trade()
-    if items["Gold"] and items["Gold"] > 0 then
-        SendChatMessage("请勿交易我任何金币，谢谢支持", "WHISPER", "Common", player)
-        CloseTrade()
-        return
-    end
-    if TradeHighlightRecipient:IsShown() then
-        if cnt == 0 then
-            SendChatMessage("未收到任何补货，为您取消补货请求。", "WHISPER", "Common", player)
-            remove_refiller(player)
-            CloseTrade()
-            return
-        else
-            local water, bread = 0, 0
-            for item_name, c in pairs(items) do
-                if item_name == L.items.water_name then
-                    water = water + c
-                elseif item_name == L.items.food_name then
-                    bread = bread + c
-                else
-                    SendChatMessage(
-                        "补货模式仅仅接受大水和大面包，请勿交易其他物品或金币，感谢支持！",
-                        "WHISPER", "Common", player
-                    )
-                    CloseTrade()
-                    return
-                end
-                local refill_check_result = check_refill_scale()
-                local item_too_many
-                if refill_check_result == "bread" and bread > 0 then
-                    item_too_many = L.items.food_name
-                elseif refill_check_result == "water" and water > 0 then
-                    item_too_many = L.items.water_name
-                elseif refill_check_result == "full" then
-                    SendChatMessage("米豪背包几乎已满，请稍后尝试补货，谢谢！", "WHISPER", "Common", player)
-                    CloseTrade()
-                    return
-                end
 
-                if item_too_many then
-                    SendChatMessage("目前库存中【"..item_too_many.."】数量过多，暂时不需要补充，谢谢支持！", "WHISPER", "Common", player)
-                    CloseTrade()
-                    return
-                end
-
-                local s = L.F.do_accept_trade()
-                if not s then
-                    print("Should not arrive")
-                elseif GetTime() - refill_context.refillers[player].last_refill_ts > 10.0 then
-                    -- limit thanks message rate.
-                    local msg = string.format(
-                        "感谢%s为我补货。M我【%s】可为我补货。",
-                        player,
-                        L.cmds.refill_cmd
-                    )
-                    refill_context.refillers[player].last_refill_ts = GetTime()
-                    SendChatMessage(msg, "say", "Common")
-                end
-            end
-        end
-    end
-
-end
-
-
-function L.F.player_is_refiller(player)
+local function player_is_refiller(player)
     local refiller_ctx = refill_context.refillers[player]
     if refiller_ctx and
             (refiller_ctx["preserve"] or GetTime() - refiller_ctx.refill_request_ts < L.refill_timeout) then
@@ -142,3 +77,80 @@ function L.F.refill_help(to_player)
     SendChatMessage("注1，每次提交补货申请，有效期内可以一直补货，如需取消补货，请对我进行一次空的交易。", "WHISPER", "Common", to_player)
     SendChatMessage("注2，请勿交易我除了大水大面包之外的任何物品或金币哦，谢谢支持！", "WHISPER", "Common", to_player)
 end
+
+
+local function should_hook(trade)
+    if player_is_refiller(trade.npc_name) then
+        return true, false
+    else
+        return false, false
+    end
+end
+
+
+local function send_thanks_message(trade)
+    local player = trade.npc_name
+    local msg = string.format(
+        "感谢%s为我补货。M我【%s】可为我补货。",
+        player,
+        L.cmds.refill_cmd
+    )
+    SendChatMessage(msg, "say", "Common")
+end
+
+
+local function should_accept_refill(trade)
+    local player = trade.npc_name
+    local items = trade.items.target.items
+    local cnt = trade.items.target.count
+    if cnt == 0 then
+        SendChatMessage("未收到任何补货，为您取消补货请求。", "WHISPER", "Common", player)
+        remove_refiller(player)
+        return false
+    end
+    if items["Gold"] and items["Gold"] > 0 then
+        SendChatMessage("请勿交易我任何金币，谢谢支持", "WHISPER", "Common", player)
+        return false
+    end
+    local water, bread = 0, 0
+    for item_name, c in pairs(items) do
+        if item_name == L.items.water_name then
+            water = water + c
+        elseif item_name == L.items.food_name then
+            bread = bread + c
+        else
+            SendChatMessage(
+                "补货模式仅仅接受大水和大面包，请勿交易其他物品或金币，感谢支持！",
+                "WHISPER", "Common", player
+            )
+            return false
+        end
+        local refill_check_result = check_refill_scale()
+        local item_too_many
+        if refill_check_result == "bread" and bread > 0 then
+            item_too_many = L.items.food_name
+        elseif refill_check_result == "water" and water > 0 then
+            item_too_many = L.items.water_name
+        elseif refill_check_result == "full" then
+            SendChatMessage("米豪背包几乎已满，请稍后尝试补货，谢谢！", "WHISPER", "Common", player)
+            return false
+        end
+
+        if item_too_many then
+            SendChatMessage("目前库存中【"..item_too_many.."】数量过多，暂时不需要补充，谢谢支持！", "WHISPER", "Common", player)
+            return false
+        end
+        return true
+    end
+end
+
+
+L.trade_hooks.trade_refill = {
+  ["should_hook"] = should_hook,
+  ["feed_items"] = nil,
+  ["on_trade_complete"] = send_thanks_message,
+  ["on_trade_cancel"] = nil,
+  ["on_trade_error"] = nil,
+  ["should_accept"] = should_accept_refill,
+  ["check_target_item"] = nil,
+}

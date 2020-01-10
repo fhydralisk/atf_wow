@@ -89,20 +89,7 @@ function SlashCmdList.ATFCmd(msg)
   auto_bind()
   L.F.drive_busy_state()
   L.F.check_low_level_food()
-  if L.atfr_run == true or msg == "force" then
-    if TradeFrame:IsShown() then
-      local npc_name = UnitName("NPC")
-      if L.gate.gating_contexts[npc_name] then
-        L.F.trade_stone(npc_name)
-      else
-        if L.F.player_is_refiller(npc_name) then
-          L.F.trade_refill(npc_name)
-        else
-          L.F.trade_food()
-        end
-      end
-    end
-  end
+  L.F.accept_accepted_trade()
 end
 
 

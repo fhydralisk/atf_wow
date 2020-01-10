@@ -132,33 +132,64 @@ function L.F.bind_gate()
 end
 
 
-function L.F.trade_stone(npc_name)
-  local ils = GetTradePlayerItemLink(1)
-  local items, tbl_cnt = L.F.post_check_opposite_trade()
-  if ils == nil and L.F.get_free_slots() < 6 then
+local function should_trade_stone(trade)
+  if L.gate.gating_contexts[trade.npc_name] then
+    return true, false
+  end
+  return false, false
+end
+
+
+local function maybe_feed_some(trade)
+  if  L.F.get_free_slots() < 6 then
     L.F.feed(L.items.food_name, 1)
-  elseif tbl_cnt == 0 then
-      -- do nothing
-  elseif items[L.items.stone_name] == 1 and tbl_cnt == 1 then
-    if L.F.do_accept_trade() then
-      local city = L.gate.gating_contexts[npc_name]["city"]
-      local spell = L.gate.gating_contexts[npc_name]["spell"]
-      SendChatMessage(
-              "符文石交易成功，请接受组队邀请。稍等几秒将为您开门...若未邀请成功，请M我水水水进组", "WHISPER", "Common", npc_name)
-      SendChatMessage(npc_name.."，"..city.."传送程序已载入，请坐稳扶好！想搭便车的朋友，M我【水水水】进组")
-      L.gate.gating_context["spell"] = spell
-      L.gate.gating_context["city"] = city
-      L.gate.gating_context["requester"] = npc_name
-      transit_to_gate_state(npc_name)
-    end
-  else
-    if items["Gold"] and items["Gold"] > 0 then
-      SendChatMessage(npc_name.."，开门服务只收【传送门符文】，不收金币，详情烦请M我【传送门】，仅需1分钟，轻松开门！", "say", "Common")
-    elseif items[L.items.stone_name] and items[L.items.stone_name] > 1 then
-      SendChatMessage(npc_name.."，请交易我【1枚】传送门符文，多余的请您保留以备后用，谢谢！", "say", "Common")
-    else
-      SendChatMessage(npc_name.."，请勿交易我额外的物品，谢谢！", "say", "Common")
-    end
-    CloseTrade()
   end
 end
+
+
+local function on_trade_complete(trade)
+  local npc_name = trade.npc_name
+  local city = L.gate.gating_contexts[npc_name]["city"]
+  local spell = L.gate.gating_contexts[npc_name]["spell"]
+  SendChatMessage(
+          "符文石交易成功，请接受组队邀请。稍等几秒将为您开门...若未邀请成功，请M我水水水进组", "WHISPER", "Common", npc_name)
+  SendChatMessage(npc_name.."，"..city.."传送程序已载入，请坐稳扶好！想搭便车的朋友，M我【水水水】进组")
+  L.gate.gating_context["spell"] = spell
+  L.gate.gating_context["city"] = city
+  L.gate.gating_context["requester"] = npc_name
+  transit_to_gate_state(npc_name)
+end
+
+
+local function should_accept_trade(trade)
+  local items = trade.items.target.items
+  local cnt = trade.items.target.count
+  local npc_name = trade.npc_name
+
+  if cnt == 0 then
+    SendChatMessage(npc_name.."，需要交易我1枚【传送门符文】才能够施法哦！", "say", "Common")
+    return false
+  end
+  if items[L.items.stone_name] == 1 and cnt == 1 then
+    return true
+  end
+  if items["Gold"] and items["Gold"] > 0 then
+    SendChatMessage(npc_name.."，开门服务只收【传送门符文】，不收金币，详情烦请M我【传送门】，仅需1分钟，轻松开门！", "say", "Common")
+  elseif items[L.items.stone_name] and items[L.items.stone_name] > 1 then
+    SendChatMessage(npc_name.."，请交易我【1枚】传送门符文，多余的请您保留以备后用，谢谢！", "say", "Common")
+  else
+    SendChatMessage(npc_name.."，请勿交易我额外的物品，谢谢！", "say", "Common")
+  end
+  return false
+end
+
+
+L.trade_hooks.trade_stone = {
+  ["should_hook"] = should_trade_stone,
+  ["feed_items"] = maybe_feed_some,
+  ["on_trade_complete"] = on_trade_complete,
+  ["on_trade_cancel"] = nil,
+  ["on_trade_error"] = nil,
+  ["should_accept"] = should_accept_trade,
+  ["check_target_item"] = nil,
+}

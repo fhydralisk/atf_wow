@@ -64,253 +64,6 @@ local function set_last_trade_player(pname)
 end
 
 
-function L.F.get_feed_count(tclass, npc_name)
-  local w, f
-  if PlayerDefinedScale[npc_name] then
-    w = PlayerDefinedScale[npc_name]["water"]
-    f = PlayerDefinedScale[npc_name]["food"]
-  else
-    w = tclass_food[tclass][1]
-    f = tclass_food[tclass][2]
-  end
-  return w, f
-end
-
-
-local function do_trade_feed(tclass, npc_name, scale)
-  local w, f = L.F.get_feed_count(tclass, npc_name)
-  w = math.ceil(w * scale)
-  f = math.ceil(f * scale)
-  L.F.feed(water_name, w, 20)
-  L.F.feed(food_name, f, 20)
-end
-
-local function pre_check_startup(npc_name)
-  if L.F.get_water_count() >= 4 and L.F.get_bread_count() >= 4 then
-    return true
-  else
-    if npc_name == last_trade_player then
-      last_fail_player_is_trade_player = true
-    else
-      last_fail_player_is_trade_player = false
-    end
-    return false
-  end
-end
-
-local function pre_check_role(tlevel, tclass, npc_name)
-  if L.debug.enabled and L.debug.white_list[npc_name] then
-    return true
-  end
-  if tlevel < tclass_level[tclass] then
-    return false
-  end
-  return true
-end
-
-local function check_and_do_feed()
-  local tclass = UnitClass("NPC")
-  local tlevel = UnitLevel("NPC")
-  local npc_name = UnitName("NPC")
-  local scale = 1
-
-  if L.F.get_busy_state() then
-    scale = 0.5
-  end
-
-  if L.F.get_busy_state() then
-    if tclass == "法师" and tlevel == 60 then
-      SendChatMessage("用餐高峰，请60级法爷自行解决食水问题。如希望为我补充货源，请M我【我要补货】，谢谢！", "WHISPER", "Common", npc_name)
-      CloseTrade()
-      return
-    elseif npc_name == last_trade_player and not(last_fail_player_is_trade_player) and GetTime() - last_trade_success_ts < 120 then
-      SendChatMessage("当前为用餐高峰时间，请勿连续取用食物，给其他朋友些机会哦，谢谢支持！", "WHISPER", "Common", npc_name)
-      CloseTrade()
-      return
-    end
-  end
-  if L.F.player_is_low_level_requester(npc_name) then
-    if L.F.low_level_food_is_cooked() then
-      L.F.feed_low_level_food()
-    else
-      SendChatMessage("您的小号食品还未烹饪完成，请您收到完成通知后再来取餐，谢谢！", "WHISPER", "Common", npc_name)
-      CloseTrade()
-    end
-  elseif not pre_check_startup() then
-    local water = L.F.get_water_count()
-    local bread = L.F.get_bread_count()
-    SendChatMessage(
-            "库存不足，请稍等一小会儿...当前存货：【大水】"..water.."组，【面包】"..bread.."组", "WHISPER",
-            "Common", npc_name
-    )
-    CloseTrade()
-  elseif pre_check_role(tlevel, tclass, npc_name) then
-    do_trade_feed(tclass, npc_name, scale)
-  else
-    SendChatMessage(
-            "米豪目前可为【25-54】级小号烹饪小号食品，但需要预约。请M我【"..L.cmds.low_level_cmd.."】进行预约。",
-            "WHISPER", "Common", npc_name
-    )
-    CloseTrade()
-  end
-end
-
-local function maybe_say_some()
-  local pname = UnitName("NPC")
-  local pclass = UnitClass("NPC")
-  local plevel = UnitLevel("NPC")
-  if L.F.search_str_contains(pclass, {"牧师", "圣骑士", "德鲁伊"}) then
-    SendChatMessage(pname..",".."智慧祝福、王者祝福、爪子、激活、精神可以提高我的制作效率，如果您方便，就强化我一下，谢谢！", "say", "Common")
-  elseif pclass == "法师" and plevel == 60 then
-    SendChatMessage("法爷需自强，不当伸手党，嘿嘿嘿...", "say", "Common")
-  end
-  local words = trade_count_words[last_trade_player_count]
-  if words then
-    SendChatMessage(pname..","..words, "say", "Common")
-  end
-end
-
-local function check_and_accept_trade()
-  local npc_name = UnitName("NPC")
-  local items, cnt = L.F.post_check_opposite_trade()
-  if cnt == 0 then
-    if L.F.do_accept_trade() then
-      set_last_trade_player(npc_name)
-      maybe_say_some()
-    end
-  else
-    if items[L.items.stone_name] then
-      SendChatMessage(
-              npc_name.."，请首先M我需要去的城市名称，例如“达纳苏斯”，再交易我【传送门符文】！"..
-                      "如果您已经M过我，可能已经过期，请重试，谢谢！",
-              "say", "Common"
-      )
-    elseif items[L.items.water_name] or items[L.items.food_name] then
-      SendChatMessage(
-              npc_name.."，餐饮一经送出，不再回收。"..
-                      "如果您觉得水或面包多余，请在交易我之前M我配比情况，例如“我要3组水，1组面包”，然后再进行交易。",
-              "say", "Common"
-      )
-
-    elseif items["Gold"] then
-      SendChatMessage(npc_name.."，餐饮完全免费，请勿交易我任何金币，谢谢您的鼓励！", "say", "Common")
-    else
-      SendChatMessage(npc_name.."，背包有限，请勿交易我任何物品，感谢支持！", "say", "Common")
-    end
-    CloseTrade()
-  end
-end
-
-function L.F.trade_food()
-  if TradeFrame.acceptState == 0 then
-      local ils = GetTradePlayerItemLink(1)
-      if ils == nil then
-        check_and_do_feed()
-      else
-        check_and_accept_trade()
-      end
-    end
-end
-
-
-local hans_num_map = {
-  {"一", "少"},
-  {"二", "两"},
-  {"三"},
-  {"四"},
-  {"五", "多"},
-  {"六"},
-  {"七"},
-  {"八"},
-  {"九"},
-  [0] = {"无", "不"},
-}
-
-
-local function wf_preprocess(msg)
-  for num, hans in ipairs(hans_num_map) do
-    for _, han in ipairs(hans) do
-      msg = string.gsub(msg, han, num)
-    end
-  end
-  return " "..msg.." "
-end
-
-
-local function wf_parser1(msg)
-  local water_pattern = "[^%d]*(%d)[^%d]*水"
-  local food_pattern = "[^%d]*(%d)[^%d]*面包"
-  local matched = 0
-  local w_s = string.match(msg, water_pattern)
-  if not(w_s == nil) then matched = matched + 1 else w_s = 0 end
-  local f_s = string.match(msg, food_pattern)
-  if not(f_s == nil) then matched = matched + 1 else f_s = 0 end
-  return tonumber(w_s), tonumber(f_s), matched
-end
-
-local function wf_parser2(msg)
-  local water_pattern = "水[^%d]*(%d)[^%d]*"
-  local food_pattern = "面包[^%d]*(%d)[^%d]"
-  local matched = 0
-  local w_s = string.match(msg, water_pattern)
-  if not (w_s == nil) then matched = matched + 1 else w_s = 0 end
-  local f_s = string.match(msg, food_pattern)
-  if not (f_s == nil) then matched = matched + 1 else f_s = 0 end
-  return tonumber(w_s), tonumber(f_s), matched
-end
-
-local function do_set_scale(water, food, author)
-  PlayerDefinedScale[author] = {
-    ["water"] = water,
-    ["food"] = food
-  }
-  if L.F.get_busy_state() then
-    SendChatMessage(
-            string.format("配比成功，您在交易我时，将获得%d组水，%d组面包（如果库存充足）。"..
-                    "【当前为高峰期，交易数量将减半。】”。", water, food),
-            "WHISPER", "Common", author
-    )
-  else
-    SendChatMessage(
-            string.format("配比成功，您在交易我时，将获得%d组水，%d组面包（如果库存充足）。" ..
-                    "如果和预期的不同，请按如下例子进行定制：“4组水，2组面包”。", water, food),
-            "WHISPER", "Common", author
-    )
-  end
-
-end
-
-function L.F.may_set_scale(msg, author)
-  msg = wf_preprocess(msg)
-  local ws1, fs1, matched1 = wf_parser1(msg)
-  local ws2, fs2, matched2 = wf_parser2(msg)
-  local water, food
-  if matched1 > matched2 then
-    water = ws1
-    food = fs1
-  else
-    water = ws2
-    food = fs2
-  end
-
-  if water + food > 0 then
-    if water + food > 6 then
-      if water == 45 or water == 35 then
-        SendChatMessage("如需【25-54】小号食物，请M我【"
-                ..L.cmds.low_level_cmd.."】进行预约。查看预约流程，行M我【"
-                ..L.cmds.low_level_help_cmd.."】", "WHISPER", "Common", author)
-      else
-        SendChatMessage("定制面包和水的数量，请确保水和面包加和不要大于6哦，不然我怎么交易给您？", "WHISPER", "Common", author)
-      end
-    else
-      do_set_scale(water, food, author)
-    end
-    return true
-  end
-
-  return false
-end
-
 function L.F.bind_make_food_or_water()
   if L.F.target_level_to_acquire() then
     L.F.bind_acquire_target_level()
@@ -330,3 +83,97 @@ function L.F.bind_make_food_or_water()
     end
   end
 end
+
+
+local function check_stock(npc_name)
+  if L.F.get_water_count() >= 4 and L.F.get_bread_count() >= 4 then
+    return true
+  else
+    if npc_name == last_trade_player then
+      last_fail_player_is_trade_player = true
+    else
+      last_fail_player_is_trade_player = false
+    end
+    return false
+  end
+end
+
+
+local function check_level(tlevel, tclass, npc_name)
+  if L.debug.enabled and L.debug.white_list[npc_name] then
+    return true
+  end
+  return L.F.can_feed_target(tlevel, tclass, npc_name)
+end
+
+
+local function should_give_food(trade)
+  local tclass = trade.npc_class
+  local tlevel = trade.npc_level
+  local npc_name = trade.npc_name
+
+  if L.F.get_busy_state() then
+    if tclass == "法师" and tlevel == 60 then
+      SendChatMessage("用餐高峰，请60级法爷自行解决食水问题。如希望为我补充货源，请M我【我要补货】，谢谢！", "WHISPER", "Common", npc_name)
+      return true, true
+    elseif npc_name == last_trade_player and not(last_fail_player_is_trade_player) and GetTime() - last_trade_success_ts < 120 then
+      SendChatMessage("当前为用餐高峰时间，请勿连续取用食物，给其他朋友些机会哦，谢谢支持！", "WHISPER", "Common", npc_name)
+      return true, true
+    end
+  end
+  if not check_stock() then
+    local water = L.F.get_water_count()
+    local bread = L.F.get_bread_count()
+    SendChatMessage(
+            "库存不足，请稍等一小会儿...当前存货：【大水】"..water.."组，【面包】"..bread.."组", "WHISPER",
+            "Common", npc_name
+    )
+    return true, true
+  elseif check_level(tlevel, tclass, npc_name) then
+    return true, false
+  end
+  return false, false
+end
+
+
+local function feed_foods(trade)
+  local w, f = L.F.get_feed_count(trade.npc_class, trade.npc_name)
+  local scale = 1
+  if L.F.get_busy_state() then
+    scale = 0.5
+  end
+  w = math.ceil(w * scale)
+  f = math.ceil(f * scale)
+  L.F.feed(water_name, w, 20)
+  L.F.feed(food_name, f, 20)
+end
+
+
+local function trade_completed(trade)
+  local class = trade.npc_class
+  local level = trade.npc_level
+  local name = trade.npc_name
+
+  set_last_trade_player(name)
+
+  if L.F.search_str_contains(class, {"牧师", "圣骑士", "德鲁伊"}) then
+    SendChatMessage(name..",".."智慧祝福、王者祝福、爪子、激活、精神可以提高我的制作效率，如果您方便，就强化我一下，谢谢！", "say", "Common")
+  elseif class == "法师" and level == 60 then
+    SendChatMessage("法爷需自强，不当伸手党，嘿嘿嘿...", "say", "Common")
+  end
+  local words = trade_count_words[last_trade_player_count]
+  if words then
+    SendChatMessage(name.."，"..words, "say", "Common")
+  end
+end
+
+
+L.trade_hooks.trade_food = {
+  ["should_hook"] = should_give_food,
+  ["feed_items"] = feed_foods,
+  ["on_trade_complete"] = trade_completed,
+  ["on_trade_cancel"] = nil,
+  ["on_trade_error"] = nil,
+  ["should_accept"] = L.F.check_food_trade_target_items,
+  ["check_target_item"] = nil,
+}

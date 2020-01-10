@@ -8,6 +8,7 @@ local addonName, L = ...
 
 L.addonName = addonName
 L.F = {}
+L.trade_hooks = {}
 
 L.cmds = {}
 L.cmds.retrieve_position = "pos"

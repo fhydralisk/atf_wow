@@ -205,12 +205,12 @@ function L.F.should_cook_low_level_food()
 end
 
 
-function L.F.player_is_low_level_requester(player)
+local function player_is_low_level_requester(player)
     return player == low_level_trade_context.player
 end
 
 
-function L.F.low_level_food_is_cooked()
+local function low_level_food_is_cooked()
     return low_level_trade_context.state == "cooked"
 end
 
@@ -271,15 +271,6 @@ function L.F.check_low_level_food()
                         "WHISPER", "Common", player
                 )
             end
-        elseif low_level_water_count < low_level_trade_context.count.water * 20 or
-                low_level_bread_count < low_level_trade_context.count.bread * 20 then
-            low_level_cleanup()
-            if not low_level_trade_context.no_inform then
-                SendChatMessage(
-                        "小号食品交易完成，欢迎下次光临",
-                        "WHISPER", "Common", player
-                )
-            end
         elseif timeleft < L.low_level_wait_timeout / 4 and not(low_level_trade_context.reinformed) then
             if not low_level_trade_context.no_inform then
                 SendChatMessage(
@@ -309,3 +300,53 @@ function L.F.say_low_level_help(to_player)
         SendChatMessage("**现在是用餐高峰期，因此无法提供小号食品服务。**", "WHISPER", "Common", to_player)
     end
 end
+
+
+local function should_trade_low_level(trade)
+    local level = trade.npc_level;
+    local class = trade.npc_class;
+    local name = trade.npc_name;
+    if not L.F.can_feed_target(level, class, name) then
+        if player_is_low_level_requester(name) then
+            if low_level_food_is_cooked() then
+                return true, false
+            else
+                SendChatMessage("您的小号食品还未烹饪完成，请您收到完成通知后再来取餐，谢谢！", "WHISPER", "Common", name)
+                return true, true
+            end
+        else
+            SendChatMessage(
+                "米豪目前可为【25-54】级小号烹饪小号食品，但需要预约。请M我【"..L.cmds.low_level_cmd.."】进行预约。",
+                "WHISPER", "Common", name
+            )
+            return true, true
+        end
+    end
+    return false, false
+end
+
+
+local function feed_low_level_food(trade)
+    L.F.feed(low_level_trade_context.info.water_name, low_level_trade_context.count.water, 20)
+    L.F.feed(low_level_trade_context.info.bread_name, low_level_trade_context.count.bread, 20)
+end
+
+
+local function trade_complete(trade)
+    low_level_cleanup()
+    SendChatMessage(
+            "小号食品交易完成，欢迎下次光临",
+            "WHISPER", "Common", trade.npc_name
+    )
+end
+
+
+L.trade_hooks.trade_low_level_food = {
+  ["should_hook"] = should_trade_low_level,
+  ["feed_items"] = feed_low_level_food,
+  ["on_trade_complete"] = trade_complete,
+  ["on_trade_cancel"] = nil,
+  ["on_trade_error"] = nil,
+  ["should_accept"] = L.F.check_food_trade_target_items,
+  ["check_target_item"] = nil,
+}
