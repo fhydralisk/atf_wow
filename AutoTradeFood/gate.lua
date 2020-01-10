@@ -167,18 +167,18 @@ local function should_accept_trade(trade)
   local npc_name = trade.npc_name
 
   if cnt == 0 then
-    SendChatMessage(npc_name.."，需要交易我1枚【传送门符文】才能够施法哦！", "say", "Common")
+    L.F.append_trade_say_messages(npc_name.."，需要交易我1枚【传送门符文】才能够施法哦！")
     return false
   end
   if items[L.items.stone_name] == 1 and cnt == 1 then
     return true
   end
   if items["Gold"] and items["Gold"] > 0 then
-    SendChatMessage(npc_name.."，开门服务只收【传送门符文】，不收金币，详情烦请M我【传送门】，仅需1分钟，轻松开门！", "say", "Common")
+    L.F.append_trade_say_messages(npc_name.."，开门服务只收【传送门符文】，不收金币，详情烦请M我【传送门】，仅需1分钟，轻松开门！")
   elseif items[L.items.stone_name] and items[L.items.stone_name] > 1 then
-    SendChatMessage(npc_name.."，请交易我【1枚】传送门符文，多余的请您保留以备后用，谢谢！", "say", "Common")
+    L.F.append_trade_say_messages(npc_name.."，请交易我【1枚】传送门符文，多余的请您保留以备后用，谢谢！")
   else
-    SendChatMessage(npc_name.."，请勿交易我额外的物品，谢谢！", "say", "Common")
+    L.F.append_trade_say_messages(npc_name.."，请勿交易我额外的物品，谢谢！")
   end
   return false
 end

@@ -157,13 +157,15 @@ local function trade_completed(trade)
   set_last_trade_player(name)
 
   if L.F.search_str_contains(class, {"牧师", "圣骑士", "德鲁伊"}) then
-    SendChatMessage(name..",".."智慧祝福、王者祝福、爪子、激活、精神可以提高我的制作效率，如果您方便，就强化我一下，谢谢！", "say", "Common")
+    L.F.append_trade_say_messages(
+            name.."，".."智慧祝福、王者祝福、爪子、激活、精神可以提高我的制作效率，如果您方便，就强化我一下，谢谢！"
+    )
   elseif class == "法师" and level == 60 then
-    SendChatMessage("法爷需自强，不当伸手党，嘿嘿嘿...", "say", "Common")
+    L.F.append_trade_say_messages("法爷需自强，不当伸手党，嘿嘿嘿...")
   end
   local words = trade_count_words[last_trade_player_count]
   if words then
-    SendChatMessage(name.."，"..words, "say", "Common")
+    L.F.append_trade_say_messages(name.."，"..words)
   end
 end
 

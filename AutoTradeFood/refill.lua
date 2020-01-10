@@ -95,7 +95,7 @@ local function send_thanks_message(trade)
         player,
         L.cmds.refill_cmd
     )
-    SendChatMessage(msg, "say", "Common")
+    L.F.append_trade_say_messages(msg)
 end
 
 

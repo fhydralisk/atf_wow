@@ -69,6 +69,7 @@ local function initiate_new_trade()
     ["start_ts"] = GetTime(),
     ["items"] = {},
     ["accepted"] = false,
+    ["messages"] = {}
   }
   return current_trade
 end
@@ -178,7 +179,7 @@ local function trade_on_event(self, event, arg1, arg2)
       end
       destroy_current_trade()
     elseif event == "TRADE_CLOSED" then
-      destroy_current_trade()
+      -- do nothing
     elseif event == "TRADE_ACCEPT_UPDATE" then
       if arg2 == 1 and arg1 == 0 then
         local player_items, player_items_count = get_items(false)
@@ -220,7 +221,21 @@ end
 
 
 function L.F.accept_accepted_trade()  -- HW
+  if current_trade.messages then
+    for _, message in ipairs(current_trade.messages) do
+      SendChatMessage(message, "say")
+    end
+    current_trade.messages = {}
+  end
   if current_trade.accepted then
     AcceptTrade()
   end
+end
+
+
+function L.F.append_trade_say_messages(trade, message)
+  if current_trade.messages == nil then
+    current_trade.messages = {}
+  end
+  table.insert(trade.messages, message)
 end
