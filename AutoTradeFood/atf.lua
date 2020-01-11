@@ -18,7 +18,24 @@ local AtfFrame = L.F.create_macro_button("ATFButton", "/atf")
 local AtfReportFrame = L.F.create_macro_button("ATFRButton", "/atfr")
 
 
+local function maybe_use_pet_when_busy()
+  if GetItemCount(L.items.pet_name) then
+    if L.F.get_busy_state() and not L.F.check_buff(L.buffs.pet_debuff_name) then
+      SetBindingItem(interact_key, L.items.pet_name)
+      return true
+    elseif not L.F.get_busy_state() and L.F.check_buff(L.buffs.pet_debuff_name) then
+      SetBindingItem(interact_key, L.items.pet_name)
+      return true
+    end
+  end
+  return false
+end
+
+
 local function bind_drink()
+  if maybe_use_pet_when_busy() then
+    return
+  end
   if check_buff(L.buffs.drinking, 3) or check_buff(L.buffs.wakeup, 0.5) then
     SetBinding(interact_key, "")
   else

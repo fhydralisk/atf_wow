@@ -39,22 +39,32 @@ function L.F.my_position()
   return string.format("(%.1f,%.1f)", x * 100, y * 100)
 end
 
-function L.F.check_buff(buff_name, remain)
+function L.F.check_buff(buff_name, remain, is_debuff)
+  local buff_func = UnitBuff
+  if is_debuff then
+    buff_func = UnitDebuff
+  end
   local i = 1;
   if remain == nil then
     remain = 0
   end
   while true do
-    local buff, _, _,   _, dur, ts = UnitBuff("player", i);
+    local buff, _, _,   _, dur, ts = buff_func("player", i);
     if buff == nil then
       return false
     elseif buff == buff_name then
-      local remaining = ts - GetTime()
+      local remaining
+      if ts then
+        remaining = ts - GetTime()
+      else
+        remaining = 9999
+      end
       return remaining > remain
     end
     i = i + 1;
   end;
 end
+
 
 function L.F.invite_player(player)
   if GetNumGroupMembers() >= 5 and not(IsInRaid()) then
