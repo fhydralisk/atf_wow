@@ -34,7 +34,7 @@ L.buffs.armor = "魔甲术"
 L.buffs.intel = "奥术智慧"
 L.buffs.wakeup = "唤醒"
 L.buffs.drinking = "喝水"
-L.items.pet_debuff_name = "软泥怪的恶心光环"
+L.buffs.pet_debuff_name = "软泥怪的恶心光环"
 
 L.state = 1
 -- states: 1 making, 2 watering? 3 gating, 4 buff

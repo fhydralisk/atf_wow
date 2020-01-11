@@ -19,11 +19,11 @@ local AtfReportFrame = L.F.create_macro_button("ATFRButton", "/atfr")
 
 
 local function maybe_use_pet_when_busy()
-  if GetItemCount(L.items.pet_name) then
-    if L.F.get_busy_state() and not L.F.check_buff(L.buffs.pet_debuff_name, nil, true) then
+  if GetItemCount(L.items.pet_name) > 0 then
+    if L.F.get_busy_state() and not(L.F.check_buff(L.buffs.pet_debuff_name, nil, true)) then
       SetBindingItem(interact_key, L.items.pet_name)
       return true
-    elseif not L.F.get_busy_state() and L.F.check_buff(L.buffs.pet_debuff_name, nil, true) then
+    elseif not(L.F.get_busy_state()) and L.F.check_buff(L.buffs.pet_debuff_name, nil, true) then
       SetBindingItem(interact_key, L.items.pet_name)
       return true
     end

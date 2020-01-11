@@ -54,7 +54,7 @@ function L.F.check_buff(buff_name, remain, is_debuff)
       return false
     elseif buff == buff_name then
       local remaining
-      if ts then
+      if ts and ts > 0 then
         remaining = ts - GetTime()
       else
         remaining = 9999
