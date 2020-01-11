@@ -16,7 +16,7 @@
 
 ## 使用方法
 
-1. 将AutoTradeFood拷贝到```WOW/\_classic\_/Interface/Addons```文件夹下。
+1. 将AutoTradeFood拷贝到```WOW/_classic_/Interface/Addons```文件夹下。
 2. 自行制作一个按键精灵或AppleScript脚本，每隔1.5秒按一次CTRL+Y，每隔3.0秒按一次CTRL+I。
 3. 如需广播库存和广告语，每隔1分钟按一次CTRL+ALT+Y。
 4. 如果需要修改上述快捷键，请参看init.lua中L.hotkeys
