@@ -53,15 +53,6 @@ function L.F.feed(itemname, icount, count_min)
 end
 
 
-function L.F.do_accept_trade()
-  if TradeHighlightRecipient:IsShown() then
-    AcceptTrade()
-    return true
-  end
-  return false
-end
-
-
 local function initiate_new_trade()
   current_trade = {
     ["npc_name"] = UnitName("NPC"),
