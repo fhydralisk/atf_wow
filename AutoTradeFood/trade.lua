@@ -41,8 +41,8 @@ local trade_say_messages = {}
 function L.F.feed(itemname, icount, count_min)
   local x = 0
   if count_min == nil then count_min = 1 end
-  for b = 0, 4 do
-    for s =1, 32 do
+  for b = 4, 0, -1 do
+    for s =32, 1, -1 do
       local _, itemCount, _, _, _, _, link = GetContainerItemInfo(b, s)
       if link and link:find(itemname) and itemCount>=count_min and x < icount then
         UseContainerItem(b, s)
