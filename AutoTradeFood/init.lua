@@ -21,6 +21,7 @@ L.cmds.refill_cmd = "我要补货"
 L.cmds.refill_help_cmd = "补货"
 L.cmds.low_level_cmd = "宝宝餐"
 L.cmds.low_level_help_cmd = "小号"
+L.cmds.say_ack = "致谢"
 
 L.items = {}
 L.items.water_name = "魔法晶水"

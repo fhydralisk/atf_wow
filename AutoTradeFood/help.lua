@@ -58,6 +58,7 @@ function L.F.say_help(to_player)
   SendChatMessage(
     string.format("7.【%s】查看获取小号食物方法", L.cmds.low_level_help_cmd), "WHISPER", "Common", to_player
   )
+  SendChatMessage("其他命令：【"..L.cmds.say_ack.."】，【"..L.cmds.scale_cmd.."】，【"..L.cmds.retrieve_position.."】", "WHISPER", "Common", to_player)
 end
 
 function L.F.send_ad()
@@ -71,4 +72,14 @@ function L.F.send_ad()
     admsgs = ad_msg
   end
   SendChatMessage(date("%X")..admsgs[math.random(1, #admsgs)], "say", "Common")
+end
+
+
+function L.F.say_acknowledgements(to_player)
+  SendChatMessage("感谢下列玩家对米豪一直以来的支持！", "WHISPER", "Common", to_player)
+  SendChatMessage("云缠绕星光丶、阿信的小可爱", "WHISPER", "Common", to_player)
+  SendChatMessage("留白丶、梦魇丶", "WHISPER", "Common", to_player)
+  SendChatMessage("大头菜咖喱酱", "WHISPER", "Common", to_player)
+  SendChatMessage("嘟嘟歪嘟嘟", "WHISPER", "Common", to_player)
+  SendChatMessage("且洛", "WHISPER", "Common", to_player)
 end
