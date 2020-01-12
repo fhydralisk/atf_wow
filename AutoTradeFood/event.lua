@@ -26,6 +26,7 @@ local function say_scale(to_player)
   for tclass, sc in pairs(tclass_food) do
     SendChatMessage(string.format("%s: 水%d 面包%d", tclass, sc[1], sc[2]), "WHISPER", "Common", to_player)
   end
+  SendChatMessage("萨满: 6根寒冰箭", "WHISPER", "Common", to_player)
 end
 
 
@@ -109,3 +110,28 @@ end
 
 
 frame:SetScript("OnEvent", eventHandler)
+
+
+local easter_egg_frame = CreateFrame("FRAME")
+easter_egg_frame:RegisterEvent("CHAT_MSG_SAY")
+
+
+local function easter_eggs(self, event, message, author, ...)
+  if L.atfr_run then
+    if event == "CHAT_MSG_SAY" then
+      author = string.match(author, "([^-]+)")
+      if author == UnitName("player") then
+        return
+      end
+      if L.F.search_str_contains(message, {"卑微的侏儒"}) then
+        SendChatMessage("卑微？！伙计。我不在乎你是谁，没有人敢说强大的米尔豪斯是一个”卑微“的侏儒！", "say")
+      elseif L.F.search_str_contains(message, {"十点法力值", "10点法力值"}) then
+        SendChatMessage("愿青龙指引你钓上一整天的鱼", "say")
+      elseif L.F.search_str_contains(message, {"等死吧"}) then
+        SendChatMessage("等等，我要先准备一下。你们先上，我先来做点水", "say")
+      end
+    end
+  end
+end
+
+easter_egg_frame:SetScript("OnEvent", easter_eggs)
