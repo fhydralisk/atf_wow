@@ -71,6 +71,8 @@ local function eventHandler(self, event, msg, author, ...)
         SendChatMessage("米豪不收取任何金币，需要开门，请M我【传送门】查看步骤；需要吃喝，请直接交易。详情M我【帮助】", "WHISPER", "Common", author)
       elseif L.F.may_set_scale(msg, author) then
         -- do nothing
+      elseif L.F.search_str_contains(msg, {"水", "面包"}) then
+        SendChatMessage("请问您要多少组水或面包？", "WHISPER", "Common", author)
       elseif msg == "5" then
         SendChatMessage(
                 "请这样M我来设置比例： 【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】或者，【2水】，等等，然后交易我。",
