@@ -9,7 +9,7 @@ local addonName, L = ...
 local check_buff = L.F.check_buff
 local interact_key = L.hotkeys.interact_key
 
-local mw_button = L.F.CreateMacroFrame("MWButton", "")
+local mw_button = L.F.create_macro_button("MWButton", "")
 
 local tclass_food = {
   ["战士"]={0, 6},
