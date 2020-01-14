@@ -110,6 +110,19 @@ function L.F.say_statistics(to_player)
     SendChatMessage(""..i..". "..class.class.." 交易成功：【"..math.modf(class.count / 20).."】组", "WHISPER", "Common", to_player)
   end
 
+  SendChatMessage("吃货排行：", "WHISPER", "Common", to_player)
+  local trade_by_ind = L.F.query_statistics("trade.food.ind."..date("%x"))
+  local trade_count = {}
+  for name, items in pairs(trade_by_ind) do
+    table.insert(trade_count, {name=name, count=L.F.nil_fallback_zero(items[L.items.food_name]) + L.F.nil_fallback_zero(items[L.items.water_name])})
+  end
+  table.sort(trade_count, function(a, b) return a.count > b.count end)
+  for i, ind in ipairs(trade_count) do
+    SendChatMessage(""..i..". "
+            ..ind.name.." 取走【"..math.modf(ind.count / 20).."】组", "WHISPER", "Common", to_player)
+    if i >= 3 then break end
+  end
+
   SendChatMessage("补货排行：", "WHISPER", "Common", to_player)
   local refill_by_ind = L.F.query_statistics("trade.refill.ind."..date("%x"))
   local refill_count = {}
