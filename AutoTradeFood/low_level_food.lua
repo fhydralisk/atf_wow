@@ -335,12 +335,19 @@ local function feed_low_level_food(trade)
 end
 
 
+local function statistics_low_level_food(trade)
+  local key_trade_all = "trade.low_level_food.count."..date("%x")
+  L.F.merge_statistics_plus_int(key_trade_all, 1)
+end
+
+
 local function trade_complete(trade)
     low_level_cleanup()
     SendChatMessage(
             "小号食品交易完成，欢迎下次光临",
             "WHISPER", "Common", trade.npc_name
     )
+    statistics_low_level_food()
 end
 
 

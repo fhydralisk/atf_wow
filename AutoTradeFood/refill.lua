@@ -88,6 +88,18 @@ local function should_hook(trade)
 end
 
 
+local function statistics_refill(trade)
+  local name = trade.npc_name
+  local key_trade_ind = "trade.refill.ind."..date("%x").."."..name
+  local key_trade_all = "trade.refill.all."..date("%x")
+  local key_trade_count = "trade.refill.count."..date("%x")
+  L.F.merge_statistics_plus_table(key_trade_ind, trade.items.target.items)
+  L.F.merge_statistics_plus_table(key_trade_all, trade.items.target.items)
+  L.F.merge_statistics_plus_int(key_trade_count, 1)
+end
+
+
+
 local function send_thanks_message(trade)
     local player = trade.npc_name
     local msg = string.format(
@@ -96,6 +108,7 @@ local function send_thanks_message(trade)
         L.cmds.refill_cmd
     )
     L.F.append_trade_say_messages(msg)
+    statistics_refill()
 end
 
 

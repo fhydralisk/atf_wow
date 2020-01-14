@@ -1,10 +1,11 @@
 ## Interface: 11303
 ## Title: 食物交易助手
 ## Notes: 食物交易助手
-## SavedVariables: PlayerDefinedScale, GateWhiteList, BusyHistory
+## SavedVariables: PlayerDefinedScale, GateWhiteList, BusyHistory, ATFStatistics
 
 init.lua
 utils.lua
+statistics_utils.lua
 container.lua
 busy_check.lua
 help.lua

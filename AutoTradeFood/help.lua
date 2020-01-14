@@ -60,7 +60,7 @@ function L.F.say_help(to_player)
   SendChatMessage(
     string.format("7.【%s】查看获取小号食物方法", L.cmds.low_level_help_cmd), "WHISPER", "Common", to_player
   )
-  SendChatMessage("其他命令：【"..L.cmds.say_ack.."】，【"..L.cmds.scale_cmd.."】，【"..L.cmds.retrieve_position.."】", "WHISPER", "Common", to_player)
+  SendChatMessage("其他命令：【"..L.cmds.say_ack.."】，【"..L.cmds.scale_cmd.."】，【"..L.cmds.retrieve_position.."】,【"..L.cmds.statistics.."】", "WHISPER", "Common", to_player)
 end
 
 function L.F.send_ad()
@@ -84,4 +84,44 @@ function L.F.say_acknowledgements(to_player)
   SendChatMessage("大头菜咖喱酱", "WHISPER", "Common", to_player)
   SendChatMessage("嘟嘟歪嘟嘟", "WHISPER", "Common", to_player)
   SendChatMessage("且洛", "WHISPER", "Common", to_player)
+end
+
+
+function L.F.say_statistics(to_player)
+  SendChatMessage("米豪今日数据：", "WHISPER", "Common", to_player)
+
+  local gate_count = L.F.query_statistics_int("trade.gate.count."..date("%x"))
+  SendChatMessage("总计开门：【"..gate_count.."】次", "WHISPER", "Common", to_player)
+
+  local water_count = L.F.query_statistics_int("trade.food.all."..date("%x").."."..L.items.water_name)
+  local food_count = L.F.query_statistics_int("trade.food.all."..date("%x").."."..L.items.food_name)
+  SendChatMessage("总计送水：【"..
+          math.modf(water_count / 20).."】组，送面包：【"..
+          math.modf(food_count / 20).."】组", "WHISPER", "Common", to_player)
+
+  SendChatMessage("职业需求排序：", "WHISPER", "Common", to_player)
+  local trade_by_class = L.F.query_statistics("trade.food.class."..date("%x"))
+  local class_count = {}
+  for class, items in pairs(trade_by_class) do
+    table.insert(class_count, {class=class, count=items[L.items.food_name] + items[L.items.water_name]})
+  end
+  table.sort(class_count, function(a, b) return a.count > b.count end)
+  for i, class in ipairs(class_count) do
+    SendChatMessage(""..i..". "..class.class.." 交易成功：【"..math.modf(class.count / 20).."】组", "WHISPER", "Common", to_player)
+  end
+
+  SendChatMessage("补货排行：", "WHISPER", "Common", to_player)
+  local refill_by_ind = L.F.query_statistics("trade.refill.ind."..date("%x"))
+  local refill_count = {}
+  for name, items in pairs(refill_by_ind) do
+    table.insert(refill_count, {name=name, food_count=items[L.items.food_name], water_count=items[L.items.water_name]})
+  end
+  table.sort(refill_count, function(a, b) return a.water_count > b.water_count end)
+  for i, ind in ipairs(refill_count) do
+    SendChatMessage(""..i..". "
+            ..ind.name.." 补充大水：【"..math.modf(ind.water_count / 20)..
+            "】组，面包【"..math.modf(ind.food_count / 20).."】组", "WHISPER", "Common", to_player)
+    if i >= 3 then break end
+  end
+
 end

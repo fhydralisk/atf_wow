@@ -146,6 +146,13 @@ local function maybe_feed_some(trade)
 end
 
 
+local function statistics_gate(trade)
+  local key_trade_all = "trade.gate.count."..date("%x")
+  L.F.merge_statistics_plus_int(key_trade_all, 1)
+end
+
+
+
 local function on_trade_complete(trade)
   local npc_name = trade.npc_name
   local city = L.gate.gating_contexts[npc_name]["city"]
@@ -157,6 +164,7 @@ local function on_trade_complete(trade)
   L.gate.gating_context["requester"] = npc_name
   transit_to_gate_state(npc_name)
   L.F.append_trade_say_messages(npc_name.."，"..city.."传送程序已载入，请坐稳扶好！想搭便车的朋友，M我【水水水】进组")
+  statistics_gate()
 end
 
 

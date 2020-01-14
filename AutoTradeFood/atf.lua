@@ -235,6 +235,10 @@ function SlashCmdList.ATF_DEBUG(msg)
     print("Exit debug mode")
     L.debug.enabled = false
   end
+  local statics_match = string.match(msg, "statics (.+)")
+  if statics_match then
+    print(L.F.query_statistics_int(statics_match))
+  end
 end
 
 

@@ -173,6 +173,20 @@ local function feed_foods(trade)
 end
 
 
+local function statistics_food(trade)
+  local name = trade.npc_name
+  local class = trade.npc_class
+  local key_trade_ind = "trade.food.ind."..date("%x").."."..name
+  local key_trade_class = "trade.food.class."..date("%x").."."..class
+  local key_trade_all = "trade.food.all."..date("%x")
+  local key_trade_count = "trade.food.count."..date("%x")
+  L.F.merge_statistics_plus_table(key_trade_ind, trade.items.player.items)
+  L.F.merge_statistics_plus_table(key_trade_class, trade.items.player.items)
+  L.F.merge_statistics_plus_table(key_trade_all, trade.items.player.items)
+  L.F.merge_statistics_plus_int(key_trade_count, 1)
+end
+
+
 local function trade_completed(trade)
   local class = trade.npc_class
   local level = trade.npc_level
@@ -191,6 +205,8 @@ local function trade_completed(trade)
   if words then
     L.F.append_trade_say_messages(name.."，"..words)
   end
+
+  statistics_food(trade)
 end
 
 
