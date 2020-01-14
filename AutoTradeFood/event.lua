@@ -72,7 +72,9 @@ local function eventHandler(self, event, msg, author, ...)
       elseif L.F.may_set_scale(msg, author) then
         -- do nothing
       elseif L.F.search_str_contains(msg, {"水", "面包"}) then
-        SendChatMessage("请问您要多少组水或面包？", "WHISPER", "Common", author)
+        SendChatMessage(
+                "请问您要多少组水或面包？请这样回复：【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】，或者【2水】等。",
+                "WHISPER", "Common", author)
       elseif msg == "5" then
         SendChatMessage(
                 "请这样M我来设置比例： 【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】或者，【2水】，等等，然后交易我。",
