@@ -85,6 +85,8 @@ local function eventHandler(self, event, msg, author, ...)
         L.F.say_gate_help(author)
       elseif msg == L.cmds.say_ack then
         L.F.say_acknowledgements(author)
+      elseif msg == L.cmds.statistics then
+        L.F.say_statistics(author)
       elseif L.F.search_str_contains(msg, {"脚本", "外挂", "机器", "自动", "宏"}) then
         SendChatMessage("是的，我是纯公益机器人，请亲手下留情，爱你哦！", "WHISPER", "Common", author)
       elseif L.F.search_str_contains(msg, {"谢", "蟹", "xie", "3q"}, "left") then

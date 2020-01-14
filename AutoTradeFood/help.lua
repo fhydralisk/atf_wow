@@ -103,7 +103,7 @@ function L.F.say_statistics(to_player)
   local trade_by_class = L.F.query_statistics("trade.food.class."..date("%x"))
   local class_count = {}
   for class, items in pairs(trade_by_class) do
-    table.insert(class_count, {class=class, count=items[L.items.food_name] + items[L.items.water_name]})
+    table.insert(class_count, {class=class, count= L.F.nil_fallback_zero(items[L.items.food_name]) +  L.F.nil_fallback_zero(items[L.items.water_name])})
   end
   table.sort(class_count, function(a, b) return a.count > b.count end)
   for i, class in ipairs(class_count) do
@@ -114,7 +114,7 @@ function L.F.say_statistics(to_player)
   local refill_by_ind = L.F.query_statistics("trade.refill.ind."..date("%x"))
   local refill_count = {}
   for name, items in pairs(refill_by_ind) do
-    table.insert(refill_count, {name=name, food_count=items[L.items.food_name], water_count=items[L.items.water_name]})
+    table.insert(refill_count, {name=name, food_count= L.F.nil_fallback_zero(items[L.items.food_name]), water_count= L.F.nil_fallback_zero(items[L.items.water_name])})
   end
   table.sort(refill_count, function(a, b) return a.water_count > b.water_count end)
   for i, ind in ipairs(refill_count) do

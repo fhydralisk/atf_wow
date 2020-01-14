@@ -38,7 +38,7 @@ function L.F.merge_statistics_plus_table(key, tbl)
         if target_tbl[k] == nil then
             target_tbl[k] = v
         else
-            target_tbl[k] = target_tbl[key] + v
+            target_tbl[k] = target_tbl[k] + v
         end
     end
 end
@@ -52,14 +52,14 @@ function L.F.merge_statistics_plus_int(key, value)
     if target_tbl[k] == nil then
         target_tbl[k] = value
     else
-        target_tbl[k] = target_tbl[key] + value
+        target_tbl[k] = target_tbl[k] + value
     end
 end
 
 
 function L.F.query_statistics(key)
     local rec = split(key)
-    local target = get_target_table(rec)
+    local target = get_target_table(ATFStatistics, rec)
     return target
 end
 
@@ -68,7 +68,7 @@ function L.F.query_statistics_int(key)
     local rec = split(key)
     local k = rec[#rec]
     table.remove(rec, #rec)
-    local target = get_target_table(rec)
+    local target = get_target_table(ATFStatistics, rec)
     if target[k] == nil then
         target[k] = 0
     end

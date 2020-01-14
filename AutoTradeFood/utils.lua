@@ -74,3 +74,12 @@ function L.F.invite_player(player)
   end
   InviteUnit(player)
 end
+
+
+function L.F.nil_fallback_zero(value)
+  if value == nil then
+    return 0
+  else
+    return value
+  end
+end

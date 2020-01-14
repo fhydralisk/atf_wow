@@ -108,7 +108,7 @@ local function send_thanks_message(trade)
         L.cmds.refill_cmd
     )
     L.F.append_trade_say_messages(msg)
-    statistics_refill()
+    statistics_refill(trade)
 end
 
 
