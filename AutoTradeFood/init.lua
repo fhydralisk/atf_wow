@@ -28,6 +28,7 @@ L.items.water_name = "魔法晶水"
 L.items.food_name = "魔法甜面包"
 L.items.stone_name = "传送门符文"
 L.items.pet_name = "恶心的软泥怪"
+L.items.trinket_to_use = "博学坠饰"
 
 L.buffs = {}
 L.buffs.armor = "魔甲术"
@@ -35,6 +36,7 @@ L.buffs.intel = "奥术智慧"
 L.buffs.wakeup = "唤醒"
 L.buffs.drinking = "喝水"
 L.buffs.pet_debuff_name = "软泥怪的恶心光环"
+L.buffs.activate = "激活"
 
 L.state = 1
 -- states: 1 making, 2 watering? 3 gating, 4 buff
@@ -45,6 +47,7 @@ L.hotkeys.atf_key = "CTRL-Y"
 L.hotkeys.atfr_key = "ALT-CTRL-Y"
 
 L.min_mana = 780
+L.min_mana_to_use_trinket = 3000
 L.atfr_run = false
 
 L.refill_timeout = 120

@@ -9,6 +9,8 @@ local addonName, L = ...
 local check_buff = L.F.check_buff
 local interact_key = L.hotkeys.interact_key
 
+local mw_button = L.F.CreateMacroFrame("MWButton", "")
+
 local tclass_food = {
   ["战士"]={0, 6},
   ["法师"]={2, 0},
@@ -66,6 +68,21 @@ local function set_last_trade_player(pname)
 end
 
 
+local function use_trinket()
+  local trinket = {13, 14}
+  for _, t in ipairs(trinket) do
+    local itemLink = GetInventoryItemLink("player", t)
+    if itemLink and itemLink:find(L.items.trinket_to_use) then
+      local cd = GetInventoryItemCooldown("player", t)
+      if cd == 0 and UnitPower("player") >= L.min_mana_to_use_trinket then
+        return "/use "..L.items.trinket_to_use.."\n"
+      end
+    end
+  end
+  return ""
+end
+
+
 function L.F.bind_make_food_or_water()
   if L.F.target_level_to_acquire() then
     L.F.bind_acquire_target_level()
@@ -73,15 +90,20 @@ function L.F.bind_make_food_or_water()
     SetBinding(interact_key, "JUMP")
   elseif L.F.should_cook_low_level_food() then
     L.F.bind_low_level_cook()
-  elseif L.F.get_free_slots() == 0 then
-    SetBindingSpell(interact_key, "魔爆术")
   else
-    local w = L.F.get_water_count(1)
-    local b = L.F.get_bread_count(1)
-    if w * 0.8 > b then
-      SetBindingSpell(interact_key, "造食术")
+    SetBindingClick(interact_key, "MWButton")
+    if L.F.get_free_slots() == 0 then
+      mw_button:SetAttribute("macrotext", "/cast 魔爆术")
     else
-      SetBindingSpell(interact_key, "造水术")
+      local w = L.F.get_water_count(1)
+      local b = L.F.get_bread_count(1)
+      local may_use_trinket = use_trinket()
+      if w * 0.8 > b then
+        mw_button:SetAttribute("macrotext", may_use_trinket.."/cast 造食术")
+      else
+        mw_button:SetAttribute("macrotext", may_use_trinket.."/cast 造水术")
+      end
+
     end
   end
 end

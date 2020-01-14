@@ -83,7 +83,11 @@ local function drive_state()
       L.state = 4
     end
   elseif L.state == 2 then  -- resting -> working
-    if UnitPower("player") == UnitPowerMax("player") then
+    local scale = 0.95
+    if L.F.check_buff(L.buffs.activate, 1) then
+      scale = 0.65
+    end
+    if UnitPower("player") >= UnitPowerMax("player") * scale then
       L.state = 1
     end
   elseif L.state == 3 then  -- gating -> working
