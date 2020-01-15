@@ -15,7 +15,7 @@ food_base.lua
 low_level_food.lua
 food.lua
 refill.lua
+agent.lua
 event.lua
 atf.lua
 trade_hooking.lua
-agent.lua

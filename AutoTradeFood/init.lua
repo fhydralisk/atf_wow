@@ -68,6 +68,8 @@ L.admin_names = {
     ["米豪"] = true,
 }
 
+L.agent_timeout = 600
+
 --小号模式
 --L.items.water_name = "魔法纯净水"
 --L.items.food_name = "魔法黑面包"

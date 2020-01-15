@@ -6,6 +6,10 @@
 
 local addonName, L = ...
 
+local connected_agent
+local connected_ts
+local connected_reverse_proxy = {}
+
 
 local function parse_agent_whisper(msg)
     local pattern = "agent (.+)"
@@ -14,12 +18,85 @@ local function parse_agent_whisper(msg)
 end
 
 
+local function queue_agent_message(msg, author)
+    L.F.queue_message("(代理人)"..msg)
+end
+
+
 function L.F.may_say_agent(msg, author)
     local parsed_msg = parse_agent_whisper(msg)
     if parsed_msg and L.F.player_is_admin(author) then
-        L.F.queue_message("(代理人)"..parsed_msg)
+        if parsed_msg == "connect" then
+            connected_agent = author
+            connected_ts = GetTime()
+        elseif parsed_msg == "disconnect" then
+            connected_agent = nil
+            connected_ts = nil
+        else
+            queue_agent_message(parsed_msg, author)
+        end
+        return true
+    elseif connected_agent == author then
+        queue_agent_message(parsed_msg, author)
         return true
     else
         return false
     end
+end
+
+
+local function get_agent()
+    if connected_agent then
+        if GetTime() - connected_ts < L.agent_timeout then
+            return connected_agent
+        else
+            connected_ts = nil
+            connected_agent = nil
+        end
+    end
+    return nil
+end
+
+
+local function forward_to_agent(msg, author)
+    local agent = get_agent()
+    if agent then
+        SendChatMessage(author..":"..msg, "WHISPER", "Common", agent)
+    end
+end
+
+
+function L.F.may_connect_reverse_proxy(msg, author)
+    local agent = get_agent()
+    if not(author == UnitName("player")) and not(author == agent) then
+        if L.F.search_str_contains(msg, {"米豪", "豪豪", "豪哥"}) then
+            if connected_reverse_proxy[author] == nil and agent then
+                L.F.queue_message(author.."，您的会话已与代我的理人（"..agent.."）连接。")
+            end
+            connected_reverse_proxy[author] = {
+                connected_ts=GetTime()
+            }
+            return true
+        end
+    end
+    return false
+end
+
+
+function L.F.may_forward_message_to_agent(msg, author)
+    if L.F.may_connect_reverse_proxy(msg, author) then
+        forward_to_agent(msg, author)
+        return true
+    else
+        if connected_reverse_proxy[author] then
+            if GetTime() - connected_reverse_proxy[author].connected_ts > L.agent_timeout then
+                connected_reverse_proxy[author] = nil
+                return false
+            else
+                forward_to_agent(msg, author)
+                return true
+            end
+        end
+    end
+    return false
 end
