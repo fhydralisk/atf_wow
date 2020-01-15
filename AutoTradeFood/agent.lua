@@ -37,7 +37,7 @@ function L.F.may_say_agent(msg, author)
         end
         return true
     elseif connected_agent == author then
-        queue_agent_message(parsed_msg, author)
+        queue_agent_message(msg, author)
         return true
     else
         return false
