@@ -9,6 +9,7 @@ local addonName, L = ...
 local connected_agent
 local connected_ts
 local connected_reverse_proxy = {}
+local forward_all_mode = false
 
 
 local function parse_agent_whisper(msg)
@@ -32,6 +33,10 @@ function L.F.may_say_agent(msg, author)
         elseif parsed_msg == "disconnect" then
             connected_agent = nil
             connected_ts = nil
+        elseif parsed_msg == "forward all" then
+            forward_all_mode = true
+        elseif parsed_msg == "forward connected" then
+            forward_all_mode = false
         else
             queue_agent_message(parsed_msg, author)
         end
@@ -84,7 +89,7 @@ end
 
 
 function L.F.may_forward_message_to_agent(msg, author)
-    if L.F.may_connect_reverse_proxy(msg, author) then
+    if forward_all_mode or L.F.may_connect_reverse_proxy(msg, author) then
         forward_to_agent(msg, author)
         return true
     else
