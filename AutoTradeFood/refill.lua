@@ -105,8 +105,8 @@ local function send_thanks_message(trade)
     local msg = string.format(
         "感谢%s为我补货。M我【%s】可为我补货，M我【%s】查看贡献榜。",
         player,
-        L.cmds.statistics,
-        L.cmds.refill_cmd
+        L.cmds.refill_cmd,
+        L.cmds.statistics
     )
     L.F.append_trade_say_messages(msg)
     statistics_refill(trade)
