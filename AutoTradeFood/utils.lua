@@ -83,3 +83,12 @@ function L.F.nil_fallback_zero(value)
     return value
   end
 end
+
+
+function L.F.player_is_admin(player)
+  if L.admin_names[player] then
+    return true
+  else
+    return false
+  end
+end

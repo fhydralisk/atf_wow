@@ -18,3 +18,4 @@ refill.lua
 event.lua
 atf.lua
 trade_hooking.lua
+agent.lua

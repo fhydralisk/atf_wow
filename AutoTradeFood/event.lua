@@ -47,6 +47,8 @@ local function eventHandler(self, event, msg, author, ...)
     if L.atfr_run == true then
       if string.lower(msg) == L.cmds.help_cmd or msg == "1" or string.lower(msg) == "help" then
         L.F.say_help(author)
+      elseif L.F.may_say_agent(msg, author) then
+        -- agent speaking
       elseif string.lower(msg) == L.cmds.retrieve_position then
         say_pos(author)
       elseif msg == L.cmds.busy_cmd or msg == "2" then
@@ -121,7 +123,7 @@ frame:SetScript("OnEvent", eventHandler)
 local message_queue = {}
 
 
-local function queue_message(message)
+function L.F.queue_message(message)
   table.insert(message_queue, message)
 end
 
@@ -146,11 +148,11 @@ local function easter_eggs(self, event, message, author, ...)
         return
       end
       if L.F.search_str_contains(message, {"卑微的侏儒"}) then
-        queue_message("卑微？！伙计。我不在乎你是谁，没有人敢说强大的米尔豪斯是一个”卑微“的侏儒！")
+        L.F.queue_message("卑微？！伙计。我不在乎你是谁，没有人敢说强大的米尔豪斯是一个”卑微“的侏儒！")
       elseif L.F.search_str_contains(message, {"十点法力值", "10点法力值"}) then
-        queue_message("愿青龙指引你钓上一整天的鱼")
+        L.F.queue_message("愿青龙指引你钓上一整天的鱼")
       elseif L.F.search_str_contains(message, {"等死吧"}) then
-        queue_message("等等，我要先准备一下。你们先上，我先来做点水")
+        L.F.queue_message("等等，我要先准备一下。你们先上，我先来做点水")
       end
     end
   end

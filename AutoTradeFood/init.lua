@@ -61,6 +61,13 @@ L.debug.white_list = {
 }
 L.debug.enabled = false
 
+L.admin_names = {
+    ["卑微的米豪"] = true,
+    ["米豪的备胎"] = true,
+    ["米豪的维修师"] = true,
+    ["米豪"] = true,
+}
+
 --小号模式
 --L.items.water_name = "魔法纯净水"
 --L.items.food_name = "魔法黑面包"
