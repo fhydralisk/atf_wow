@@ -42,7 +42,7 @@ function L.F.say_help(to_player)
     string.format("1.【%s】打印本命令列表", L.cmds.help_cmd), "WHISPER", "Common", to_player
   )
   SendChatMessage(
-    string.format("2. 【%s】查看高峰时期规则", L.cmds.busy_cmd), "WHISPER", "Common", to_player
+    string.format("2.【%s】查看重置副本方法", L.cmds.reset_instance_help), "WHISPER", "Common", to_player
   )
   SendChatMessage(
     string.format("3.【%s】向您发起组队邀请，以便发送位置、跨位面", L.cmds.invite_cmd), "WHISPER", "Common", to_player
@@ -60,7 +60,12 @@ function L.F.say_help(to_player)
   SendChatMessage(
     string.format("7.【%s】查看获取小号食物方法", L.cmds.low_level_help_cmd), "WHISPER", "Common", to_player
   )
-  SendChatMessage("其他命令：【"..L.cmds.say_ack.."】，【"..L.cmds.scale_cmd.."】，【"..L.cmds.retrieve_position.."】,【"..L.cmds.statistics.."】", "WHISPER", "Common", to_player)
+  SendChatMessage("其他命令：【"..L.cmds.say_ack.."】，【"
+          ..L.cmds.scale_cmd.."】，【"
+          ..L.cmds.retrieve_position.."】,【"
+          ..L.cmds.statistics.."】，【"
+          ..L.cmds.busy_cmd.."】",
+          "WHISPER", "Common", to_player)
 end
 
 function L.F.send_ad()

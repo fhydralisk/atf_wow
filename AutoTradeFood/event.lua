@@ -49,8 +49,12 @@ local function eventHandler(self, event, msg, author, ...)
         L.F.say_help(author)
       elseif string.lower(msg) == L.cmds.retrieve_position then
         say_pos(author)
-      elseif msg == L.cmds.busy_cmd or msg == "2" then
+      elseif msg == L.cmds.busy_cmd then
         L.F.say_busy(author)
+      elseif msg == L.cmds.reset_instance_help or msg == "2" then
+        L.F.say_reset_instance_help(author)
+      elseif msg == L.cmds.reset_instance_cmd then
+        L.F.reset_instance_request(author)
       elseif msg == L.cmds.invite_cmd then
         L.F.invite_player(author)
       elseif L.F.may_say_agent(msg, author) then
