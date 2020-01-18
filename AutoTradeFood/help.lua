@@ -17,6 +17,7 @@ local ad_msg = {
   "【米豪公益】米豪每天会升级维护，维护期间不能提供服务，敬请谅解！有关米豪的使用帮助，请M我【"..L.cmds.help_cmd.."】！",
   "【米豪公益】米豪现在可以为【25-54】的小号供餐，详情请M我【"..L.cmds.low_level_help_cmd.."】",
   "【米豪公益】TIPs: 如果米豪变绿了，说明现在正处于用餐高峰，请M我【"..L.cmds.busy_cmd.."】查看高峰期规则！",
+  "【米豪公益】TIPs: 如需单刷重置FB工具人服务，请M我【"..L.cmds.reset_instance_help.."】查看使用方法！",
 }
 
 local ad_msg_busy = {
