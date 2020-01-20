@@ -33,6 +33,9 @@ end
 local function player_want_trade_gold(msg)
 
   msg = string.gsub(string.lower(msg), "金", "g")
+  msg = string.gsub(string.lower(msg), "钱", "g")
+  msg = string.gsub(string.lower(msg), "要", "给")
+  msg = string.gsub(string.lower(msg), "收", "给")
   if string.match(msg, "%dg") or string.match(msg, "给g") then
     return true
   else

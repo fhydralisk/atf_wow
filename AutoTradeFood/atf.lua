@@ -105,6 +105,7 @@ end
 
 
 function SlashCmdList.ATFCmd(msg)
+  L.F.watch_dog_hit()
   drive_state()
   L.F.drive_gate()
   auto_bind()

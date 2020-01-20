@@ -57,6 +57,8 @@ L.refill_timeout = 120
 
 L.low_level_wait_timeout = 60
 
+L.watch_dog_threshold = 15
+
 L.debug = {}
 L.debug.white_list = {
     ["米豪的维修师"] = true

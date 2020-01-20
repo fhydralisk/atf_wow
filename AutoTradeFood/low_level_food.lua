@@ -157,6 +157,13 @@ end
 
 function L.F.low_level_food_request(player)
     -- if L.F.get_busy_state() then
+    if not (L.F.watch_dog_ok()) then
+        SendChatMessage(
+                "米豪的驱动程序出现故障，宝宝餐暂时不可用，请等待米豪的维修师进行修复。十分抱歉！",
+                "WHISPER", "Common", player)
+        return
+    end
+
     if false then
         SendChatMessage(
                 "用餐高峰期，暂时不能为小号烹饪，请您等待高峰期结束，或寻求其他法师的帮助，谢谢！",
