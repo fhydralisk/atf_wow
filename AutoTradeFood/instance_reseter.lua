@@ -33,6 +33,13 @@ end
 
 
 function L.F.reset_instance_request(player)
+    if not (L.F.watch_dog_ok()) then
+        SendChatMessage(
+                "米豪的驱动程序出现故障，重置副本功能暂时失效，请等待米豪的维修师进行修复。十分抱歉！",
+                "WHISPER", "Common", player)
+        return
+    end
+
     if reseter_context.player then
         if reseter_context.player == player then
             SendChatMessage("您已请求重置，请在"..timeout.."秒内下线。", "WHISPER", "Common", player)

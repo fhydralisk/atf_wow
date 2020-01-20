@@ -144,6 +144,13 @@ local function trade_on_event(self, event, arg1, arg2)
     return
   end
   if event == "TRADE_SHOW" then
+    if not (L.F.watch_dog_ok()) then
+      local trader = UnitName("NPC")
+      SendChatMessage("米豪的驱动程序出现故障，暂时无法进行交易，请等待米豪的维修师进行修复。十分抱歉！", "WHISPER", "Common", trader)
+      CloseTrade()
+      return
+    end
+
     local trade = initiate_new_trade()
 
     local hook, close_trade = get_available_hook(trade)
@@ -221,7 +228,7 @@ function L.F.accept_accepted_trade()  -- HW
   end
   if current_trade.accepted then
     AcceptTrade()
-  elseif current_trade.start_ts and GetTime() - current_trade.start_ts > 30 then
+  elseif current_trade.start_ts and GetTime() - current_trade.start_ts > L.trade_timeout then
     CloseTrade()
   end
 end

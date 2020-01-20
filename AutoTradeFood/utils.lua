@@ -6,6 +6,9 @@
 
 local addonName, L = ...
 
+local watch_dog_ts = 0
+
+
 function L.F.create_macro_button(button_name, macro_text)
   local cframe = CreateFrame("Button", button_name, UIParent, "SecureActionButtonTemplate");
 --  cframe:RegisterForClicks("AnyUp");
@@ -87,6 +90,20 @@ end
 
 function L.F.player_is_admin(player)
   if L.admin_names[player] then
+    return true
+  else
+    return false
+  end
+end
+
+
+function L.F.watch_dog_hit()
+  watch_dog_ts = GetTime()
+end
+
+
+function L.F.watch_dog_ok()
+  if GetTime() - watch_dog_ts < L.watch_dog_threshold then
     return true
   else
     return false

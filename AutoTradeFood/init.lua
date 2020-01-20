@@ -53,9 +53,13 @@ L.min_mana = 780
 L.min_mana_to_use_trinket = 3000
 L.atfr_run = false
 
+L.trade_timeout = 14
+
 L.refill_timeout = 120
 
 L.low_level_wait_timeout = 60
+
+L.watch_dog_threshold = 15
 
 L.debug = {}
 L.debug.white_list = {

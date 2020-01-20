@@ -66,6 +66,13 @@ end
 
 
 function L.F.gate_request(player, msg)
+  if not (L.F.watch_dog_ok()) then
+    SendChatMessage(
+        "米豪的驱动程序出现故障，开门服务暂时失效，请等待米豪的维修师进行修复。十分抱歉！",
+        "WHISPER", "Common", player)
+    return
+  end
+
   if GetTime() < L.gate.gating_context["cooldown_ts"] then
     local cooldown_last = math.modf( L.gate.gating_context["cooldown_ts"] - GetTime())
     SendChatMessage("传送门法术正在冷却，请"..cooldown_last.."秒后重新请求", "WHISPER", "Common", player)
