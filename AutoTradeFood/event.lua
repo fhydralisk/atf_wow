@@ -63,7 +63,7 @@ local function eventHandler(self, event, msg, author, ...)
         SendChatMessage("请M我【"..L.cmds.invite_cmd.."】进组，而不是M我3，zu，组，谢谢", "WHISPER", "Common", author)
       elseif msg == "4" or msg == L.cmds.refill_help_cmd then
         L.F.refill_help(author)
-      elseif msg == L.cmds.refill_cmd then
+      elseif L.F.search_str_contains(msg, {L.cmds.refill_cmd}) then
         L.F.refill_request(author)
       elseif msg == L.cmds.scale_cmd then
         say_scale(author)
