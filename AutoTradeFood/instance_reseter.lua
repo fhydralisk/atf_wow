@@ -43,6 +43,14 @@ function L.F.reset_instance_request(player)
     if reseter_context.player then
         if reseter_context.player == player then
             SendChatMessage("您已请求重置，请在"..timeout.."秒内下线。", "WHISPER", "Common", player)
+            SendChatMessage("重置流程在【1月21日】有所优化，为了防止重置失败，请M我【"..L.cmds.reset_instance_help.."】查看。", "WHISPER", "Common", player)
+            if IsInRaid() then
+                SendChatMessage("【重要】有玩家正在请求重置副本，请待进入副本的玩家离队。已进入副本的玩家将不可避免的被重置副本，请不要离开当前副本以避免损失，十分抱歉！", "RAID", "Common")
+                SendChatMessage("【重要】如有紧急情况，请与玩家"..player.."沟通，请其不要下线，可避免副本被重置。详情请M我："..L.cmds.reset_instance_help, "RAID", "Common")
+            elseif IsInGroup() then
+                SendChatMessage("【重要】有玩家正在请求重置副本，请待进入副本的玩家离队。已进入副本的玩家将不可避免的被重置副本，请不要离开当前副本以避免损失，十分抱歉！", "PARTY", "Common")
+                SendChatMessage("【重要】如有紧急情况，请与玩家"..player.."沟通，请其不要下线，可避免副本被重置。详情请M我："..L.cmds.reset_instance_help, "PARTY", "Common")
+            end
         else
             SendChatMessage("目前正有其他玩家请求，请一会儿尝试。", "WHISPER", "Common", player)
         end
@@ -63,8 +71,8 @@ end
 
 function L.F.say_reset_instance_help(to_player)
     SendChatMessage("重置副本功能可以帮您迅速传送至副本门口，并对副本内怪物进行重置。请按如下步骤操作", "WHISPER", "Common", to_player)
-    SendChatMessage("1. 首先M我【"..L.cmds.invite_cmd.."】进组", "WHISPER", "Common", to_player)
-    SendChatMessage("2. 然后M我【"..L.cmds.reset_instance_cmd.."】进行重置请求，我会向您回复请求确认消息。", "WHISPER", "Common", to_player)
+    SendChatMessage("1. 首先M我【"..L.cmds.reset_instance_cmd.."】进组", "WHISPER", "Common", to_player)
+    SendChatMessage("2. 然后【重新】M我【"..L.cmds.reset_instance_cmd.."】进行重置请求，我会向您回复请求确认消息。", "WHISPER", "Common", to_player)
     SendChatMessage("3. 请您在"..timeout.."秒内下线，一旦您下线，我会立即重置副本，并将您移出队伍。", "WHISPER", "Common", to_player)
     SendChatMessage("4. 如果您未爆本，下次上线您将会出现在副本门口，且副本内怪物已重置。", "WHISPER", "Common", to_player)
 end

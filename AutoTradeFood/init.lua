@@ -23,7 +23,7 @@ L.cmds.low_level_cmd = "宝宝餐"
 L.cmds.low_level_help_cmd = "小号"
 L.cmds.say_ack = "致谢"
 L.cmds.statistics = "数据"
-L.cmds.reset_instance_help = "重置副本帮助"
+L.cmds.reset_instance_help = "重置帮助"
 L.cmds.reset_instance_cmd = "重置"
 
 L.items = {}
