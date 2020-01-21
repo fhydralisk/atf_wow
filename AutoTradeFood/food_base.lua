@@ -103,8 +103,7 @@ local function do_set_scale(water, food, author)
   }
   if L.F.get_busy_state() then
     SendChatMessage(
-            string.format("配比成功，您在交易我时，将获得%d组水，%d组面包（如果库存充足）。"..
-                    "【当前为高峰期，交易数量将减半。】”。", water, food),
+            string.format("【用餐高峰、数量减半！】配比成功，您在交易我时，非高峰时将获得%d组水，%d组面包（如果库存充足）。", water, food),
             "WHISPER", "Common", author
     )
   else

@@ -103,9 +103,9 @@ local function eventHandler(self, event, msg, author, ...)
       else
         if not(author == UnitName("player")) then
           SendChatMessage(
-                  "【渴了？饿了？经济舱？找米豪！请直接交易我！需要帮助，请M我“"
-                          ..L.cmds.help_cmd.."”需要进组，请M我【"
-                          ..L.cmds.invite_cmd.."】】",
+                  "【免费餐饮（请您直接交易）、传送门（请看帮助）？找米豪！跨位面，请M我【"
+                          ..L.cmds.invite_cmd.."】查看完整帮助，请M我【"
+                          ..L.cmds.help_cmd.."】】",
                   "WHISPER", "Common", author
           )
         end
