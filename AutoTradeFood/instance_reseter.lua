@@ -43,14 +43,6 @@ function L.F.reset_instance_request(player)
     if reseter_context.player then
         if reseter_context.player == player then
             SendChatMessage("您已请求重置，请在"..timeout.."秒内下线。", "WHISPER", "Common", player)
-            SendChatMessage("重置流程在【1月21日】有所优化，为了防止重置失败，请M我【"..L.cmds.reset_instance_help.."】查看。", "WHISPER", "Common", player)
-            if IsInRaid() then
-                SendChatMessage("【重要】有玩家正在请求重置副本，请待进入副本的玩家离队。已进入副本的玩家将不可避免的被重置副本，请不要离开当前副本以避免损失，十分抱歉！", "RAID", "Common")
-                SendChatMessage("【重要】如有紧急情况，请与玩家"..player.."沟通，请其不要下线，可避免副本被重置。详情请M我："..L.cmds.reset_instance_help, "RAID", "Common")
-            elseif IsInGroup() then
-                SendChatMessage("【重要】有玩家正在请求重置副本，请待进入副本的玩家离队。已进入副本的玩家将不可避免的被重置副本，请不要离开当前副本以避免损失，十分抱歉！", "PARTY", "Common")
-                SendChatMessage("【重要】如有紧急情况，请与玩家"..player.."沟通，请其不要下线，可避免副本被重置。详情请M我："..L.cmds.reset_instance_help, "PARTY", "Common")
-            end
         else
             SendChatMessage("目前正有其他玩家请求，请一会儿尝试。", "WHISPER", "Common", player)
         end
@@ -61,6 +53,15 @@ function L.F.reset_instance_request(player)
                 request_ts = GetTime(),
             }
             SendChatMessage("请求成功，请在"..timeout.."秒内下线。", "WHISPER", "Common", player)
+            SendChatMessage("重置流程在【1月21日】有所优化，为了防止重置失败，请M我【"..L.cmds.reset_instance_help.."】查看。", "WHISPER", "Common", player)
+            if IsInRaid() then
+                SendChatMessage("【重要】有玩家正在请求重置副本，请待进入副本的玩家离队。已进入副本的玩家将不可避免的被重置副本，请不要离开当前副本以避免损失，十分抱歉！", "RAID", "Common")
+                SendChatMessage("【重要】如有紧急情况，请与玩家"..player.."沟通，请其不要下线，可避免副本被重置。详情请M我："..L.cmds.reset_instance_help, "RAID", "Common")
+            elseif IsInGroup() then
+                SendChatMessage("【重要】有玩家正在请求重置副本，请待进入副本的玩家离队。已进入副本的玩家将不可避免的被重置副本，请不要离开当前副本以避免损失，十分抱歉！", "PARTY", "Common")
+                SendChatMessage("【重要】如有紧急情况，请与玩家"..player.."沟通，请其不要下线，可避免副本被重置。详情请M我："..L.cmds.reset_instance_help, "PARTY", "Common")
+            end
+
         else
             SendChatMessage("请求失败，您未在队伍中。请接受组队邀请，或M我【"..L.cmds.invite_cmd.."】进组后重试。", "WHISPER", "Common", player)
             L.F.invite_player(player)
