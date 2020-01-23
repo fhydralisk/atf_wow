@@ -63,7 +63,7 @@ function L.F.reset_instance_request(player)
             end
 
         else
-            SendChatMessage("请接受组队邀请，然后再次M我【"..L.cmds.reset_instance_cmd.."】进行充值。", "WHISPER", "Common", player)
+            SendChatMessage("请接受组队邀请，然后再次M我【"..L.cmds.reset_instance_cmd.."】进行重置请求。", "WHISPER", "Common", player)
             L.F.invite_player(player)
         end
     end
