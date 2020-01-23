@@ -17,7 +17,7 @@ local refill_context = {
 }
 
 function L.F.refill_request(player)
-    if L.F.get_food_count() <= 50 then
+    if L.F.get_free_slots() > 10 then
         refill_context.refillers[player] = {
             ["refill_request_ts"] = GetTime(),
             ["last_refill_ts"] = 0,
