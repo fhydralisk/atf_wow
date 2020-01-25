@@ -56,6 +56,8 @@ L.atfr_run = false
 
 L.trade_timeout = 14
 
+L.gate_request_timeout = 90
+
 L.refill_timeout = 120
 
 L.low_level_wait_timeout = 60
