@@ -184,6 +184,11 @@ local function should_accept_trade(trade)
     L.F.append_trade_say_messages(npc_name.."，需要交易我1枚【传送门符文】才能够施法哦！")
     return false
   end
+  if L.gate.gating_contexts[npc_name] == nil then
+    -- already canceled.
+    L.F.append_trade_say_messages(npc_name.."，截至交易，您的开门请求已超过"..L.F.gate_request_timeout.."秒，交易已取消，请您重新从M我城市名字开始。")
+    return false
+  end
   if items[L.items.stone_name] == 1 and cnt == 1 then
     return true
   end
@@ -191,6 +196,8 @@ local function should_accept_trade(trade)
     L.F.append_trade_say_messages(npc_name.."，开门服务只收【传送门符文】，不收金币，详情烦请M我【传送门】，仅需1分钟，轻松开门！")
   elseif items[L.items.stone_name] and items[L.items.stone_name] > 1 then
     L.F.append_trade_say_messages(npc_name.."，请交易我【1枚】传送门符文，多余的请您保留以备后用，谢谢！")
+  elseif items[L.items.stone_name_incorrect] then
+    L.F.append_trade_say_messages(npc_name.."，您交易的材料有误，材料名字是【传送“门”符文】而非【传送符文】，请您重新购买哦。")
   else
     L.F.append_trade_say_messages(npc_name.."，请勿交易我额外的物品，谢谢！")
   end

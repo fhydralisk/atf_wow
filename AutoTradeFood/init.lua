@@ -30,6 +30,7 @@ L.items = {}
 L.items.water_name = "魔法晶水"
 L.items.food_name = "魔法甜面包"
 L.items.stone_name = "传送门符文"
+L.items.stone_name_incorrect = "传送符文"
 L.items.pet_name = "恶心的软泥怪"
 L.items.trinket_to_use = "博学坠饰"
 
