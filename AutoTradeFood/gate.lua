@@ -186,7 +186,7 @@ local function should_accept_trade(trade)
   end
   if L.gate.gating_contexts[npc_name] == nil then
     -- already canceled.
-    L.F.append_trade_say_messages(npc_name.."，截至交易，您的开门请求已超过"..L.F.gate_request_timeout.."秒，交易已取消，请您重新从M我城市名字开始。")
+    L.F.append_trade_say_messages(npc_name.."，由于"..L.F.gate_request_timeout.."秒已过，交易已取消，请重新M我主城名字。")
     return false
   end
   if items[L.items.stone_name] == 1 and cnt == 1 then
