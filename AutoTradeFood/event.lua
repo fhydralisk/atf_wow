@@ -145,6 +145,7 @@ end
 
 local easter_egg_frame = CreateFrame("FRAME")
 easter_egg_frame:RegisterEvent("CHAT_MSG_SAY")
+easter_egg_frame:RegisterEvent("CHAT_MSG_TEXT_EMOTE")
 
 
 local function easter_eggs(self, event, message, author, ...)
@@ -161,6 +162,15 @@ local function easter_eggs(self, event, message, author, ...)
         L.F.queue_message("愿青龙指引你钓上一整天的鱼")
       elseif L.F.search_str_contains(message, {"等死吧"}) then
         L.F.queue_message("等等，我要先准备一下。你们先上，我先来做点水")
+      end
+    elseif event == "CHAT_MSG_TEXT_EMOTE" then
+      print(author, message)
+      if message == author.."给了你一个飞吻。" then
+        DoEmote("shy", author)
+      elseif message == author.."舔了舔你。" then
+        DoEmote("lick", author)
+      elseif message == author.."对你表示感谢。" then
+        DoEmote("blush", author)
       end
     end
   end

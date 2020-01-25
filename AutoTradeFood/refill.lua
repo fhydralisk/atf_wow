@@ -109,6 +109,7 @@ local function send_thanks_message(trade)
         L.cmds.statistics
     )
     L.F.append_trade_say_messages(msg)
+    DoEmote("thank", player)
     statistics_refill(trade)
 end
 
