@@ -99,7 +99,7 @@ local function invite_event(self, event, message)
             elseif string.format(ERR_JOINED_GROUP_S, reseter_context.player) == message
                     or string.format(ERR_RAID_MEMBER_ADDED_S, reseter_context.player) == message then
                 SendChatMessage("请抓紧时间下线，我将在您下线后立即重置副本。", "WHISPER", "Common", reseter_context.player)
-                reseter_context.request_ts = GetTime()
+                reseter_context.invite_ts = GetTime()
             elseif string.format(ERR_LEFT_GROUP_S, reseter_context.player) == message
                     or string.format(ERR_RAID_MEMBER_REMOVED_S, reseter_context.player) == message
                     or ERR_GROUP_DISBANDED == message then
