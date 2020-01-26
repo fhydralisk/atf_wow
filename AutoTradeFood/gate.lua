@@ -65,6 +65,15 @@ local function transit_to_gate_state(player)
 end
 
 
+function L.F.gate_cooldown()
+  if GetTime() < L.gate.gating_context["cooldown_ts"] then
+    return math.modf( L.gate.gating_context["cooldown_ts"] - GetTime())
+  else
+    return 0
+  end
+end
+
+
 function L.F.gate_request(player, msg)
   if not (L.F.watch_dog_ok()) then
     SendChatMessage(
@@ -73,8 +82,8 @@ function L.F.gate_request(player, msg)
     return
   end
 
-  if GetTime() < L.gate.gating_context["cooldown_ts"] then
-    local cooldown_last = math.modf( L.gate.gating_context["cooldown_ts"] - GetTime())
+  local cooldown_last = L.F.gate_cooldown()
+  if cooldown_last > 0 then
     SendChatMessage("传送门法术正在冷却，请"..cooldown_last.."秒后重新请求", "WHISPER", "Common", player)
     return
   end

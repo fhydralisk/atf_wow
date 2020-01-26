@@ -53,11 +53,15 @@ function L.F.reset_instance_request(player)
     end
 
     if reseter_context.player == nil then
-        reseter_context.player = player
-        reseter_context.request_ts = GetTime()
-        LeaveParty()
-        InviteUnit(player)
-        SendChatMessage("请接受组队邀请，然后立即下线。请求有效期"..timeout.."秒。", "WHISPER", "Common", player)
+        if L.F.gate_cooldown() > 35 then
+            SendChatMessage("正在有玩家请求重置，请稍后再试。", "WHISPER", "Common", player)
+        else
+            reseter_context.player = player
+            reseter_context.request_ts = GetTime()
+            LeaveParty()
+            InviteUnit(player)
+            SendChatMessage("请接受组队邀请，然后立即下线。请求有效期"..timeout.."秒。", "WHISPER", "Common", player)
+        end
     elseif reseter_context.player == player then
         SendChatMessage("请接受组队邀请，然后立即下线。", "WHISPER", "Common", player)
     else
