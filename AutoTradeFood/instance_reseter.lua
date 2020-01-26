@@ -15,7 +15,13 @@ local timeout = L.reset_instance_timeout
 local reseter_context = {
     player=nil,
     request_ts=nil,
+    invite_ts=nil,
 }
+
+
+local function can_reset(player)
+    return UnitInParty(player) and not UnitIsConnected(player) and reseter_context.invite_ts and GetTime() - reseter_context.invite_ts > 2
+end
 
 
 function L.F.drive_reset_instance()
@@ -25,7 +31,7 @@ function L.F.drive_reset_instance()
             SendChatMessage("未能重置，您未在规定时间内下线。", "WHISPER", "Common", player)
             LeaveParty()
             reseter_context = {}
-        elseif UnitInParty(player) and not UnitIsConnected(player) then
+        elseif can_reset(player) then
             ResetInstances()
             reseter_context = {}
             SendChatMessage("米豪已帮【"..player.."】重置副本。请M我【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
@@ -93,6 +99,7 @@ local function invite_event(self, event, message)
             elseif string.format(ERR_JOINED_GROUP_S, reseter_context.player) == message
                     or string.format(ERR_RAID_MEMBER_ADDED_S, reseter_context.player) == message then
                 SendChatMessage("请抓紧时间下线，我将在您下线后立即重置副本。", "WHISPER", "Common", reseter_context.player)
+                reseter_context.request_ts = GetTime()
             elseif string.format(ERR_LEFT_GROUP_S, reseter_context.player) == message
                     or string.format(ERR_RAID_MEMBER_REMOVED_S, reseter_context.player) == message
                     or ERR_GROUP_DISBANDED == message then
