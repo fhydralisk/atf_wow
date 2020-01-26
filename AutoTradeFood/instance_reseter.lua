@@ -16,6 +16,7 @@ local reseter_context = {
     player=nil,
     request_ts=nil,
     invite_ts=nil,
+    reset=nil,
 }
 
 
@@ -31,11 +32,13 @@ function L.F.drive_reset_instance()
             SendChatMessage("未能重置，您未在规定时间内下线。", "WHISPER", "Common", player)
             LeaveParty()
             reseter_context = {}
+        elseif reseter_context.reset then
+            reseter_context = {}
+            UninviteUnit(player)
         elseif can_reset(player) then
             ResetInstances()
-            reseter_context = {}
+            reseter_context.reset = true
             SendChatMessage("米豪已帮【"..player.."】重置副本。请M我【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
-            UninviteUnit(player)
         end
     end
 end
