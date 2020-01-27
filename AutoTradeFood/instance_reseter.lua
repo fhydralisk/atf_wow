@@ -52,8 +52,10 @@ function L.F.reset_instance_request(player)
         return
     end
 
-    SendChatMessage("【功能暂停】由于本功能导致米豪掉线，因此暂停。敬请期待解决方案。", "WHISPER", "Common", player)
-    return
+    if true then
+        SendChatMessage("【功能暂停】由于本功能导致米豪掉线，因此暂停。敬请期待解决方案。", "WHISPER", "Common", player)
+        return
+    end
 
     if UnitInParty(player) then
         if reseter_context.player == player then
