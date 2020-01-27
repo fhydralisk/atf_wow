@@ -52,7 +52,7 @@ function L.F.reset_instance_request(player)
         return
     end
 
-    SendChatMessage("【功能暂停】由于重置副本功能会导致米豪频繁掉线，该功能暂时下线，待解决方案出台后重新上线，敬请期待。", "WHISPER", "Common", player)
+    SendChatMessage("【功能暂停】由于本功能导致米豪掉线，因此暂停。敬请期待解决方案。", "WHISPER", "Common", player)
     return
 
     if UnitInParty(player) then
