@@ -52,6 +52,9 @@ function L.F.reset_instance_request(player)
         return
     end
 
+    SendChatMessage("【功能暂停】由于重置副本功能会导致米豪频繁掉线，该功能暂时下线，待解决方案出台后重新上线，敬请期待。", "WHISPER", "Common", player)
+    return
+
     if UnitInParty(player) then
         if reseter_context.player == player then
             SendChatMessage("【重置流程变更】当前版本只需在【未进组】的情况下M我一次请求即可。无需再次请求。", "WHISPER", "Common", player)
