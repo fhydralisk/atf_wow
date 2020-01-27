@@ -83,11 +83,12 @@ end
 
 
 function L.F.say_reset_instance_help(to_player)
-    SendChatMessage("重置副本功能可以帮您迅速传送至副本门口，并对副本内怪物进行重置。请按如下步骤操作", "WHISPER", "Common", to_player)
-    SendChatMessage("1. 请确保您不在队伍中，然后M我【"..L.cmds.reset_instance_cmd.."】", "WHISPER", "Common", to_player)
-    SendChatMessage("2. 如果请求成功，我会向您发起组队邀请。请您进入队伍后在"..timeout.."秒内下线。", "WHISPER", "Common", to_player)
-    SendChatMessage("3. 一旦您下线，我会立即重置副本。", "WHISPER", "Common", to_player)
-    SendChatMessage("4. 如果您未爆本，下次上线您将会出现在副本门口，且副本内怪物已重置。", "WHISPER", "Common", to_player)
+    --SendChatMessage("重置副本功能可以帮您迅速传送至副本门口，并对副本内怪物进行重置。请按如下步骤操作", "WHISPER", "Common", to_player)
+    --SendChatMessage("1. 请确保您不在队伍中，然后M我【"..L.cmds.reset_instance_cmd.."】", "WHISPER", "Common", to_player)
+    --SendChatMessage("2. 如果请求成功，我会向您发起组队邀请。请您进入队伍后在"..timeout.."秒内下线。", "WHISPER", "Common", to_player)
+    --SendChatMessage("3. 一旦您下线，我会立即重置副本。", "WHISPER", "Common", to_player)
+    --SendChatMessage("4. 如果您未爆本，下次上线您将会出现在副本门口，且副本内怪物已重置。", "WHISPER", "Common", to_player)
+    SendChatMessage("重置副本功能暂时下线，因为其导致米豪掉线。敬请期待解决方案。", "WHISPER", "Common", to_player)
 end
 
 

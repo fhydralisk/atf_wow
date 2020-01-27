@@ -59,9 +59,9 @@ local function eventHandler(self, event, msg, author, ...)
       elseif msg == L.cmds.reset_instance_cmd then
         L.F.reset_instance_request(author)
       elseif msg == L.cmds.invite_cmd then
-        SendChatMessage("【功能变更】请注意，如果您需要重置副本，请拒绝组队，重新M我【"..L.cmds.reset_instance_cmd.."】进组，否则无法为您重置副本。", "WHISPER", "Common", author)
-        SendChatMessage("【功能变更】请注意，如果您需要重置副本，请拒绝组队，重新M我【"..L.cmds.reset_instance_cmd.."】进组，否则无法为您重置副本。", "WHISPER", "Common", author)
-        SendChatMessage("【功能变更】请注意，如果您需要重置副本，请拒绝组队，重新M我【"..L.cmds.reset_instance_cmd.."】进组，否则无法为您重置副本。", "WHISPER", "Common", author)
+        --SendChatMessage("【功能变更】请注意，如果您需要重置副本，请拒绝组队，重新M我【"..L.cmds.reset_instance_cmd.."】进组，否则无法为您重置副本。", "WHISPER", "Common", author)
+        --SendChatMessage("【功能变更】请注意，如果您需要重置副本，请拒绝组队，重新M我【"..L.cmds.reset_instance_cmd.."】进组，否则无法为您重置副本。", "WHISPER", "Common", author)
+        --SendChatMessage("【功能变更】请注意，如果您需要重置副本，请拒绝组队，重新M我【"..L.cmds.reset_instance_cmd.."】进组，否则无法为您重置副本。", "WHISPER", "Common", author)
         L.F.invite_player(author)
       elseif L.F.may_say_agent(msg, author) then
         -- agent speaking
