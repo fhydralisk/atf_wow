@@ -8,6 +8,7 @@ local addonName, L = ...
 
 local frame = CreateFrame("FRAME", "ATFFrame")
 frame:RegisterEvent("CHAT_MSG_WHISPER")
+frame:RegisterEvent("CHAT_MSG_ADDON")
 frame:RegisterEvent("TRADE_ACCEPT_UPDATE")
 frame:RegisterEvent("PARTY_INVITE_REQUEST")
 

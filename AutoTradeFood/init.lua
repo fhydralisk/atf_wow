@@ -108,3 +108,4 @@ local function eventHandler(self, event, msg)
 end
 
 frame:SetScript("OnEvent", eventHandler)
+C_ChatInfo.RegisterAddonMessagePrefix("ATF")
