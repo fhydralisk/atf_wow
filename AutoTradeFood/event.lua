@@ -127,12 +127,16 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4, ...)
   if event == "CHAT_MSG_ADDON" and arg1 == "ATF" then
     local msg, author = arg2, arg4
     print(msg, author)
+    local sender, message = string.match(msg, "author:([^|]+)|(.*)")
+    if sender then
+      execute_command(message, sender)
+    end
   elseif event == "CHAT_MSG_WHISPER" then
     local msg, author = arg1, arg2
     if fwd then
       local fwdstr = string.format("author:%s|%s", author, msg)
       L.F.whisper("您的密语已转发至-"..fwd, author)
-      SendAddonMessage("ATF", fwdstr, "WHISPER", fwd)
+      C_ChatInfo.SendAddonMessage("ATF", fwdstr, "WHISPER", fwd)
     else
       execute_command(msg, author)
     end
