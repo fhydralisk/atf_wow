@@ -126,6 +126,7 @@ end
 local function eventHandler(self, event, arg1, arg2, arg3, arg4, ...)
   if event == "CHAT_MSG_ADDON" and arg1 == "ATF" then
     local msg, author = arg2, arg4
+    author = string.match(author, "([^-]+)")
     print(msg, author)
     local sender, message = string.match(msg, "author:([^|]+)|(.*)")
     if sender then
