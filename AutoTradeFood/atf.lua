@@ -13,6 +13,7 @@ SLASH_ATF_CLEAN1= "/atfc"
 SLASH_ATF_SWITCH1 = "/atfs"
 SLASH_ATF_DEBUG1 = "/atfd"
 SLASH_ATG_WHITELIST1 = "/atgwl"
+SLASH_ATG_FWD1 = "/atff"
 
 local AtfFrame = L.F.create_macro_button("ATFButton", "/atf")
 local AtfReportFrame = L.F.create_macro_button("ATFRButton", "/atfr")
@@ -261,4 +262,10 @@ function SlashCmdList.ATG_WHITELIST(msg)
       end
     end
   end
+end
+
+
+function SlashCmdList.ATG_FWD(msg)
+  L.F.set_msg_fwd(msg)
+  print("fwd to"..msg)
 end

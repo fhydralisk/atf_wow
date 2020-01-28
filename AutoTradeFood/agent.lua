@@ -66,7 +66,7 @@ end
 local function forward_to_agent(msg, author)
     local agent = get_agent()
     if agent then
-        SendChatMessage(author..":"..msg, "WHISPER", "Common", agent)
+        L.F.whisper(author..":"..msg, agent)
     end
 end
 

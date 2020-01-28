@@ -133,11 +133,11 @@ function L.F.may_set_scale(msg, author)
   if water + food > 0 then
     if water + food > 6 then
       if water == 45 or water == 35 then
-        SendChatMessage("如需【25-54】小号食物，请M我【"
+        L.F.whisper("如需【25-54】小号食物，请M我【"
                 ..L.cmds.low_level_cmd.."】进行预约。查看预约流程，行M我【"
-                ..L.cmds.low_level_help_cmd.."】", "WHISPER", "Common", author)
+                ..L.cmds.low_level_help_cmd.."】", author)
       else
-        SendChatMessage("定制面包和水的数量，请确保水和面包加和不要大于6哦，不然我怎么交易给您？", "WHISPER", "Common", author)
+        L.F.whisper("定制面包和水的数量，请确保水和面包加和不要大于6哦，不然我怎么交易给您？", author)
       end
     else
       do_set_scale(water, food, author)

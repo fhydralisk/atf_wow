@@ -87,14 +87,14 @@ end
 
 function L.F.say_busy(to_player)
   if L.F.get_busy_state() then
-    SendChatMessage("【当前正处于用餐高峰！】", "WHISPER", "Common", to_player)
+    L.F.whisper("【当前正处于用餐高峰！】", to_player)
   else
-    SendChatMessage("【当前处于非用餐高峰。】", "WHISPER", "Common", to_player)
+    L.F.whisper("【当前处于非用餐高峰。】", to_player)
   end
-  SendChatMessage("米豪将在库存持续紧张的情况下自动切换为用餐高峰模式，将在库存不紧张时切换为非用餐高峰模式。", "WHISPER", "Common", to_player)
-  SendChatMessage("用餐高峰模式下，米豪将自动进行如下限制：", "WHISPER", "Common", to_player)
-  SendChatMessage("1. 每次交易时，供应餐饮数量减半。", "WHISPER", "Common", to_player)
-  SendChatMessage("2. 在多个角色同时交易时，将阻止某一玩家连续（成功的）交易。", "WHISPER", "Common", to_player)
-  SendChatMessage("3. 阻止60级法师进行交易。", "WHISPER", "Common", to_player)
-  SendChatMessage("谢谢您的理解与支持，如有任何建议，请邮件与我联系哈！", "WHISPER", "Common", to_player)
+  L.F.whisper("米豪将在库存持续紧张的情况下自动切换为用餐高峰模式，将在库存不紧张时切换为非用餐高峰模式。", to_player)
+  L.F.whisper("用餐高峰模式下，米豪将自动进行如下限制：", to_player)
+  L.F.whisper("1. 每次交易时，供应餐饮数量减半。", to_player)
+  L.F.whisper("2. 在多个角色同时交易时，将阻止某一玩家连续（成功的）交易。", to_player)
+  L.F.whisper("3. 阻止60级法师进行交易。", to_player)
+  L.F.whisper("谢谢您的理解与支持，如有任何建议，请邮件与我联系哈！", to_player)
 end

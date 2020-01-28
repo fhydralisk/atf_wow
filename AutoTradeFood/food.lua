@@ -138,19 +138,18 @@ local function should_give_food(trade)
 
   if L.F.get_busy_state() then
     if tclass == "法师" and tlevel == 60 then
-      SendChatMessage("用餐高峰，请60级法爷自行解决食水问题。如希望为我补充货源，请M我【我要补货】，谢谢！", "WHISPER", "Common", npc_name)
+      L.F.whisper("用餐高峰，请60级法爷自行解决食水问题。如希望为我补充货源，请M我【我要补货】，谢谢！", npc_name)
       return true, true
     elseif npc_name == last_trade_player and not(last_fail_player_is_trade_player) and GetTime() - last_trade_success_ts < 120 then
-      SendChatMessage("当前为用餐高峰时间，请勿连续取用食物，给其他朋友些机会哦，谢谢支持！", "WHISPER", "Common", npc_name)
+      L.F.whisper("当前为用餐高峰时间，请勿连续取用食物，给其他朋友些机会哦，谢谢支持！", npc_name)
       return true, true
     end
   end
   if not check_stock() then
     local water = L.F.get_water_count()
     local bread = L.F.get_bread_count()
-    SendChatMessage(
-            "库存不足，请稍等一小会儿...当前存货：【大水】"..water.."组，【面包】"..bread.."组", "WHISPER",
-            "Common", npc_name
+    L.F.whisper(
+            "库存不足，请稍等一小会儿...当前存货：【大水】"..water.."组，【面包】"..bread.."组", npc_name
     )
     return true, true
   elseif check_level(tlevel, tclass, npc_name) then

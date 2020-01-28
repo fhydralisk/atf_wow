@@ -146,7 +146,7 @@ local function trade_on_event(self, event, arg1, arg2)
   if event == "TRADE_SHOW" then
     if not (L.F.watch_dog_ok()) then
       local trader = UnitName("NPC")
-      SendChatMessage("米豪的驱动程序出现故障，暂时无法进行交易，请等待米豪的维修师进行修复。十分抱歉！", "WHISPER", "Common", trader)
+      L.F.whisper("米豪的驱动程序出现故障，暂时无法进行交易，请等待米豪的维修师进行修复。十分抱歉！", trader)
       CloseTrade()
       return
     end
