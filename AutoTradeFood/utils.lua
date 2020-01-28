@@ -114,6 +114,6 @@ end
 function L.F.whisper(message, to_player, enqueue)
   if enqueue then
   else
-    L.F.whisper(message, to_player)
+    SendChatMessage(message, "WHISPER", "Common", to_player)
   end
 end
