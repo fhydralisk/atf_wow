@@ -1,7 +1,9 @@
 ## Interface: 11303
 ## Title: 食物交易助手
 ## Notes: 食物交易助手
+## Author: 米豪
 ## SavedVariables: PlayerDefinedScale, GateWhiteList, BusyHistory, ATFStatistics
+## SavedVariablesPerCharacter: InstanceResetBackends
 
 init.lua
 utils.lua
@@ -20,3 +22,4 @@ instance_reseter.lua
 event.lua
 atf.lua
 trade_hooking.lua
+anti_offline_block.lua

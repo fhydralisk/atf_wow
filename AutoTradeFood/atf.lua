@@ -13,7 +13,9 @@ SLASH_ATF_CLEAN1= "/atfc"
 SLASH_ATF_SWITCH1 = "/atfs"
 SLASH_ATF_DEBUG1 = "/atfd"
 SLASH_ATG_WHITELIST1 = "/atgwl"
-SLASH_ATG_FWD1 = "/atff"
+SLASH_ATF_FWD1 = "/atff"
+SLASH_RESET_BACKEND1 = "/atrb"
+
 
 local AtfFrame = L.F.create_macro_button("ATFButton", "/atf")
 local AtfReportFrame = L.F.create_macro_button("ATFRButton", "/atfr")
@@ -76,6 +78,11 @@ local function auto_bind()
 end
 
 
+local function auto_bind_backend()
+  L.F.bind_reseter_backend()
+end
+
+
 local function drive_state()
   if L.state == 1 then  -- working -> resting or buffing
     if UnitPower("player") < min_mana then
@@ -107,13 +114,18 @@ end
 
 function SlashCmdList.ATFCmd(msg)
   L.F.watch_dog_hit()
-  drive_state()
-  L.F.drive_gate()
-  auto_bind()
-  L.F.drive_busy_state()
-  L.F.check_low_level_food()
-  L.F.accept_accepted_trade()
-  L.F.drive_reset_instance()
+  if L.F.is_frontend() then
+    drive_state()
+    L.F.drive_gate()
+    auto_bind()
+    L.F.drive_busy_state()
+    L.F.check_low_level_food()
+    L.F.accept_accepted_trade()
+    L.F.ping_reseters()
+  else
+    auto_bind_backend()
+    L.F.drive_reset_instance()
+  end
   L.F.dequeue_say_messages()
 end
 
@@ -265,7 +277,21 @@ function SlashCmdList.ATG_WHITELIST(msg)
 end
 
 
-function SlashCmdList.ATG_FWD(msg)
+function SlashCmdList.ATF_FWD(msg)
   L.F.set_msg_fwd(msg)
   print("fwd to"..msg)
+end
+
+
+function SlashCmdList.RESET_BACKEND(msg)
+  local cmd, player = string.match(msg, "(.-) (.+)")
+  if cmd and player then
+    if cmd == "add" then
+      InstanceResetBackends[player] = true
+      print("add backend "..player)
+    elseif cmd == "remove" or cmd == "delete" or cmd == "del" then
+      InstanceResetBackends[player] = nil
+      print("delete backend"..player)
+    end
+  end
 end

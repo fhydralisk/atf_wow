@@ -117,3 +117,8 @@ function L.F.whisper(message, to_player, enqueue)
     SendChatMessage(message, "WHISPER", "Common", to_player)
   end
 end
+
+
+function L.F.is_frontend()
+  return UnitClass("player") == "法师" and UnitLevel("player") == 60
+end

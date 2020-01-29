@@ -68,7 +68,7 @@ local function execute_command(msg, author)
     elseif msg == L.cmds.reset_instance_help or msg == "2" then
       L.F.say_reset_instance_help(author)
     elseif msg == L.cmds.reset_instance_cmd then
-      L.F.reset_instance_request(author)
+      L.F.reset_instance_request_frontend(author)
     elseif msg == L.cmds.invite_cmd then
       L.F.invite_player(author)
     elseif L.F.may_say_agent(msg, author) then
@@ -123,11 +123,10 @@ local function execute_command(msg, author)
   end
 end
 
-local function eventHandler(self, event, arg1, arg2, arg3, arg4, ...)
+
+local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
   if event == "CHAT_MSG_ADDON" and arg1 == "ATF" then
     local msg, author = arg2, arg4
-    author = string.match(author, "([^-]+)")
-    print(msg, author)
     local sender, message = string.match(msg, "author:([^|]+)|(.*)")
     if sender then
       execute_command(message, sender)
@@ -152,7 +151,21 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4, ...)
 end
 
 
-frame:SetScript("OnEvent", eventHandler)
+local function eventHandlerBackend(self, event, arg1, arg2, arg3, arg4, ...)
+  if event == "PARTY_INVITE_REQUEST" then
+    if L.atfr_run then
+      DeclineGroup()
+      StaticPopup_Hide("PARTY_INVITE")
+    end
+  end
+end
+
+
+if L.F.is_frontend() then
+  frame:SetScript("OnEvent", eventHandlerFrontend)
+else
+  frame:SetScript("OnEvent", eventHandlerBackend)
+end
 
 
 local message_queue = {}

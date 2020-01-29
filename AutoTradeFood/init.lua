@@ -104,6 +104,9 @@ local function eventHandler(self, event, msg)
         if ATFStatistics == nil then
             ATFStatistics = {}
         end
+        if InstanceResetBackends == nil then
+            InstanceResetBackends = {}
+        end
     end
 end
 
