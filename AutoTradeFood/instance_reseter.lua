@@ -12,9 +12,6 @@ frame:RegisterEvent("CHAT_MSG_ADDON")
 
 
 local timeout = L.reset_instance_timeout
-local last_pind_ts = 0
-local reseters_available = {}
-local ping_interval = 20
 
 
 local reseter_context = {
@@ -52,35 +49,10 @@ function L.F.drive_reset_instance()
 end
 
 
-local function should_ping()
-    return GetTime() - last_pind_ts > ping_interval
-end
-
-
-function L.F.ping_reseters()
-    if should_ping() then
-        last_pind_ts = GetTime()
-        for reseter, _ in pairs(InstanceResetBackends) do
-            print("pinging "..reseter)
-            C_ChatInfo.SendAddonMessage("ATF", "ping_reseter", "WHISPER", reseter)
-        end
-    end
-    for reseter, ts in pairs(reseters_available) do
-        if GetTime() - ts > ping_interval * 2 then
-            reseters_available[reseter] = nil
-        end
-    end
-end
-
-
 function L.F.reset_instance_request_frontend(player)
-    local backends = {}
-    for backend, _ in pairs(reseters_available) do
-        table.insert(backends, backend)
-    end
+    local backend = L.F.choice_random_backend()
 
-    if #backends > 0 then
-        local backend = backends[math.random(1, #backends)]
+    if backend then
         C_ChatInfo.SendAddonMessage("ATF", "reset:"..player, "WHISPER", backend)
         L.F.whisper("重置请求已转发至重置后端【"..backend.."】，请等待其回应。", player)
     else
@@ -161,22 +133,14 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
     elseif event == "CHAT_MSG_ADDON" and arg1 == "ATF" then
         local message, author = arg2, arg4
         author = string.match(author, "([^-]+)")
-        print(author, message)
         if L.F.is_frontend() then
-            if message == "pong_reseter" and InstanceResetBackends[author] then
-                print("received pong from "..author)
-                reseters_available[author] = GetTime()
-            end
+            -- frontend do not respond to commands.
         else
-            if message == "ping_reseter" then
-                C_ChatInfo.SendAddonMessage("ATF", "pong_reseter", "WHISPER", author)
-            else
-                local cmd, target = string.match(message, "(.-):(.+)")
-                if cmd and target then
-                    if cmd == "reset" then
-                        author = string.match(author, "([^-]+)") or author
-                        L.F.reset_instance_request(target, author)
-                    end
+            local cmd, target = string.match(message, "(.-):(.+)")
+            if cmd and target then
+                if cmd == "reset" then
+                    author = string.match(author, "([^-]+)") or author
+                    L.F.reset_instance_request(target, author)
                 end
             end
         end

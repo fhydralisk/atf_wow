@@ -121,7 +121,7 @@ function SlashCmdList.ATFCmd(msg)
     L.F.drive_busy_state()
     L.F.check_low_level_food()
     L.F.accept_accepted_trade()
-    L.F.ping_reseters()
+    L.F.ping_backends()
   else
     auto_bind_backend()
     L.F.drive_reset_instance()
