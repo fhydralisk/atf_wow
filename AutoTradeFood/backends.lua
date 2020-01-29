@@ -22,6 +22,7 @@ end
 
 
 function L.F.ping_backends()
+    print("ping")
     if should_ping() then
         last_pind_ts = GetTime()
         for backend, _ in pairs(InstanceResetBackends) do
