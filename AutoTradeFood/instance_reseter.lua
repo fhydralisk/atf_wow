@@ -22,6 +22,7 @@ local reseter_context = {
     request_ts=nil,
     invite_ts=nil,
     reset=nil,
+    frontend=nil,
 }
 
 
@@ -45,7 +46,7 @@ function L.F.drive_reset_instance()
             ResetInstances()
             print("reseted")
             reseter_context.reset = true
-            SendChatMessage("米豪已帮【"..player.."】重置副本。请M我【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
+            SendChatMessage("米豪已帮【"..player.."】重置副本。请M "..reseter_context.frontend.." 【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
         end
     end
 end
@@ -88,7 +89,7 @@ function L.F.reset_instance_request_frontend(player)
 end
 
 
-function L.F.reset_instance_request(player)
+function L.F.reset_instance_request(player, frontend)
     if not (L.F.watch_dog_ok()) then
         L.F.whisper(
                 "米豪的驱动程序出现故障，重置副本功能暂时失效，请等待米豪的维修师进行修复。十分抱歉！", player)
@@ -108,6 +109,7 @@ function L.F.reset_instance_request(player)
     if reseter_context.player == nil then
         reseter_context.player = player
         reseter_context.request_ts = GetTime()
+        reseter_context.frontend = frontend
         LeaveParty()
         InviteUnit(player)
         L.F.whisper("请接受组队邀请，然后立即下线。请求有效期"..timeout.."秒。", player)
@@ -172,7 +174,8 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                 local cmd, target = string.match(message, "(.-):(.+)")
                 if cmd and target then
                     if cmd == "reset" then
-                        L.F.reset_instance_request(target)
+                        author = string.match(author, "([^-]+)") or author
+                        L.F.reset_instance_request(target, author)
                     end
                 end
             end

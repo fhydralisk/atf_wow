@@ -136,6 +136,10 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
     local msg, author = arg1, arg2
     if fwd then
       local fwdstr = string.format("author:%s|%s", author, msg)
+      local author_name = string.match(author, "([^-]+)")
+      if author_name == fwd then
+        return
+      end
       L.F.whisper("您的密语已转发至-"..fwd, author)
       C_ChatInfo.SendAddonMessage("ATF", fwdstr, "WHISPER", fwd)
     else
