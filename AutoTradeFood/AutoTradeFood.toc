@@ -18,6 +18,7 @@ food_base.lua
 low_level_food.lua
 food.lua
 refill.lua
+enlarge_baggage.lua
 agent.lua
 instance_reseter.lua
 event.lua

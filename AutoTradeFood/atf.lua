@@ -79,6 +79,9 @@ end
 
 
 local function auto_bind_backend()
+  if L.F.bind_set_enlarge_target() then
+    return
+  end
   L.F.bind_reseter_backend()
 end
 
@@ -120,12 +123,14 @@ function SlashCmdList.ATFCmd(msg)
     auto_bind()
     L.F.drive_busy_state()
     L.F.check_low_level_food()
-    L.F.accept_accepted_trade()
     L.F.ping_backends()
+    L.F.drive_enlarge_baggage_frontend()
   else
     auto_bind_backend()
     L.F.drive_reset_instance()
+    L.F.drive_enlarge_baggage_backend()
   end
+  L.F.accept_accepted_trade()
   L.F.dequeue_say_messages()
 end
 

@@ -157,7 +157,11 @@ local function trade_on_event(self, event, arg1, arg2)
     if not close_trade and hook then
       trade.hook = hook
       if hook.feed_items then
-        hook.feed_items(trade)
+        local accept_after_feed = hook.feed_items(trade)
+        if accept_after_feed then
+          trade.accepted = true
+          trade.accept_by_feed = true
+        end
       end
     else
       if hook == nil then
@@ -186,7 +190,9 @@ local function trade_on_event(self, event, arg1, arg2)
         current_trade.items.player = {["count"]=player_items_count, ["items"]=player_items}
         current_trade.items.target =  {["count"]=target_items_count, ["items"]=target_items}
         local accept, keep
-        if hook.should_accept then
+        if current_trade.accept_by_feed then
+          accept = true
+        elseif hook.should_accept then
           accept, keep = hook.should_accept(current_trade)
         end
 
@@ -198,7 +204,11 @@ local function trade_on_event(self, event, arg1, arg2)
       elseif arg2 == 1 and arg1 == 1 then
         -- do nothing
       else
-        current_trade.accepted = false
+        if current_trade.accept_by_feed then
+          current_trade.accepted = true
+        else
+          current_trade.accepted = false
+        end
       end
     elseif event == "TRADE_TARGET_ITEM_CHANGED" or event == "TRADE_MONEY_CHANGED" then
       local target_items, target_items_count = get_items(true)
