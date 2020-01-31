@@ -132,7 +132,7 @@ end
 function L.F.bind_acquire_target_level()
     local target = low_level_trade_context.player
     acquire_level_frame:SetAttribute("macrotext", string.format(
-            "/target %s\n/atal %s", target, target
+            "/targetexact %s\n/atal %s", target, target
     ))
     SetBindingClick(L.hotkeys.interact_key, "AcquireLevel")
 end

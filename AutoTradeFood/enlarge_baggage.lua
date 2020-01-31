@@ -82,7 +82,7 @@ end
 function L.F.bind_set_enlarge_target()
     if has_transfer_ctx() then
         if not(UnitName("target") == transfer_ctx.target) then
-            target_frame:SetAttribute("macrotext", "/target "..transfer_ctx.target)
+            target_frame:SetAttribute("macrotext", "/targetexact "..transfer_ctx.target)
             SetBindingClick(L.hotkeys.interact_key, "TargetTransfer")
             return true
         end
