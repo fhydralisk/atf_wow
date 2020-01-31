@@ -154,13 +154,17 @@ end
 local function trade_completed(trade)
     L.F.merge_statistics_plus_int("trade.enlarge.count."..date("%x"), 1)
     if L.F.is_frontend() then
-        local direction
+        local direction, target, origin
         if transfer_ctx.direction == "in" then
-            direction = "加油"
+            direction = "补水"
+            origin = transfer_ctx.target
+            target = UnitName("player")
         else
-            direction = "储油"
+            direction = "储水"
+            target = transfer_ctx.target
+            origin = UnitName("player")
         end
-        L.F.queue_message("远程"..direction.."成功，传输大水"..transfer_ctx.num.."组，目标："..transfer_ctx.target)
+        L.F.queue_message(string.format("%s成功：%s===%s==>%s", direction, origin, transfer_ctx.num.."组大水", target))
     end
     transfer_ctx = nil
 end
