@@ -175,10 +175,12 @@ local function trade_on_event(self, event, arg1, arg2)
     local hook = current_trade.hook
 
     if trade_close_reason then
-      local callback = hook["on_trade_"..trade_close_reason]
-      if callback then
-        local ok, msg = pcall(callback, current_trade)
-        if not ok then print(msg) end
+      if hook then
+        local callback = hook["on_trade_"..trade_close_reason]
+        if callback then
+          local ok, msg = pcall(callback, current_trade)
+          if not ok then print(msg) end
+        end
       end
       destroy_current_trade()
     elseif event == "TRADE_CLOSED" then
@@ -239,6 +241,7 @@ function L.F.accept_accepted_trade()  -- HW
   if current_trade.accepted then
     AcceptTrade()
   elseif current_trade.start_ts and GetTime() - current_trade.start_ts > L.trade_timeout then
+    --print("closing outdated trade...")
     CloseTrade()
   end
 end
