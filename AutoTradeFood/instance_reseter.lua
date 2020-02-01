@@ -23,8 +23,29 @@ local reseter_context = {
 }
 
 
+local reset_queue = {}
+
+local block_list = {}
+
+
 local function can_reset(player)
     return UnitInParty(player) and not UnitIsConnected(player) and reseter_context.invite_ts and GetTime() - reseter_context.invite_ts > 2
+end
+
+
+local function dequeue_reseter()
+    if #reset_queue > 0 then
+        local queued = reset_queue[1]
+        table.remove(reset_queue, 1)
+        return queued
+    end
+end
+
+
+local function notify_queued_player()
+    for i, q in ipairs(reset_queue) do
+        L.F.whisper("重置队列已更新，您的当前位置："..i, q.player)
+    end
 end
 
 
@@ -45,7 +66,62 @@ function L.F.drive_reset_instance()
             reseter_context.reset = true
             SendChatMessage("米豪已帮【"..player.."】重置副本。请M "..reseter_context.frontend.." 【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
         end
+    else
+        local queued = dequeue_reseter()
+        player = queued.player
+        if queued then
+            reseter_context.player = player
+            reseter_context.request_ts = GetTime()
+            reseter_context.frontend = queued.frontend
+            LeaveParty()
+            InviteUnit(player)
+            L.F.whisper("请接受组队邀请，然后立即下线。请求有效期"..timeout.."秒。", player)
+        end
+        notify_queued_player()
     end
+end
+
+
+local function get_block_duration(player)
+    if block_list[player] then
+        local deadline = block_list[player].deadline
+        if deadline == 0 then
+            return 0
+        elseif deadline > GetTime() then
+            return deadline - GetTime()
+        else
+            block_list[player] = nil
+        end
+    end
+end
+
+
+local function block_player(player, duration)
+    if duration == 0 then
+        block_list[player] = {deadline=0}
+    else
+        block_list[player] = {deadline=GetTime() + duration}
+    end
+end
+
+
+local function enqueue_player(player, frontend)
+    for i, q_player in ipairs(reset_queue) do
+        if q_player.player == player then
+            q_player.request_count = q_player.request_count + 1
+            if q_player.request_count > 10 then
+                L.F.whisper("由于您过于频繁的请求，您已被暂停使用该服务。您已被移出队列。", player)
+                table.remove(reset_queue, i)
+                block_player(player, 3600)
+                return
+            else
+                L.F.whisper("您已在队列中，队列位置："..i.."。请勿重复请求，刷屏可能会被暂停使用该功能，谢谢！", player)
+                return
+            end
+        end
+    end
+    table.insert(reset_queue, {player=player, request_ts=GetTime(), request_count=1, frontend=frontend})
+    return #reset_queue
 end
 
 
@@ -69,6 +145,17 @@ function L.F.reset_instance_request(player, frontend)
     end
     assert(not L.F.is_frontend())
 
+    local block_duration = get_block_duration(player)
+
+    if block_duration then
+        if block_duration > 0 then
+            L.F.whisper("由于刷屏或其他原因，您已被暂停该服务【"..math.ceil(block_duration / 60).."】分钟。请解禁后避免刷屏操作，谢谢合作！", player)
+        else
+            L.F.whisper("由于您的不当使用，该服务已向您永久关闭，请邮件联系我咨询解禁事宜，抱歉！", player)
+        end
+        return
+    end
+
     if UnitInParty(player) then
         if reseter_context.player == player then
             L.F.whisper("【重置流程变更】当前版本只需在【未进组】的情况下M我一次请求即可。无需再次请求。", player)
@@ -76,19 +163,15 @@ function L.F.reset_instance_request(player, frontend)
             L.F.whisper("【重置流程变更】为避免高峰期重置冲突，重置流程发生变化，您务必在【未进组】的前提下想我发起请求。本次请求失败。", player)
         end
         return
-    end
-
-    if reseter_context.player == nil then
-        reseter_context.player = player
-        reseter_context.request_ts = GetTime()
-        reseter_context.frontend = frontend
-        LeaveParty()
-        InviteUnit(player)
-        L.F.whisper("请接受组队邀请，然后立即下线。请求有效期"..timeout.."秒。", player)
     elseif reseter_context.player == player then
         L.F.whisper("请接受组队邀请，然后立即下线。", player)
-    else
-        L.F.whisper("正在有玩家请求重置，请稍后再试。", player)
+        return
+    end
+
+    local queue_pos = enqueue_player(player, frontend)
+    if queue_pos > 1 or (queue_pos == 1 and reseter_context.player) then
+        L.F.whisper("目前正在为其他玩家重置，已为您排队。请勿重复请求，刷屏可能会被暂停服务，谢谢支持！", player)
+        L.F.whisper("队列位置："..queue_pos, player)
     end
 end
 
@@ -127,6 +210,8 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                     or string.format(ERR_RAID_MEMBER_REMOVED_S, reseter_context.player) == message
                     or ERR_GROUP_DISBANDED == message then
                 L.F.whisper("您离开了队伍，重置请求已取消。", reseter_context.player)
+                reseter_context = {}
+            elseif string.format(ERR_BAD_PLAYER_NAME_S, reseter_context.player) == message then
                 reseter_context = {}
             end
         end

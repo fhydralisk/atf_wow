@@ -78,7 +78,7 @@ L.admin_names = {
 }
 
 L.agent_timeout = 7200
-L.reset_instance_timeout = 60
+L.reset_instance_timeout = 40
 
 --小号模式
 --L.items.water_name = "魔法纯净水"
