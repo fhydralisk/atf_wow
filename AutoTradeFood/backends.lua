@@ -74,4 +74,26 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
 end
 
 
+-- default hook for backends
+local function should_hook(trade)
+    L.F.whisper("工具人不能被交易，请交易我的FS号哦！", trade.npc_name)
+    return true, true
+end
+
+
+local function should_accept(trade)
+    return false
+end
+
+
+L.trade_hooks.backend_default = {
+  ["should_hook"] = should_hook,
+  ["feed_items"] = nil,
+  ["on_trade_complete"] = nil,
+  ["on_trade_cancel"] = nil,
+  ["on_trade_error"] = nil,
+  ["should_accept"] = should_accept,
+  ["check_target_item"] = nil,
+}
+
 frame:SetScript("OnEvent", eventHandler)

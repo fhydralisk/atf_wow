@@ -15,4 +15,5 @@ if L.F.is_frontend() then
     L.F.append_trade_hook(L.trade_hooks.trade_food)
 else
     L.F.append_trade_hook(L.trade_hooks.enlarge)
+    L.F.append_trade_hook(L.trade_hooks.backend_default)
 end

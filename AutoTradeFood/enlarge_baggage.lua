@@ -67,8 +67,10 @@ function L.F.drive_enlarge_baggage_backend()
     if has_transfer_ctx() then
         if UnitName("target") == transfer_ctx.target and not(transfer_ctx.is_trading) then
             if transfer_ctx.direction == "out" and L.F.get_water_count() > 0 then
+                print("trade out")
                 InitiateTrade("target")
             elseif transfer_ctx.direction == "in" and L.F.get_free_slots() >= transfer_ctx.num then
+                print("trade in")
                 InitiateTrade("target")
             else
                 transfer_ctx = nil
@@ -76,6 +78,7 @@ function L.F.drive_enlarge_baggage_backend()
             end
         end
     end
+
 end
 
 
