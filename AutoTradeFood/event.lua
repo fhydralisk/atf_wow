@@ -198,6 +198,27 @@ easter_egg_frame:RegisterEvent("CHAT_MSG_SAY")
 easter_egg_frame:RegisterEvent("CHAT_MSG_TEXT_EMOTE")
 
 
+local emote_challenge = {
+  ["给了你一个飞吻。"]="shy",
+  ["舔了舔你。"]="lick",
+  ["对你表示感谢。"]="blush",
+  ["对着你吐口水"]="stink",
+  ["向你鞠躬。"]="massage",
+  ["感到很饿。也许在你那里可以找到一些食物。"]="ready",
+  ["给你讲了一个笑话。"]="guffaw",
+}
+
+
+local function reply_to_emotes(message, player)
+
+  local k = string.gsub(message, player, "")
+  local challenge = emote_challenge[k]
+  if challenge then
+    DoEmote(challenge, player)
+  end
+end
+
+
 local function easter_eggs(self, event, message, author, ...)
   if L.atfr_run then
     if event == "CHAT_MSG_SAY" then
@@ -214,13 +235,7 @@ local function easter_eggs(self, event, message, author, ...)
         L.F.queue_message("等等，我要先准备一下。你们先上，我先来做点水")
       end
     elseif event == "CHAT_MSG_TEXT_EMOTE" then
-      if message == author.."给了你一个飞吻。" then
-        DoEmote("shy", author)
-      elseif message == author.."舔了舔你。" then
-        DoEmote("lick", author)
-      elseif message == author.."对你表示感谢。" then
-        DoEmote("blush", author)
-      end
+      reply_to_emotes(message, author)
     end
   end
 end
