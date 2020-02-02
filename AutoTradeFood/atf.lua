@@ -90,6 +90,7 @@ local function drive_state()
   if L.state == 1 then  -- working -> resting or buffing
     if UnitPower("player") < min_mana then
       L.state = 2
+      DoEmote("drink", "none")
     elseif not ((check_buff(L.buffs.intel, 10) or check_buff("奥术光辉", 10)) and check_buff(L.buffs.armor, 10)) then
       L.state = 4
     end
@@ -100,6 +101,7 @@ local function drive_state()
     end
     if UnitPower("player") >= UnitPowerMax("player") * scale then
       L.state = 1
+      DoEmote("work", "none")
     end
   elseif L.state == 3 then  -- gating -> working
     local cd_gate = GetSpellCooldown(L.gate.gating_context["spell"])
