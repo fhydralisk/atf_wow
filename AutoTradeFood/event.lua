@@ -9,6 +9,7 @@ local addonName, L = ...
 local frame = CreateFrame("FRAME", "ATFFrame")
 frame:RegisterEvent("CHAT_MSG_WHISPER")
 frame:RegisterEvent("CHAT_MSG_ADDON")
+frame:RegisterEvent("CHAT_MSG_SYSTEM")
 frame:RegisterEvent("TRADE_ACCEPT_UPDATE")
 frame:RegisterEvent("PARTY_INVITE_REQUEST")
 
@@ -75,7 +76,7 @@ local function execute_command(msg, author)
     elseif L.F.may_say_agent(msg, author) then
       -- agent speaking
     elseif msg == "3" then
-      L.F.whisper("请M我【"..L.cmds.invite_cmd.."】进组，而不是M我3，zu，组，谢谢", author)
+      L.F.whisper("请M我【"..L.cmds.invite_cmd.."】进组，而不是M我3，zu，组，位面，谢谢", author)
     elseif msg == "4" or msg == L.cmds.refill_help_cmd then
       L.F.refill_help(author)
     elseif L.F.search_str_contains(msg, {L.cmds.refill_cmd}) then
@@ -106,6 +107,8 @@ local function execute_command(msg, author)
       L.F.say_acknowledgements(author)
     elseif msg == L.cmds.statistics then
       L.F.say_statistics(author)
+    elseif L.F.search_str_contains(msg, {"位面", "组", "zu"}) and not L.F.search_str_contains(msg, {"水", "面包", "吃", "喝"}) then
+      L.F.whisper("请M我【"..L.cmds.invite_cmd.."】进组，而不是M我3，zu，组，位面，谢谢", author)
     elseif L.F.search_str_contains(msg, {"脚本", "外挂", "机器", "自动", "宏"}) then
       L.F.whisper("是的，我是纯公益机器人，请亲手下留情，爱你哦！", author)
     elseif L.F.search_str_contains(msg, {"谢", "蟹", "xie", "3q"}, "left") then
@@ -125,6 +128,9 @@ local function execute_command(msg, author)
 end
 
 
+local pattern_already_in_group = string.gsub(ERR_ALREADY_IN_GROUP_S, "%%s", "(.-)")
+
+
 local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
   if event == "CHAT_MSG_ADDON" and arg1 == "ATF" then
     local msg, author = arg2, arg4
@@ -142,6 +148,8 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
       end
       L.F.whisper("您的密语已转发至-"..fwd, author)
       C_ChatInfo.SendAddonMessage("ATF", fwdstr, "WHISPER", fwd)
+    elseif L.F.is_in_backends(author) then
+      -- do nothing
     else
       execute_command(msg, author)
     end
@@ -151,6 +159,15 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
       StaticPopup_Hide("PARTY_INVITE")
       L.F.whisper("请勿邀请我进组，您可以M我【"..L.cmds.invite_cmd.."】进组，谢谢！", msg)
       L.F.invite_player(msg)
+    end
+  elseif event == "CHAT_MSG_SYSTEM" then
+    if L.atfr_run then
+      local message = arg1
+      local player = string.match(message, pattern_already_in_group)
+      if player and not UnitInParty(player) then
+        local name = UnitName("player")
+        L.F.whisper("【提示】"..name.."对您的组队邀请失败：您已有队伍。", player)
+      end
     end
   end
 end

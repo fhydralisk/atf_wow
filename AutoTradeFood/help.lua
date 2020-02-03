@@ -93,6 +93,8 @@ function L.F.say_acknowledgements(to_player)
   L.F.whisper("大头菜咖喱酱", to_player)
   L.F.whisper("嘟嘟歪嘟嘟", to_player)
   L.F.whisper("且洛", to_player)
+  L.F.whisper("蛋蛋放中间", to_player)
+  L.F.whisper("皇额娘", to_player)
 end
 
 

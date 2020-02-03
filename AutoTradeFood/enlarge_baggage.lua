@@ -17,7 +17,7 @@ local interval_base = 30
 local function build_transfer_ctx(target, num, direction)
     transfer_ctx = {
         request_ts = GetTime(),
-        deadline = GetTime() + math.random(interval_base * -0.5, interval_base * 0.5),
+        deadline = GetTime() + interval_base + math.random(interval_base * -0.5, interval_base * 0.5),
         target = target,
         num = num,
         direction = direction,

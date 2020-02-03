@@ -42,6 +42,15 @@ function L.F.get_backends()
 end
 
 
+function L.F.is_in_backends(player)
+    if backends_available[player] then
+        return true
+    else
+        return false
+    end
+end
+
+
 function L.F.choice_random_backend()
     local backends = {}
     for backend, _ in pairs(backends_available) do
