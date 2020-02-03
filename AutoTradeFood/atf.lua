@@ -138,7 +138,7 @@ end
 
 
 function SlashCmdList.ATF_REPORT(msg)
-  if L.atfr_run == true or msg == "force" then
+  if (L.atfr_run == true or msg == "force") and L.F.is_frontend() then
     L.F.send_ad()
   end
 end
