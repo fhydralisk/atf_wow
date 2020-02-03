@@ -10,13 +10,14 @@ local target_frame = L.F.create_macro_button("TargetTransfer", "/target targetna
 local frame = CreateFrame("FRAME")
 frame:RegisterEvent("CHAT_MSG_ADDON")
 
-local transfer_ctx = nil
-local timeout = 60
+local transfer_ctx
+local interval_base = 30
 
 
 local function build_transfer_ctx(target, num, direction)
     transfer_ctx = {
         request_ts = GetTime(),
+        deadline = GetTime() + math.random(interval_base * -0.5, interval_base * 0.5),
         target = target,
         num = num,
         direction = direction,
@@ -27,7 +28,7 @@ end
 
 function L.F.has_transfer_ctx()
     if transfer_ctx then
-        if GetTime() - transfer_ctx.request_ts > timeout then
+        if GetTime() - transfer_ctx.deadline > 0 then
             transfer_ctx = nil
             return false
         end
@@ -63,20 +64,20 @@ function L.F.drive_enlarge_baggage_frontend()
 end
 
 
+local function check_can_transfer(direction, num)
+    if direction == "out" and L.F.get_water_count() > 0 then
+        return true
+    elseif direction == "in" and L.F.get_free_slots() >= num then
+        return true
+    else
+        return false
+    end
+end
+
+
 function L.F.drive_enlarge_baggage_backend()
-    if has_transfer_ctx() then
-        if UnitName("target") == transfer_ctx.target and not(transfer_ctx.is_trading) then
-            if transfer_ctx.direction == "out" and L.F.get_water_count() > 0 then
-                print("trade out")
-                InitiateTrade("target")
-            elseif transfer_ctx.direction == "in" and L.F.get_free_slots() >= transfer_ctx.num then
-                print("trade in")
-                InitiateTrade("target")
-            else
-                transfer_ctx = nil
-                -- no stock or slots.
-            end
-        end
+    if has_transfer_ctx() and UnitName("target") == transfer_ctx.target and not(transfer_ctx.is_trading) then
+        InitiateTrade("target")
     end
 
 end
@@ -108,10 +109,14 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                     local direction = string.match(cmd, "transfer_(.*)")
                     author = string.match(author, "([^-]+)") or author
                     if not(has_transfer_ctx()) then
+                        local direction_ctx
                         if direction == "in" then
-                            build_transfer_ctx(author, num, "out")
+                            direction_ctx = "out"
                         elseif direction == "out" then
-                            build_transfer_ctx(author, num, "in")
+                            direction_ctx = "in"
+                        end
+                        if direction_ctx and check_can_transfer(direction_ctx, num) then
+                            build_transfer_ctx(author, num, direction_ctx)
                         end
                     end
                 end
