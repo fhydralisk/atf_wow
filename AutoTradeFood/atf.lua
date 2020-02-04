@@ -127,6 +127,7 @@ function SlashCmdList.ATFCmd(msg)
     L.F.check_low_level_food()
     L.F.ping_backends()
     L.F.drive_enlarge_baggage_frontend()
+    L.F.may_cleanup_baggage()
   else
     auto_bind_backend()
     L.F.drive_reset_instance()
@@ -144,71 +145,12 @@ function SlashCmdList.ATF_REPORT(msg)
 end
 
 
-local function do_delete_groups(item_name, groups)
-  local x = 0
-  for b = 0, 4 do
-    for l = 0, 32 do
-      local itemLink = GetContainerItemLink(b, l)
-      if itemLink and itemLink:find(item_name) and x < groups then
-        x = x + 1
-        L.F.delete_item_at(b, l)
-      end
-    end
-  end
-end
-
-
-local function delete_groups()
-  local water = GetItemCount(L.items.water_name)
-  local food = GetItemCount(L.items.food_name)
-  if water * 0.5 > food then
-    local water_to_delete = math.modf((water * 0.5 - food) / 20)
-    do_delete_groups(L.items.water_name, water_to_delete)
-  elseif food > water * 0.9 then
-    local food_to_delete = math.modf((food - water * 0.9) / 20)
-    do_delete_groups(L.items.food_name, food_to_delete)
-  end
-end
-
-
-local function del_fragment()
-  for b = 0, 4 do
-    for l = 1, 32 do
-      local _, itemCount, _, _, _, _, link = GetContainerItemInfo(b, l)
-      if link and (link:find(L.items.water_name) or link:find(L.items.food_name)) then
-        if itemCount < 20 then
-          L.F.delete_item_at(b, l)
-        end
-      end
-    end
-  end
-end
-
-
-local function do_real_cleanup()
-  del_fragment()
-  delete_groups()
-end
-
-
-local function do_clean_all()
-  for b = 0, 4 do
-    for l = 1, 32 do
-      local _, _, _, _, _, _, link = GetContainerItemInfo(b, l)
-      if link and (link:find(L.items.water_name) or link:find(L.items.food_name)) then
-          L.F.delete_item_at(b, l)
-      end
-    end
-  end
-end
-
-
 function SlashCmdList.ATF_CLEAN(msg)
   local free_slots = L.F.get_free_slots()
   if free_slots == 0 or msg == "force" then
-    do_real_cleanup()
+    L.F.do_real_cleanup()
   elseif msg == "clean all" then
-    do_clean_all()
+    L.F.do_clean_all()
   end
 end
 
@@ -286,7 +228,7 @@ end
 
 function SlashCmdList.ATF_FWD(msg)
   L.F.set_msg_fwd(msg)
-  print("fwd to"..msg)
+  print("fwd to "..msg)
 end
 
 

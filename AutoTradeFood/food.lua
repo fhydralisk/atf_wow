@@ -165,6 +165,9 @@ local function feed_foods(trade)
   if L.F.get_busy_state() then
     scale = 0.5
   end
+  if trade.npc_class == "法师" and trade.npc_level == 60 then
+    scale = scale * 0.5
+  end
   w = math.ceil(w * scale)
   f = math.ceil(f * scale)
   L.F.feed(water_name, w, 20)

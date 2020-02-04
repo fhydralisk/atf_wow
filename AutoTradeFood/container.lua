@@ -40,3 +40,72 @@ function L.F.delete_item_at(b, s)
   PickupContainerItem(b, s)
   DeleteCursorItem()
 end
+
+
+local function do_delete_groups(item_name, groups)
+  local x = 0
+  for b = 0, 4 do
+    for l = 0, 32 do
+      local itemLink = GetContainerItemLink(b, l)
+      if itemLink and itemLink:find(item_name) and x < groups then
+        x = x + 1
+        L.F.delete_item_at(b, l)
+      end
+    end
+  end
+end
+
+
+function L.F.delete_groups()
+  local water = GetItemCount(L.items.water_name)
+  local food = GetItemCount(L.items.food_name)
+  if water * 0.5 > food then
+    local water_to_delete = math.modf((water * 0.5 - food) / 20)
+    do_delete_groups(L.items.water_name, water_to_delete)
+  elseif food > water * 0.9 then
+    local food_to_delete = math.modf((food - water * 0.9) / 20)
+    do_delete_groups(L.items.food_name, food_to_delete)
+  end
+end
+
+
+function L.F.del_fragment()
+  for b = 0, 4 do
+    for l = 1, 32 do
+      local _, itemCount, _, _, _, _, link = GetContainerItemInfo(b, l)
+      if link and (link:find(L.items.water_name) or link:find(L.items.food_name)) then
+        if itemCount < 20 then
+          L.F.delete_item_at(b, l)
+        end
+      end
+    end
+  end
+end
+
+
+function L.F.do_real_cleanup()
+  L.F.del_fragment()
+  L.F.delete_groups()
+end
+
+
+function L.F.do_clean_all()
+  for b = 0, 4 do
+    for l = 1, 32 do
+      local _, _, _, _, _, _, link = GetContainerItemInfo(b, l)
+      if link and (link:find(L.items.water_name) or link:find(L.items.food_name)) then
+          L.F.delete_item_at(b, l)
+      end
+    end
+  end
+end
+
+
+function L.F.may_cleanup_baggage()
+  if L.F.get_free_slots() == 0 then
+    if math.random(1, 20) == 1 then
+      -- 1/20 possibility
+      L.F.del_fragment()
+    end
+  end
+end

@@ -8,7 +8,7 @@ local addonName, L = ...
 
 local tclass_food = {
     ["战士"]={0, 6},
-    ["法师"]={2, 0},
+    ["法师"]={4, 0},
     ["猎人"]={4, 2},
     ["圣骑士"]={4, 2},
     ["潜行者"]={0, 6},
@@ -164,8 +164,7 @@ function L.F.check_food_trade_target_items(trade)
       )
     elseif items[L.items.water_name] or items[L.items.food_name] then
       L.F.append_trade_say_messages(
-              npc_name.."，餐饮一经送出，不再回收。"..
-                      "如果您觉得水或面包多余，请在交易我之前M我配比情况，例如“我要3组水，1组面包”，然后再进行交易。",
+              npc_name.."，如希望为我补货，请M我【"..L.cmds.refill_cmd.."】。如果您觉得水或面包多余，请在交易我之前M我配比情况，例如“我要3组水，1组面包”，然后再进行交易。",
               "say", "Common"
       )
 
@@ -177,4 +176,3 @@ function L.F.check_food_trade_target_items(trade)
     return false
   end
 end
-
