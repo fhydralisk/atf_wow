@@ -10,7 +10,14 @@ local min_mana = L.min_mana
 local interact_key = L.hotkeys.interact_key
 
 L.gate = {}
-L.gate.gating_context = {["spell"]="", ["requester"]="", ["cooldown_ts"]=0, ["city"]="", ["invited"]=false}
+L.gate.gating_context = {
+  spell = "",
+  requester = "",
+  cooldown_ts = 0,
+  city = "",
+  invited = false,
+  invite_ts = 0,
+}
 L.gate.gating_contexts = {}
 
 
@@ -56,17 +63,18 @@ end
 
 local function transit_to_gate_state(player)
   L.gate.gating_contexts[player] = nil
-  invalidate_requests(player, L.gate.gating_context["city"])
+  invalidate_requests(player, L.gate.gating_context.city)
   L.state = 3
-  L.gate.gating_context["cooldown_ts"] = GetTime() + 60
-  L.gate.gating_context["invited"] = false
+  L.gate.gating_context.cooldown_ts = GetTime() + 60
+  L.gate.gating_context.invited = false
+  L.gate.gating_context.invite_ts = GetTime()
   L.F.invite_player(player)
 end
 
 
 function L.F.gate_cooldown()
-  if GetTime() < L.gate.gating_context["cooldown_ts"] then
-    return math.modf( L.gate.gating_context["cooldown_ts"] - GetTime())
+  if GetTime() < L.gate.gating_context.cooldown_ts then
+    return math.modf( L.gate.gating_context.cooldown_ts - GetTime())
   else
     return 0
   end
@@ -91,9 +99,9 @@ function L.F.gate_request(player, msg)
   end
   if GateWhiteList[player] then
     if GetItemCount(L.items.stone_name) > 0 then
-      L.gate.gating_context["spell"] = spell
-      L.gate.gating_context["city"] = city
-      L.gate.gating_context["requester"] = player
+      L.gate.gating_context.spell = spell
+      L.gate.gating_context.city = city
+      L.gate.gating_context.requester = player
       transit_to_gate_state(player)
       L.F.whisper("贵宾驾到，马上起航！", player)
       return
@@ -103,9 +111,9 @@ function L.F.gate_request(player, msg)
   end
 
   L.gate.gating_contexts[player] = {
-    ["request_ts"]=GetTime(),
-    ["city"]=city,
-    ["spell"]=spell,
+    request_ts = GetTime(),
+    city = city,
+    spell = spell,
   }
   L.F.whisper(
     city.."传送门指定成功，请于"..gate_request_timeout..
@@ -116,19 +124,22 @@ end
 
 function L.F.drive_gate()
   for player, gc in pairs(L.gate.gating_contexts) do
-    if GetTime() - gc["request_ts"] > gate_request_timeout then
+    if GetTime() - gc.request_ts > gate_request_timeout then
       L.F.whisper("传送门未能成功开启，未收到符文石", player)
       L.gate.gating_contexts[player] = nil
     end
   end
-  if GetTime() < L.gate.gating_context["cooldown_ts"] and L.gate.gating_context['invited'] == false then
-    if UnitInParty(L.gate.gating_context["requester"]) then
-      L.gate.gating_context["invited"] = true
-    else
+  if GetTime() < L.gate.gating_context.cooldown_ts and L.gate.gating_context.invited == false then
+    if UnitInParty(L.gate.gating_context.requester) then
+      L.gate.gating_context.invited = true
+    elseif GetTime() - L.gate.gating_context.invite_ts >= 4 then
       L.F.whisper(
-              "上次邀请未成功！请您确认离队，我会在传送门消失前重复尝试邀请您！", L.gate.gating_context["requester"]
+              "上次邀请未成功！请您确认离队，我会在传送门消失前重复尝试邀请您！", L.gate.gating_context.requester
       )
-      L.F.invite_player(L.gate.gating_context["requester"])
+      L.gate.gating_context.invite_ts = GetTime()
+      L.F.invite_player(L.gate.gating_context.requester)
+    else
+      -- pending. do nothing.
     end
   end
 end
@@ -136,9 +147,9 @@ end
 
 function L.F.bind_gate()
   if UnitPower("player") < min_mana then
-    SetBindingItem(interact_key, "魔法晶水")
+    SetBindingItem(interact_key, L.items.water_name)
   else
-    SetBindingSpell(interact_key, L.gate.gating_context["spell"])
+    SetBindingSpell(interact_key, L.gate.gating_context.spell)
   end
 end
 
