@@ -27,7 +27,7 @@ function L.F.ping_backends()
         last_pind_ts = GetTime()
         for backend, _ in pairs(InstanceResetBackends) do
             print("pinging ".. backend)
-            local t = math.modf(time()/1000)
+            local t = math.modf(time())
             C_ChatInfo.SendAddonMessage("ATF", "ping:"..t, "WHISPER", backend)
         end
     end
@@ -74,7 +74,7 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
         local cmd, ts = string.match(message, "(.-):(.+)")
         if cmd and ts then
             ts = tonumber(ts)
-            if time()/1000 - ts > max_latency then
+            if time() - ts > max_latency then
                 return
             end
             if L.F.is_frontend() then
@@ -84,7 +84,7 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                 end
             else
                 if cmd == "ping" then
-                    local t = math.modf(time()/1000)
+                    local t = math.modf(time())
                     C_ChatInfo.SendAddonMessage("ATF", "pong:"..t, "WHISPER", author)
                 end
             end
