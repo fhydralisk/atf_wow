@@ -98,19 +98,34 @@ function L.F.say_acknowledgements(to_player)
 end
 
 
+local function whisper_or_say(message, to_player)
+  local say
+  if to_player then
+    say = function()
+      L.F.whisper(message, to_player)
+    end
+  else
+    say = function()
+      SendChatMessage(message, "SAY")
+    end
+  end
+  say()
+end
+
+
 function L.F.say_statistics(to_player)
-  L.F.whisper("米豪今日数据：", to_player)
+  whisper_or_say("米豪今日数据：", to_player)
 
   local gate_count = L.F.query_statistics_int("trade.gate.count."..date("%x"))
-  L.F.whisper("总计开门：【"..gate_count.."】次", to_player)
+  whisper_or_say("总计开门：【"..gate_count.."】次", to_player)
 
   local water_count = L.F.query_statistics_int("trade.food.all."..date("%x").."."..L.items.water_name)
   local food_count = L.F.query_statistics_int("trade.food.all."..date("%x").."."..L.items.food_name)
-  L.F.whisper("总计送水：【"..
+  whisper_or_say("总计送水：【"..
           math.modf(water_count / 20).."】组，送面包：【"..
           math.modf(food_count / 20).."】组", to_player)
 
-  L.F.whisper("职业需求排序：", to_player)
+  whisper_or_say("职业需求排序：", to_player)
   local trade_by_class = L.F.query_statistics("trade.food.class."..date("%x"))
   local class_count = {}
   for class, items in pairs(trade_by_class) do
@@ -118,10 +133,10 @@ function L.F.say_statistics(to_player)
   end
   table.sort(class_count, function(a, b) return a.count > b.count end)
   for i, class in ipairs(class_count) do
-    L.F.whisper(""..i..". "..class.class.." 交易成功：【"..math.modf(class.count / 20).."】组", to_player)
+    whisper_or_say(""..i..". "..class.class.." 交易成功：【"..math.modf(class.count / 20).."】组", to_player)
   end
 
-  L.F.whisper("吃货排行：", to_player)
+  whisper_or_say("吃货排行：", to_player)
   local trade_by_ind = L.F.query_statistics("trade.food.ind."..date("%x"))
   local trade_count = {}
   for name, items in pairs(trade_by_ind) do
@@ -129,11 +144,11 @@ function L.F.say_statistics(to_player)
   end
   table.sort(trade_count, function(a, b) return a.count > b.count end)
   for i, ind in ipairs(trade_count) do
-    L.F.whisper(""..i..". "..ind.name.." 取走【"..math.modf(ind.count / 20).."】组", to_player)
+    whisper_or_say(""..i..". "..ind.name.." 取走【"..math.modf(ind.count / 20).."】组", to_player)
     if i >= 3 then break end
   end
 
-  L.F.whisper("补货排行：", to_player)
+  whisper_or_say("补货排行：", to_player)
   local refill_by_ind = L.F.query_statistics("trade.refill.ind."..date("%x"))
   local refill_count = {}
   for name, items in pairs(refill_by_ind) do
@@ -141,7 +156,7 @@ function L.F.say_statistics(to_player)
   end
   table.sort(refill_count, function(a, b) return a.water_count > b.water_count end)
   for i, ind in ipairs(refill_count) do
-    L.F.whisper(""..i..". "..ind.name.." 补充大水：【"..math.modf(ind.water_count / 20)..
+    whisper_or_say(""..i..". "..ind.name.." 补充大水：【"..math.modf(ind.water_count / 20)..
             "】组，面包【"..math.modf(ind.food_count / 20).."】组", to_player)
     if i >= 3 then break end
   end

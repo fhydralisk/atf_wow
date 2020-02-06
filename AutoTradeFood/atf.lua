@@ -15,6 +15,7 @@ SLASH_ATF_DEBUG1 = "/atfd"
 SLASH_ATG_WHITELIST1 = "/atgwl"
 SLASH_ATF_FWD1 = "/atff"
 SLASH_RESET_BACKEND1 = "/atrb"
+SLASH_REPORT_STATISTICS1 = "/atrs"
 
 
 local AtfFrame = L.F.create_macro_button("ATFButton", "/atf")
@@ -242,5 +243,14 @@ function SlashCmdList.RESET_BACKEND(msg)
       InstanceResetBackends[player] = nil
       print("delete backend"..player)
     end
+  end
+end
+
+
+function SlashCmdList.SLASH_REPORT_STATISTICS(msg)
+  if msg and not(msg=="") then
+    L.F.say_statistics(msg)
+  else
+    L.F.say_statistics()
   end
 end
