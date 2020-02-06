@@ -247,7 +247,7 @@ function SlashCmdList.RESET_BACKEND(msg)
 end
 
 
-function SlashCmdList.SLASH_REPORT_STATISTICS(msg)
+function SlashCmdList.REPORT_STATISTICS(msg)
   if msg and not(msg=="") then
     L.F.say_statistics(msg)
   else
