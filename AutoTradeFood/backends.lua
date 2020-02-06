@@ -13,7 +13,8 @@ frame:RegisterEvent("CHAT_MSG_ADDON")
 
 local last_pind_ts = 0
 local backends_available = {}
-local ping_interval = 20
+local ping_interval = 10
+local max_latency = 5
 
 
 local function should_ping()
@@ -26,11 +27,11 @@ function L.F.ping_backends()
         last_pind_ts = GetTime()
         for backend, _ in pairs(InstanceResetBackends) do
             print("pinging ".. backend)
-            C_ChatInfo.SendAddonMessage("ATF", "ping", "WHISPER", backend)
+            C_ChatInfo.SendAddonMessage("ATF", "ping:"..math.modf(GetTime()), "WHISPER", backend)
         end
     end
     for backend, ts in pairs(backends_available) do
-        if GetTime() - ts > ping_interval * 2 then
+        if GetTime() - ts > ping_interval * 1.5 then
             backends_available[backend] = nil
         end
     end
@@ -69,14 +70,21 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
     if event == "CHAT_MSG_ADDON" and arg1 == "ATF" then
         local message, author = arg2, arg4
         author = string.match(author, "([^-]+)")
-        if L.F.is_frontend() then
-            if message == "pong" and InstanceResetBackends[author] then
-                print("received pong from "..author)
-                backends_available[author] = GetTime()
+        local cmd, ts = string.match(message, "(.-):(.+)")
+        if cmd and ts then
+            ts = tonumber(ts)
+            if GetTime() - ts > max_latency then
+                return
             end
-        else
-            if message == "ping" then
-                C_ChatInfo.SendAddonMessage("ATF", "pong", "WHISPER", author)
+            if L.F.is_frontend() then
+                if cmd == "pong" and InstanceResetBackends[author] then
+                    print("received pong from "..author)
+                    backends_available[author] = GetTime()
+                end
+            else
+                if cmd == "ping" then
+                    C_ChatInfo.SendAddonMessage("ATF", "pong:"..math.modf(GetTime()), "WHISPER", author)
+                end
             end
         end
     end
