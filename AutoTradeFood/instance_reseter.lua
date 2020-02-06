@@ -102,7 +102,7 @@ local function detect_block_intention()
             local block_remain = block_intention(reseter_context.player, block_reset_duration)
             L.F.whisper("【敬告】不当的使用重置功能，导致阻塞重置队列的玩家，将被禁止使用该功能。", reseter_context.player)
             if block_remain > 0 then
-                L.F.whisper("本次重置您阻塞了重置队列"..block_reset_duration.."秒，若再次累计阻塞"..block_remain.."秒，您将被禁止使用该功能。", reseter_context.player)
+                L.F.whisper("本次重置您阻塞了重置队列"..math.modf(block_reset_duration).."秒，若再次累计阻塞"..block_remain.."秒，您将被禁止使用该功能。", reseter_context.player)
                 L.F.whisper("为防止被禁用，烦请您快速接受组队邀请，并迅速通过/camp宏或返回人物选择按键下线，谢谢合作。", reseter_context.player)
             else
                 L.F.whisper("由于您多次阻塞重置队列，累计阻塞时长达到警戒值，您已被限制/禁止使用该功能。", reseter_context.player)
