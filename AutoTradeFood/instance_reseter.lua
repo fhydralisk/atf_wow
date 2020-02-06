@@ -78,6 +78,9 @@ end
 
 
 local function block_intention(player, duration)
+    if not block_intention_list[date("%x")] then
+        block_intention_list[date("%x")] = {}
+    end
     if not block_intention_list[date("%x")][player] then
         block_intention_list[date("%x")][player] = 0
     end
