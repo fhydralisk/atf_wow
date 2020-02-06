@@ -1,0 +1,6 @@
+## Interface: 11303
+## Title: 米豪的防掉线检测块 
+## Notes: 在屏幕左上角增加一个防掉线检测块
+## Author: 米豪
+
+anti_offline_block.lua

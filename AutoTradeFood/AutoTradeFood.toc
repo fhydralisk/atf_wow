@@ -24,4 +24,3 @@ instance_reseter.lua
 event.lua
 atf.lua
 trade_hooking.lua
-anti_offline_block.lua
