@@ -25,8 +25,6 @@ local reseter_context = {
 
 local reset_queue = {}
 
-local block_list = {}
-
 local block_intention_list = {}
 local block_duration_to_block = 120
 local block_duration_try_block = 0
@@ -55,14 +53,14 @@ end
 
 
 local function get_block_duration(player)
-    if block_list[player] then
-        local deadline = block_list[player].deadline
+    if ATFResetBlockList[player] then
+        local deadline = ATFResetBlockList[player].deadline
         if deadline == 0 then
             return 0
         elseif deadline > GetTime() then
             return deadline - GetTime()
         else
-            block_list[player] = nil
+            ATFResetBlockList[player] = nil
         end
     end
 end
@@ -70,9 +68,9 @@ end
 
 local function block_player(player, duration)
     if duration == 0 then
-        block_list[player] = {deadline=0}
+        ATFResetBlockList[player] = { deadline=0}
     else
-        block_list[player] = {deadline=GetTime() + duration}
+        ATFResetBlockList[player] = { deadline=GetTime() + duration}
     end
 end
 

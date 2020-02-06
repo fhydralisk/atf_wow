@@ -107,6 +107,9 @@ local function eventHandler(self, event, msg)
         if InstanceResetBackends == nil then
             InstanceResetBackends = {}
         end
+        if ATFResetBlockList == nil then
+            ATFResetBlockList = {}
+        end
     end
 end
 
