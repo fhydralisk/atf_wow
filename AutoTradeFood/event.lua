@@ -181,7 +181,13 @@ local function eventHandlerBackend(self, event, arg1, arg2, arg3, arg4, ...)
     end
   elseif event == "CHAT_MSG_WHISPER" then
     if L.atfr_run then
-      L.F.whisper("重置工具人不接受任何密语指令，请M我的大号FS们哦！", arg2)
+      local message, author = arg1, arg2
+      local author = string.match(author, "([^-]+)")
+      if message == L.cmds.reset_instance_cmd then
+        L.F.reset_instance_request(author, nil)
+        return
+      end
+      L.F.whisper("重置工具人不接受任何密语指令，请M我的大号FS们哦！", author)
     end
   end
 end

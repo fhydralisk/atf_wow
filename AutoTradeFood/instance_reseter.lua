@@ -126,7 +126,11 @@ function L.F.drive_reset_instance()
             ResetInstances()
             print("reseted")
             reseter_context.reset = true
-            SendChatMessage("米豪已帮【"..player.."】重置副本。请M "..reseter_context.frontend.." 【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
+            if reseter_context.frontend then
+                SendChatMessage("米豪已帮【"..player.."】重置副本。请M "..reseter_context.frontend.." 【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
+            else
+                SendChatMessage("米豪已帮【"..player.."】重置副本。", "say")
+            end
         end
     else
         local queued = dequeue_reseter()
