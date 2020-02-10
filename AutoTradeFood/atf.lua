@@ -168,6 +168,12 @@ function SlashCmdList.ATF_SWITCH(msg)
     L.atfr_run = false
   elseif msg == "maintain" then
     L.atfr_run = "maintain"
+  elseif msg == "noparty" then
+    print("no party mode on")
+    L.no_party = true
+  elseif msg == "party" then
+    print("no party mode off")
+    L.no_party = nil
   end
 end
 

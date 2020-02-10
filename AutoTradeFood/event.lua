@@ -154,11 +154,17 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
       execute_command(msg, author)
     end
   elseif event == "PARTY_INVITE_REQUEST" then
+    local inviter = arg1
+    if L.no_party then
+      DeclineGroup()
+      StaticPopup_Hide("PARTY_INVITE")
+      L.F.whisper("米豪正在人工打本或进行其他的事情，希望您在向任何人组队前都要礼貌的询问哦！", inviter)
+      return
+    end
     if L.atfr_run then
       DeclineGroup()
       StaticPopup_Hide("PARTY_INVITE")
-      L.F.whisper("请勿邀请我进组，您可以M我【"..L.cmds.invite_cmd.."】进组，谢谢！", msg)
-      L.F.invite_player(msg)
+      L.F.whisper("请勿邀请我进组，您可以M我【"..L.cmds.invite_cmd.."】进组，谢谢！", inviter)
     end
   elseif event == "CHAT_MSG_SYSTEM" then
     if L.atfr_run then
