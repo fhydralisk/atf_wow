@@ -271,7 +271,7 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
             if #InstanceResetQueue > 0 then
                 print("queue is not empty")
                 for _, q in ipairs(InstanceResetQueue) do
-                    L.F.whisper("十分抱歉，重置工具人刚刚被服务器踢下线，所有重置请求已取消，请您重新请求。", q.player)
+                    SendChatMessage("十分抱歉，重置工具人刚刚被服务器踢下线，所有重置请求已取消，请您重新请求。", "WHISPER", nil, q.player)
                 end
             end
             InstanceResetQueue = {}
