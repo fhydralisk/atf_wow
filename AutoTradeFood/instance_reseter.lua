@@ -113,6 +113,13 @@ end
 function L.F.drive_reset_instance()
     if just_started then
         just_started = false
+        if #InstanceResetQueue > 0 then
+            print("queue is not empty")
+            for _, q in ipairs(InstanceResetQueue) do
+                SendChatMessage("十分抱歉，重置工具人刚刚被服务器踢下线，所有重置请求已取消，请您重新请求。", "WHISPER", nil, q.player)
+            end
+        end
+        InstanceResetQueue = {}
         if UnitInParty("player") then
             local player = UnitName("party1")
             if UnitIsGroupLeader("player") then
@@ -264,16 +271,6 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
             ATFResetBlockList = {}
         end
         if InstanceResetQueue == nil then
-            print("queue is nil")
-            InstanceResetQueue = {}
-        else
-            print("queue is empty")
-            if #InstanceResetQueue > 0 then
-                print("queue is not empty")
-                for _, q in ipairs(InstanceResetQueue) do
-                    SendChatMessage("十分抱歉，重置工具人刚刚被服务器踢下线，所有重置请求已取消，请您重新请求。", "WHISPER", nil, q.player)
-                end
-            end
             InstanceResetQueue = {}
         end
         return
