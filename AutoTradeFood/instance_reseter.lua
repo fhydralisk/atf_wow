@@ -9,6 +9,7 @@ local addonName, L = ...
 local frame = CreateFrame("FRAME", "ATFFrame")
 frame:RegisterEvent("CHAT_MSG_SYSTEM")
 frame:RegisterEvent("CHAT_MSG_ADDON")
+frame:RegisterEvent("ADDON_LOADED")
 
 
 local timeout = L.reset_instance_timeout
@@ -22,8 +23,7 @@ local reseter_context = {
     frontend=nil,
 }
 
-
-local reset_queue = {}
+local just_started = true
 
 local block_intention_list = {}
 local block_duration_to_block = 120
@@ -37,16 +37,16 @@ end
 
 
 local function dequeue_reseter()
-    if #reset_queue > 0 then
-        local queued = reset_queue[1]
-        table.remove(reset_queue, 1)
+    if #InstanceResetQueue > 0 then
+        local queued = InstanceResetQueue[1]
+        table.remove(InstanceResetQueue, 1)
         return queued
     end
 end
 
 
 local function notify_queued_player()
-    for i, q in ipairs(reset_queue) do
+    for i, q in ipairs(InstanceResetQueue) do
         L.F.whisper("重置队列已更新，您的当前位置："..i, q.player)
     end
 end
@@ -111,6 +111,31 @@ end
 
 
 function L.F.drive_reset_instance()
+    if just_started then
+        just_started = false
+        if UnitInParty("player") then
+            local player = UnitName("party1")
+            if UnitIsGroupLeader("player") then
+                if UnitIsConnected("party1") then
+                    L.F.whisper("由于工具人刚刚从掉线中恢复，本次重置失败，请您再次尝试下线，或离队后重新请求，十分抱歉！", player)
+                    reseter_context = {
+                        player=player,
+                        request_ts=GetTime(),
+                        invite_ts=GetTime(),
+                        frontend=nil,
+                    }
+                else
+                    ResetInstances()
+                    LeaveParty()
+                end
+            else
+                L.F.whisper("由于工具人刚刚从掉线中恢复，本次重置失败，请您重新请求，十分抱歉！", player)
+                LeaveParty()
+            end
+            return
+        end
+    end
+
     local player = reseter_context.player
     if player then
         if GetTime() - reseter_context.request_ts > timeout then
@@ -149,12 +174,12 @@ end
 
 
 local function enqueue_player(player, frontend)
-    for i, q_player in ipairs(reset_queue) do
+    for i, q_player in ipairs(InstanceResetQueue) do
         if q_player.player == player then
             q_player.request_count = q_player.request_count + 1
             if q_player.request_count > 10 then
                 L.F.whisper("由于您过于频繁的请求，您已被暂停使用该服务。您已被移出队列。", player)
-                table.remove(reset_queue, i)
+                table.remove(InstanceResetQueue, i)
                 block_player(player, block_duration_repeat_request)
                 return
             else
@@ -163,8 +188,8 @@ local function enqueue_player(player, frontend)
             end
         end
     end
-    table.insert(reset_queue, {player=player, request_ts=GetTime(), request_count=1, frontend=frontend})
-    return #reset_queue
+    table.insert(InstanceResetQueue, { player=player, request_ts=GetTime(), request_count=1, frontend=frontend})
+    return #InstanceResetQueue
 end
 
 
@@ -273,6 +298,20 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                     L.F.reset_instance_request(target, author)
                 end
             end
+        end
+    elseif event == "ADDON_LOADED" and arg1 == addonName then
+        if ATFResetBlockList == nil then
+            ATFResetBlockList = {}
+        end
+        if InstanceResetQueue == nil then
+            InstanceResetQueue = {}
+        else
+            if #InstanceResetQueue > 0 then
+                for _, q in ipairs(InstanceResetQueue) do
+                    L.F.whisper("十分抱歉，重置工具人刚刚被服务器踢下线，所有重置请求已取消，请您重新请求。", q.player)
+                end
+            end
+            InstanceResetQueue = {}
         end
     end
 end
