@@ -54,6 +54,8 @@ local last_fail_player_is_trade_player = true
 local last_trade_player_count = 0
 local last_trade_success_ts = 0
 
+local items_usable = {}
+
 
 local function set_last_trade_player(pname)
   last_fail_player_is_trade_player = true
@@ -68,16 +70,41 @@ local function set_last_trade_player(pname)
 end
 
 
-local function use_trinket()
-  local trinket = {13, 14}
-  for _, t in ipairs(trinket) do
+function L.F.register_item_to_use(name, condition)
+  ---
+  --- item: a dict of item information
+  ---      key: name, value: (string) item name;
+  ---      key: condition, value: (function) condition of item to use;
+  ---
+
+  if name and condition then
+    items_usable[name]=condition
+  end
+end
+
+
+L.F.register_item_to_use("博学坠饰", function()
+  return UnitPower("player") >= 3000
+end)
+
+
+L.F.register_item_to_use("思维加速宝石", function()
+  return UnitPower("player") >= 5000
+end)
+
+
+local function use_enforce_item()
+  for t = 1, 18 do
     local itemLink = GetInventoryItemLink("player", t)
-    if itemLink and itemLink:find(L.items.trinket_to_use) then
-      local cd = GetInventoryItemCooldown("player", t)
-      if cd == 0 and UnitPower("player") >= L.min_mana_to_use_trinket then
-        return "/use "..L.items.trinket_to_use.."\n"
+    for name, condition in pairs(items_usable) do
+      if itemLink and itemLink:find(name) then
+        local cd = GetInventoryItemCooldown("player", t)
+        if cd == 0 and condition() then
+          return "/use "..name.."\n"
+        end
       end
     end
+
   end
   return ""
 end
@@ -97,13 +124,12 @@ function L.F.bind_make_food_or_water()
     else
       local w = L.F.get_water_count(1)
       local b = L.F.get_bread_count(1)
-      local may_use_trinket = use_trinket()
+      local may_use_item = use_enforce_item()
       if w * 0.8 > b then
-        mw_button:SetAttribute("macrotext", may_use_trinket.."/cast 造食术")
+        mw_button:SetAttribute("macrotext", may_use_item .."/cast 造食术")
       else
-        mw_button:SetAttribute("macrotext", may_use_trinket.."/cast 造水术")
+        mw_button:SetAttribute("macrotext", may_use_item .."/cast 造水术")
       end
-
     end
   end
 end
