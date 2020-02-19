@@ -259,6 +259,25 @@ end
 
 
 local function eventHandler(self, event, arg1, arg2, arg3, arg4)
+    if event == "ADDON_LOADED" and arg1 == addonName then
+        if ATFResetBlockList == nil then
+            ATFResetBlockList = {}
+        end
+        if InstanceResetQueue == nil then
+            print("queue is nil")
+            InstanceResetQueue = {}
+        else
+            print("queue is empty")
+            if #InstanceResetQueue > 0 then
+                print("queue is not empty")
+                for _, q in ipairs(InstanceResetQueue) do
+                    L.F.whisper("十分抱歉，重置工具人刚刚被服务器踢下线，所有重置请求已取消，请您重新请求。", q.player)
+                end
+            end
+            InstanceResetQueue = {}
+        end
+        return
+    end
     if not(L.atfr_run) then
         return
     end
@@ -298,20 +317,6 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                     L.F.reset_instance_request(target, author)
                 end
             end
-        end
-    elseif event == "ADDON_LOADED" and arg1 == addonName then
-        if ATFResetBlockList == nil then
-            ATFResetBlockList = {}
-        end
-        if InstanceResetQueue == nil then
-            InstanceResetQueue = {}
-        else
-            if #InstanceResetQueue > 0 then
-                for _, q in ipairs(InstanceResetQueue) do
-                    L.F.whisper("十分抱歉，重置工具人刚刚被服务器踢下线，所有重置请求已取消，请您重新请求。", q.player)
-                end
-            end
-            InstanceResetQueue = {}
         end
     end
 end
