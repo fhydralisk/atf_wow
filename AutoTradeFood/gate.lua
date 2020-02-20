@@ -23,7 +23,7 @@ L.gate.gating_contexts = {}
 
 function L.F.say_gate_help(to_player)
   L.F.whisper("4步便捷开门！请花1分钟仔细阅读，简单高效无需求人开门即可达成！", to_player)
-  L.F.whisper("1. 在材料NPC处购买传【送门符文】1枚，也可以AH购买，我原价放了许多。", to_player)
+  L.F.whisper("1. 在材料NPC处购买【传送门符文】1枚，也可以AH购买，我原价放了许多。", to_player)
 --  L.F.whisper("**！！！请注意！！！，原价是20银！！！认准我的名字【米豪】或【米豪的维修师】**", to_player)
   L.F.whisper("2. 【先】M我主城的名字，“暴风城”、“铁炉堡”或“达纳苏斯”", to_player)
   L.F.whisper("3. 【然后】将石头主动交易给我：【传送门符文】【1枚】", to_player)
