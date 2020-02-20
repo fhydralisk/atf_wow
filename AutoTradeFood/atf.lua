@@ -21,15 +21,21 @@ SLASH_REPORT_STATISTICS1 = "/atrs"
 local AtfFrame = L.F.create_macro_button("ATFButton", "/atf")
 local AtfReportFrame = L.F.create_macro_button("ATFRButton", "/atfr")
 
+local pet_last_used = 0
+
 
 local function maybe_use_pet_when_busy()
-  if GetItemCount(L.items.pet_name) > 0 then
-    if L.F.get_busy_state() and not(L.F.check_buff(L.buffs.pet_debuff_name, nil, true)) then
-      SetBindingItem(interact_key, L.items.pet_name)
-      return true
-    elseif not(L.F.get_busy_state()) and L.F.check_buff(L.buffs.pet_debuff_name, nil, true) then
-      SetBindingItem(interact_key, L.items.pet_name)
-      return true
+  if GetTime() - pet_last_used > 2 then
+    if GetItemCount(L.items.pet_name) > 0 then
+      if L.F.get_busy_state() and not(L.F.check_buff(L.buffs.pet_debuff_name, nil, true)) then
+        SetBindingItem(interact_key, L.items.pet_name)
+        pet_last_used = GetTime()
+        return true
+      elseif not(L.F.get_busy_state()) and L.F.check_buff(L.buffs.pet_debuff_name, nil, true) then
+        SetBindingItem(interact_key, L.items.pet_name)
+        pet_last_used = GetTime()
+        return true
+      end
     end
   end
   return false
