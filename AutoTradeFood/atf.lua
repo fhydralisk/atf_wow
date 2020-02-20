@@ -94,6 +94,11 @@ end
 
 
 local function drive_state()
+  if L.next_state then
+    -- using next_state to bypass the concurrent issue.
+    L.state = L.next_state
+    L.next_state = nil
+  end
   if L.state == 1 then  -- working -> resting or buffing
     if UnitPower("player") < min_mana then
       L.state = 2
@@ -111,9 +116,9 @@ local function drive_state()
       DoEmote("work", "none")
     end
   elseif L.state == 3 then  -- gating -> working
-    local cd_gate = GetSpellCooldown(L.gate.gating_context["spell"])
-    if cd_gate > 0 then
-      L.gate.gating_context['cooldown_ts'] = cd_gate + 60
+    local cd_gate, cd_duration = GetSpellCooldown(L.gate.gating_context["spell"])
+    if cd_gate > 0 and cd_duration > 10 then
+      L.gate.gating_context['cooldown_ts'] = cd_gate + cd_duration
       L.state = 1
     end
   elseif L.state == 4 then -- buffing -> working

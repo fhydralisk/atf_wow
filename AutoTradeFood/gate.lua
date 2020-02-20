@@ -64,7 +64,7 @@ end
 local function transit_to_gate_state(player)
   L.gate.gating_contexts[player] = nil
   invalidate_requests(player, L.gate.gating_context.city)
-  L.state = 3
+  L.next_state = 3
   L.gate.gating_context.cooldown_ts = GetTime() + 60
   L.gate.gating_context.invited = false
   L.gate.gating_context.invite_ts = GetTime()
