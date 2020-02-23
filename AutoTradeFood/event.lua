@@ -117,7 +117,7 @@ local function execute_command(msg, author)
       if not(author == UnitName("player")) then
         L.F.whisper(
                 "【免费餐饮（请您直接交易）、传送门（请看帮助）？找米豪！跨位面，请M我【"
-                        ..L.cmds.invite_cmd.."】查看完整帮助，请M我【"
+                        ..L.cmds.invite_cmd.."】，查看完整帮助，请M我【"
                         ..L.cmds.help_cmd.."】】", author
         )
       end

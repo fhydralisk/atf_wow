@@ -241,7 +241,7 @@ function L.F.accept_accepted_trade()  -- HW
   if current_trade.accepted then
     AcceptTrade()
   elseif current_trade.start_ts and GetTime() - current_trade.start_ts > L.trade_timeout then
-    --print("closing outdated trade...")
+    print("closing outdated trade...")
     CloseTrade()
   end
 end

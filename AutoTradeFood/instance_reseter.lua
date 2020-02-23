@@ -253,10 +253,11 @@ end
 
 function L.F.say_reset_instance_help(to_player)
     L.F.whisper("重置副本功能可以帮您迅速传送至副本门口，并对副本内怪物进行重置。请按如下步骤操作", to_player)
-    L.F.whisper("1. 请确保您不在队伍中，然后M我【"..L.cmds.reset_instance_cmd.."】", to_player)
+    L.F.whisper("1. 请确保您不在队伍中，且副本内没有其他玩家，然后M我【"..L.cmds.reset_instance_cmd.."】", to_player)
     L.F.whisper("2. 如果请求成功，我的【重置工具人】会向您发起组队邀请。请您进入队伍后在"..timeout.."秒内下线。", to_player)
     L.F.whisper("3. 一旦您下线，我会立即重置副本。", to_player)
     L.F.whisper("4. 如果您未爆本，下次上线您将会出现在副本门口，且副本内怪物已重置。", to_player)
+    L.F.whisper("注：如果下次上线您发现在炉石点，说明：您已爆本或服务器总副本数量达到上限。", to_player)
 end
 
 

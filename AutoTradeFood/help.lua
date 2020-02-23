@@ -9,6 +9,7 @@ local addonName, L = ...
 local ad_msg = {
   "【米豪公益】需要55级水、45级面包，请直接交易“米豪”货仓！免费提供！",
   "【米豪公益】需要打开去主城的捷径，请与我私聊“传送门”！，牢记程序，免一切手续费！",
+  "【米豪公益】米豪4大功能：免费餐饮，0手续费传送门，跨位面，副本重置。详情M我【"..L.cmds.help_cmd.."】",
 --  "【米豪公益】如果亲觉得米豪公益好用，请奔走相告，米豪力争24小时为各位提供免费食水传送服务！",
   "【米豪公益】TIPs: 米豪开门只收【传送门符文】不收金币！！！详情M我【传送门】",
 --  "【米豪公益】TIPs: 如果米豪开始奥暴，并非米豪在划水，而是米豪食水充足无比！欢迎各种交易！完全免费！",
@@ -16,11 +17,11 @@ local ad_msg = {
   "【米豪公益】TIPs: 米豪平时无人值守，需要食物的请直接交易！需要传送请M我【传送门】，并认真按照开门程序操作，简单便捷！",
 --  "【米豪公益】米豪每天会升级维护，维护期间不能提供服务，敬请谅解！有关米豪的使用帮助，请M我【"..L.cmds.help_cmd.."】！",
   "【米豪公益】米豪现在可以为【25-54】的小号供餐，详情请M我【"..L.cmds.low_level_help_cmd.."】",
-  "【米豪公益】TIPs: 如果米豪变绿了，说明现在正处于用餐高峰，请M我【"..L.cmds.busy_cmd.."】查看高峰期规则！",
+  --"【米豪公益】TIPs: 如果米豪变绿了，说明现在正处于用餐高峰，请M我【"..L.cmds.busy_cmd.."】查看高峰期规则！",
   "【米豪公益】TIPs: 如需单刷重置FB工具人服务，请M我【"..L.cmds.reset_instance_help.."】查看使用方法！",
-  "【米豪公益】TIPs: 6组大水相当于约1分钟时间，当其他法师免费赠与您时间时，希望您能心存感激，保持礼貌哦！",
-  "【米豪公益】无论是在魔兽世界，还是现实生活，请各位一定勤洗手，保持个人清洁，远离疾病！",
-  "【米豪公益】特殊时期，请各位友人减少外出，外出请带一次性口罩，切忌水洗口罩哦，否则过滤功能会失效！",
+  --"【米豪公益】TIPs: 6组大水相当于约1分钟时间，当其他法师免费赠与您时间时，希望您能心存感激，保持礼貌哦！",
+  --"【米豪公益】无论是在魔兽世界，还是现实生活，请各位一定勤洗手，保持个人清洁，远离疾病！",
+  --"【米豪公益】特殊时期，请各位友人减少外出，外出请带一次性口罩，切忌水洗口罩哦，否则过滤功能会失效！",
   "【米豪公益】米豪祝愿湖北省早日攻克难关！武汉加油！湖北加油！中国加油！",
 }
 
@@ -72,17 +73,24 @@ function L.F.say_help(to_player)
           "WHISPER", "Common", to_player)
 end
 
+
+local is_odd = false
+
 function L.F.send_ad()
-  local water = L.F.get_water_count()
-  local bread = L.F.get_bread_count()
-  SendChatMessage(date("%X").."存货：【大水】"..water.."组，【面包】"..bread.."组。","say","Common")
-  local admsgs;
-  if L.F.get_busy_state() then
-    admsgs = ad_msg_busy
+  is_odd = not is_odd
+  if is_odd then
+    local water = L.F.get_water_count()
+    local bread = L.F.get_bread_count()
+    SendChatMessage(date("%X").."存货：【大水】"..water.."组，【面包】"..bread.."组。【免费】【直接交易】","say","Common")
   else
-    admsgs = ad_msg
+    local admsgs;
+    if L.F.get_busy_state() then
+      admsgs = ad_msg_busy
+    else
+      admsgs = ad_msg
+    end
+    SendChatMessage(date("%X")..admsgs[math.random(1, #admsgs)], "say", "Common")
   end
-  SendChatMessage(date("%X")..admsgs[math.random(1, #admsgs)], "say", "Common")
 end
 
 
