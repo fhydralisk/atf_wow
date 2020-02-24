@@ -71,7 +71,6 @@ local function execute_command(msg, author)
     elseif msg == L.cmds.reset_instance_cmd then
       L.F.reset_instance_request_frontend(author)
     elseif msg == L.cmds.invite_cmd then
-      L.F.whisper("【功能回归】重置副本功现已回归，请M我【"..L.cmds.reset_instance_cmd.."】重置副本，或M我【"..L.cmds.reset_instance_help.."】查看详情。", author)
       L.F.invite_player(author)
     elseif L.F.may_say_agent(msg, author) then
       -- agent speaking
@@ -188,12 +187,14 @@ local function eventHandlerBackend(self, event, arg1, arg2, arg3, arg4, ...)
   elseif event == "CHAT_MSG_WHISPER" then
     if L.atfr_run then
       local message, author = arg1, arg2
-      local author = string.match(author, "([^-]+)")
+      author = string.match(author, "([^-]+)")
       if message == L.cmds.reset_instance_cmd then
         L.F.reset_instance_request(author, nil)
-        return
+      elseif message == L.cmds.reset_instance_help then
+        L.F.say_reset_instance_help(author)
+      else
+        L.F.whisper("重置工具人不接受任何密语指令，请M我的大号FS们哦！", author)
       end
-      L.F.whisper("重置工具人不接受任何密语指令，请M我的大号FS们哦！", author)
     end
   end
 end
