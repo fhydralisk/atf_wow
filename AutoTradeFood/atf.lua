@@ -185,6 +185,12 @@ function SlashCmdList.ATF_SWITCH(msg)
   elseif msg == "party" then
     print("no party mode off")
     L.no_party = nil
+  elseif msg == "adv" then
+    print("say adv")
+    AtfAdv = true
+  elseif msg == "noadv" then
+    print("disable say adv")
+    AtfAdv = nil
   end
 end
 
