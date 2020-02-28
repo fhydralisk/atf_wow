@@ -69,7 +69,7 @@ end
 
 
 function L.F.refill_help(to_player)
-    L.F.whisper("【在货存不足时】，米豪将接受其他有共同志向玩家的补货救急，降低食客等待时间。", to_player)
+    L.F.whisper("【在货存不足时】，我将接受其他有共同志向玩家的补货救急，降低食客等待时间。", to_player)
     L.F.whisper("1. 如需补货，请首先M我【"..L.cmds.refill_cmd.."】，如果成功，我会向您回复消息。", to_player)
     L.F.whisper("2. 然后请在"..L.refill_timeout.."秒内与我进行交易，将食水放至您的交易栏内，并点击交易", to_player)
     L.F.whisper("3. 我将对您的补货内容进行验证，接受合法的补货，并广播致谢信息。", to_player)
@@ -148,7 +148,7 @@ local function should_accept_refill(trade)
         elseif refill_check_result == "water" and water > 0 then
             item_too_many = L.items.water_name
         elseif refill_check_result == "full" then
-            L.F.whisper("米豪背包几乎已满，请稍后尝试补货，谢谢！", player)
+            L.F.whisper("背包几乎已满，请稍后尝试补货，谢谢！", player)
             return false
         end
 

@@ -163,7 +163,7 @@ local function should_give_food(trade)
   local npc_name = trade.npc_name
 
   if tclass == "法师" and tlevel == 60 and L.F.get_water_count() < 25 then
-    L.F.whisper("60级法师仅能在米豪货存充足时取水。如希望为我补充货存，请M我【"..L.cmds.refill_cmd.."】。", npc_name)
+    L.F.whisper("60级法师仅能在我货存充足时取水。如希望为我补充货存，请M我【"..L.cmds.refill_cmd.."】。", npc_name)
     return true, true
   end
 

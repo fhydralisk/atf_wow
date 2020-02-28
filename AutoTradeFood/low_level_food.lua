@@ -158,7 +158,7 @@ function L.F.low_level_food_request(player)
     -- if L.F.get_busy_state() then
     if not (L.F.watch_dog_ok()) then
         L.F.whisper(
-                "米豪的驱动程序出现故障，宝宝餐暂时不可用，请等待米豪的维修师进行修复。十分抱歉！", player)
+                "驱动程序出现故障，宝宝餐暂时不可用，请等待维修师进行修复。十分抱歉！", player)
         return
     end
 
@@ -279,10 +279,10 @@ function L.F.check_low_level_food()
         elseif timeleft < L.low_level_wait_timeout / 4 and not(low_level_trade_context.reinformed) then
             if not low_level_trade_context.no_inform then
                 L.F.whisper(
-                        "您的小号食品即将在"..math.modf(timeleft).."秒后过期，请速来米豪身边取用。", player
+                        "您的小号食品即将在"..math.modf(timeleft).."秒后过期，请速来"..L.ad_name.."身边取用。", player
                 )
                 SendChatMessage(
-                        player.."，您的小号食品快要过期！请速来米豪身边取餐！", "yell", "Common"
+                        player.."，您的小号食品快要过期！请速来我身边取餐！", "yell", "Common"
                 )
             end
 
@@ -293,7 +293,7 @@ end
 
 
 function L.F.say_low_level_help(to_player)
-    L.F.whisper("米豪可以为【25-54】级小号烹饪符合小号等级的专属烹饪。请按如下步骤进行。", to_player)
+    L.F.whisper(L.ad_name.."可以为【25-54】级小号烹饪符合小号等级的专属烹饪。请按如下步骤进行。", to_player)
     L.F.whisper("1. 请位于我的视线内，M我【"..L.cmds.low_level_cmd.."】。", to_player)
     L.F.whisper("2. 我将在成功获取您的等级信息后回复您，并开始烹饪。", to_player)
     L.F.whisper("3. 【烹饪完毕后】，我将发送一条密语给您，请收到后立即前来取用。", to_player)
@@ -320,7 +320,7 @@ local function should_trade_low_level(trade)
             end
         else
             L.F.whisper(
-                "米豪目前可为【25-54】级小号烹饪小号食品，但需要预约。请M我【"..L.cmds.low_level_cmd.."】进行预约。", name
+                "我目前可为【25-54】级小号烹饪小号食品，但需要预约。请M我【"..L.cmds.low_level_cmd.."】进行预约。", name
             )
             return true, true
         end

@@ -89,7 +89,7 @@ local function execute_command(msg, author)
     elseif L.F.search_str_contains(msg, {"交易", "收到"}) then
       -- do nothing, auto sent by BurningTrade addons.
     elseif player_want_trade_gold(msg) then
-      L.F.whisper("米豪不收取任何金币，需要开门，请M我【传送门】查看步骤；需要吃喝，请直接交易。详情M我【帮助】", author)
+      L.F.whisper(L.ad_name.."不收取任何金币，需要开门，请M我【传送门】查看步骤；需要吃喝，请直接交易。详情M我【帮助】", author)
     elseif L.F.may_set_scale(msg, author) then
       -- do nothing
     elseif L.F.search_str_contains(msg, {"水", "面包"}) then
@@ -115,14 +115,14 @@ local function execute_command(msg, author)
     else
       if not(author == UnitName("player")) then
         L.F.whisper(
-                "【免费餐饮（请您直接交易）、传送门（请看帮助）？找米豪！跨位面，请M我【"
+                "【免费餐饮（请您直接交易）、传送门（请看帮助）？找"..L.ad_name.."！跨位面，请M我【"
                         ..L.cmds.invite_cmd.."】，查看完整帮助，请M我【"
                         ..L.cmds.help_cmd.."】】", author
         )
       end
     end
   elseif L.atfr_run == "maintain" then
-    L.F.whisper("米豪正在停机维护，暂时无法为您提供服务……", author)
+    L.F.whisper("正在停机维护，暂时无法为您提供服务……", author)
   end
 end
 
@@ -157,7 +157,7 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
     if L.no_party then
       DeclineGroup()
       StaticPopup_Hide("PARTY_INVITE")
-      L.F.whisper("米豪正在人工打本或进行其他的事情，希望您在向任何人组队前都要礼貌的询问哦！", inviter)
+      L.F.whisper("我正在人工打本或进行其他的事情，希望您在向任何人组队前都要礼貌的询问哦！", inviter)
       return
     end
     if L.atfr_run then

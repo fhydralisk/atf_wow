@@ -159,9 +159,9 @@ function L.F.drive_reset_instance()
             print("reseted")
             reseter_context.reset = true
             if reseter_context.frontend then
-                SendChatMessage("米豪已帮【"..player.."】重置副本。请M "..reseter_context.frontend.." 【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
+                SendChatMessage(L.ad_name.."已帮【"..player.."】重置副本。请M "..reseter_context.frontend.." 【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
             else
-                SendChatMessage("米豪已帮【"..player.."】重置副本。请M我【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
+                SendChatMessage(L.ad_name.."已帮【"..player.."】重置副本。请M我【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
             end
         end
     else
@@ -201,11 +201,6 @@ end
 
 
 function L.F.reset_instance_request_frontend(player)
-    if true then
-        L.F.whisper("由于遭到不明集团举报，米豪账号受限，重置功能无法使用。米豪正在申请解禁", player)
-        return
-    end
-
     local backend = L.F.choice_random_backend()
 
     if backend then
@@ -220,7 +215,7 @@ end
 function L.F.reset_instance_request(player, frontend)
     if not (L.F.watch_dog_ok()) then
         L.F.whisper(
-                "米豪的驱动程序出现故障，重置副本功能暂时失效，请等待米豪的维修师进行修复。十分抱歉！", player)
+                "驱动程序出现故障，重置副本功能暂时失效，请等待维修师进行修复。十分抱歉！", player)
         return
     end
     assert(not L.F.is_frontend())

@@ -10,6 +10,8 @@ L.addonName = addonName
 L.F = {}
 L.trade_hooks = {}
 
+L.ad_name = "米豪"
+
 L.cmds = {}
 L.cmds.retrieve_position = "pos"
 L.cmds.scale_cmd = "查看比例"

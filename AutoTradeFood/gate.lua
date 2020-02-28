@@ -84,7 +84,7 @@ end
 function L.F.gate_request(player, msg)
   if not (L.F.watch_dog_ok()) then
     L.F.whisper(
-        "米豪的驱动程序出现故障，开门服务暂时失效，请等待米豪的维修师进行修复。十分抱歉！", player)
+        "驱动程序出现故障，开门服务暂时失效，请等待维修师进行修复。十分抱歉！", player)
     return
   end
 
