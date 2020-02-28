@@ -12,6 +12,7 @@ local refill_context = {
             ["refill_request_ts"] = 0,
             ["preserve"] = true,
             ["last_refill_ts"] = 0,
+            thanked=true,
         }
     }
 }
@@ -21,6 +22,7 @@ function L.F.refill_request(player)
         refill_context.refillers[player] = {
             ["refill_request_ts"] = GetTime(),
             ["last_refill_ts"] = 0,
+            thanked=false,
         }
         L.F.whisper("补货请求成功，我将在"..L.refill_timeout.."秒内接受您的补货，感谢支持！", player)
     else
@@ -99,14 +101,17 @@ end
 
 local function send_thanks_message(trade)
     local player = trade.npc_name
-    local msg = string.format(
-        "感谢%s为我补货。M我【%s】可为我补货，M我【%s】查看贡献榜。",
-        player,
-        L.cmds.refill_cmd,
-        L.cmds.statistics
-    )
-    L.F.append_trade_say_messages(msg)
     DoEmote("thank", player)
+    if refill_context.refillers[player] and not refill_context.refillers[player].thanked then
+        local msg = string.format(
+            "感谢%s为我补货。M我【%s】可为我补货，M我【%s】查看贡献榜。",
+            player,
+            L.cmds.refill_cmd,
+            L.cmds.statistics
+        )
+        L.F.append_trade_say_messages(msg)
+        refill_context.refillers[player].thanked = true
+    end
     statistics_refill(trade)
 end
 
