@@ -71,6 +71,7 @@ local function execute_command(msg, author)
     elseif msg == L.cmds.reset_instance_cmd then
       L.F.reset_instance_request_frontend(author)
     elseif msg == L.cmds.invite_cmd then
+      L.F.whisper("米豪公益已搬迁至石火旅店，烦请您移步。重置副本功能恢复，详情M我【"..L.cmds.reset_instance_help.."】。", author)
       L.F.invite_player(author)
     elseif L.F.may_say_agent(msg, author) then
       -- agent speaking
