@@ -201,11 +201,6 @@ end
 
 
 function L.F.reset_instance_request_frontend(player)
-    if true then
-        L.F.whisper("由于遭到不明集团举报，米豪账号受限，重置功能无法使用。米豪正在申请解禁", player)
-        return
-    end
-
     local backend = L.F.choice_random_backend()
 
     if backend then
