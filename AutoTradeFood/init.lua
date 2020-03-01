@@ -75,6 +75,7 @@ L.admin_names = {
     ["米豪的备胎"] = true,
     ["米豪的维修师"] = true,
     ["米豪"] = true,
+    ["云缠绕星光丶"] = true,
 }
 
 L.agent_timeout = 7200

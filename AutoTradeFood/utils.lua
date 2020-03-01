@@ -136,7 +136,7 @@ function L.F.get_party_member_count()
   end
 
   if prefix then
-    local online, offline = {}, {}
+    local online, offline = {"player"}, {}
     for i = 1, members_count do
       local unit = prefix..i
       if UnitIsConnected(unit) then

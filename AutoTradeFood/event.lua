@@ -77,7 +77,7 @@ local function execute_command(msg, author)
       L.F.whisper("大水库存："..L.F.get_water_count(), author)
       L.F.whisper("面包库存："..L.F.get_bread_count(), author)
       local members, online = L.F.get_party_member_count()
-      L.F.whisper("成员数量："..members.."，在线数量："..#online)
+      L.F.whisper("成员数量："..members.."，在线数量："..#online, author)
     elseif msg == L.cmds.kick_offline and L.F.player_is_admin(author) then
       local _, _, offline = L.F.get_party_member_count()
       for _, unit in ipairs(offline) do
