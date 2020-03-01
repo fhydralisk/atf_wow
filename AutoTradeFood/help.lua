@@ -129,20 +129,25 @@ local function whisper_or_say(message, to_player)
 end
 
 
-function L.F.say_statistics(to_player)
-  whisper_or_say("米豪今日数据：", to_player)
+function L.F.say_statistics(to_player, day)
+  if day == nil then
+    day = 0
+  end
+  local ts = math.modf(time()) - day * 24 * 60 * 60
+  local date_to_stat = date("%x", ts)
+  whisper_or_say("米豪"..date_to_stat.."数据：", to_player)
 
-  local gate_count = L.F.query_statistics_int("trade.gate.count."..date("%x"))
+  local gate_count = L.F.query_statistics_int("trade.gate.count."..date_to_stat)
   whisper_or_say("总计开门：【"..gate_count.."】次", to_player)
 
-  local water_count = L.F.query_statistics_int("trade.food.all."..date("%x").."."..L.items.water_name)
-  local food_count = L.F.query_statistics_int("trade.food.all."..date("%x").."."..L.items.food_name)
+  local water_count = L.F.query_statistics_int("trade.food.all."..date_to_stat.."."..L.items.water_name)
+  local food_count = L.F.query_statistics_int("trade.food.all."..date_to_stat.."."..L.items.food_name)
   whisper_or_say("总计送水：【"..
           math.modf(water_count / 20).."】组，送面包：【"..
           math.modf(food_count / 20).."】组", to_player)
 
   whisper_or_say("职业需求排序：", to_player)
-  local trade_by_class = L.F.query_statistics("trade.food.class."..date("%x"))
+  local trade_by_class = L.F.query_statistics("trade.food.class."..date_to_stat)
   local class_count = {}
   for class, items in pairs(trade_by_class) do
     table.insert(class_count, {class=class, count= L.F.nil_fallback_zero(items[L.items.food_name]) +  L.F.nil_fallback_zero(items[L.items.water_name])})
@@ -153,7 +158,7 @@ function L.F.say_statistics(to_player)
   end
 
   whisper_or_say("吃货排行：", to_player)
-  local trade_by_ind = L.F.query_statistics("trade.food.ind."..date("%x"))
+  local trade_by_ind = L.F.query_statistics("trade.food.ind."..date_to_stat)
   local trade_count = {}
   for name, items in pairs(trade_by_ind) do
     table.insert(trade_count, {name=name, count=L.F.nil_fallback_zero(items[L.items.food_name]) + L.F.nil_fallback_zero(items[L.items.water_name])})
@@ -165,7 +170,7 @@ function L.F.say_statistics(to_player)
   end
 
   whisper_or_say("补货排行：", to_player)
-  local refill_by_ind = L.F.query_statistics("trade.refill.ind."..date("%x"))
+  local refill_by_ind = L.F.query_statistics("trade.refill.ind."..date_to_stat)
   local refill_count = {}
   for name, items in pairs(refill_by_ind) do
     table.insert(refill_count, {name=name, food_count= L.F.nil_fallback_zero(items[L.items.food_name]), water_count= L.F.nil_fallback_zero(items[L.items.water_name])})
@@ -177,4 +182,15 @@ function L.F.say_statistics(to_player)
     if i >= 3 then break end
   end
 
+end
+
+
+function L.F.may_say_statistics(msg, author)
+  local pattern = L.cmds.statistics.."%-(%d+)"
+  local day = string.match(msg, pattern)
+  if day or msg == L.cmds.statistics then
+    L.F.say_statistics(author, day)
+    return true
+  end
+  return false
 end

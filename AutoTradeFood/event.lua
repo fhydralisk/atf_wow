@@ -73,6 +73,16 @@ local function execute_command(msg, author)
     elseif msg == L.cmds.invite_cmd then
       L.F.whisper("米豪公益已搬迁至石火旅店，烦请您移步。重置副本功能恢复，详情M我【"..L.cmds.reset_instance_help.."】。", author)
       L.F.invite_player(author)
+    elseif msg == L.cmds.stat and L.F.player_is_admin(author) then
+      L.F.whisper("大水库存："..L.F.get_water_count(), author)
+      L.F.whisper("面包库存："..L.F.get_bread_count(), author)
+      local members, online = L.F.get_party_member_count()
+      L.F.whisper("成员数量："..members.."，在线数量："..#online)
+    elseif msg == L.cmds.kick_offline and L.F.player_is_admin(author) then
+      local _, _, offline = L.F.get_party_member_count()
+      for _, unit in ipairs(offline) do
+        UninviteUnit(unit)
+      end
     elseif L.F.may_say_agent(msg, author) then
       -- agent speaking
     elseif msg == "3" then
@@ -105,8 +115,8 @@ local function execute_command(msg, author)
       L.F.say_gate_help(author)
     elseif msg == L.cmds.say_ack then
       L.F.say_acknowledgements(author)
-    elseif msg == L.cmds.statistics then
-      L.F.say_statistics(author)
+    elseif L.F.may_say_statistics(msg, author) then
+      -- do nothing
     elseif L.F.search_str_contains(msg, {"位面", "组", "zu"}) and not L.F.search_str_contains(msg, {"水", "面包", "吃", "喝"}) then
       L.F.whisper("请M我【"..L.cmds.invite_cmd.."】进组，而不是M我3，zu，组，位面，谢谢", author)
     elseif L.F.search_str_contains(msg, {"脚本", "外挂", "机器", "自动", "宏"}) then

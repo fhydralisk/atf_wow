@@ -122,3 +122,32 @@ end
 function L.F.is_frontend()
   return UnitClass("player") == "法师" and UnitLevel("player") == 60
 end
+
+
+function L.F.get_party_member_count()
+  local members_count = GetNumGroupMembers()
+  local prefix
+  if UnitInRaid("player") then
+    prefix = "raid"
+  elseif UnitInParty("player") then
+    prefix = "party"
+  else
+    prefix = nil
+  end
+
+  if prefix then
+    local online, offline = {}, {}
+    for i = 1, members_count do
+      local unit = prefix..i
+      if UnitIsConnected(unit) then
+        table.insert(online, unit)
+      else
+        table.insert(offline, unit)
+      end
+    end
+    return members_count, online, offline
+  else
+    return 1, {"player"}, {}
+  end
+
+end

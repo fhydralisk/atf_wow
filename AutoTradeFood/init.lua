@@ -11,6 +11,8 @@ L.F = {}
 L.trade_hooks = {}
 
 L.cmds = {}
+L.cmds.stat = "stat"
+L.cmds.kick_offline = "kick offline"
 L.cmds.retrieve_position = "pos"
 L.cmds.scale_cmd = "查看比例"
 L.cmds.help_cmd = "帮助"
