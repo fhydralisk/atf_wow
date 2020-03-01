@@ -214,6 +214,8 @@ local function eventHandlerBackend(self, event, arg1, arg2, arg3, arg4, ...)
         L.F.reset_instance_request(author, nil)
       elseif message == L.cmds.reset_instance_help then
         L.F.say_reset_instance_help(author)
+      elseif L.F.may_say_statistics(message, author) then
+        -- do nothing
       else
         L.F.whisper("重置工具人不接受任何密语指令，请M我的大号FS们哦！", author)
       end

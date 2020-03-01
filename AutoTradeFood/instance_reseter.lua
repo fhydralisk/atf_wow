@@ -17,11 +17,16 @@ local timeout = L.reset_instance_timeout
 
 local reseter_context = {
     player=nil,
+    class=nil,
     request_ts=nil,
     invite_ts=nil,
     reset=nil,
     frontend=nil,
+    instance=nil,
+    queue_length=nil,
 }
+
+local last_ctx = {}
 
 local just_started = true
 
@@ -68,9 +73,9 @@ end
 
 local function block_player(player, duration)
     if duration == 0 then
-        ATFResetBlockList[player] = { deadline=0}
+        ATFResetBlockList[player] = { deadline=0 }
     else
-        ATFResetBlockList[player] = { deadline=GetTime() + duration}
+        ATFResetBlockList[player] = { deadline=GetTime() + duration }
     end
 end
 
@@ -129,6 +134,7 @@ function L.F.drive_reset_instance()
                         player=player,
                         request_ts=GetTime(),
                         invite_ts=GetTime(),
+                        class=UnitClass("party1"),
                         frontend=nil,
                     }
                 else
@@ -168,6 +174,7 @@ function L.F.drive_reset_instance()
         local queued = dequeue_reseter()
         if queued then
             player = queued.player
+            last_ctx = reseter_context
             reseter_context.player = player
             reseter_context.request_ts = GetTime()
             reseter_context.frontend = queued.frontend
@@ -266,6 +273,33 @@ function L.F.bind_reseter_backend()
 end
 
 
+local function statistics_reset_instance(reset_ctx)
+    local name = reset_ctx.player
+    local class = reset_ctx.class
+    local instance = reset_ctx.instance
+    local key_instance_ind = "reset.ind."..date("%x").."."..name
+    local key_instance_class = "reset.class."..date("%x").."."..class
+    local key_instance_instance = "reset.instance."..date("%x").."."..instance
+    local key_instance_count = "reset.count."..date("%x")
+    L.F.merge_statistics_plus_int(key_instance_ind, 1)
+    L.F.merge_statistics_plus_int(key_instance_class, 1)
+    L.F.merge_statistics_plus_int(key_instance_instance, 1)
+    L.F.merge_statistics_plus_int(key_instance_count, 1)
+end
+
+
+local function may_record_success(message)
+    local pattern = string.format(INSTANCE_RESET_SUCCESS, "(.+)")
+    local instance = string.match(message, pattern)
+    if instance then
+        last_ctx.instance = instance
+        last_ctx.queue_length = #InstanceResetQueue
+        statistics_reset_instance(last_ctx)
+        return true
+    end
+end
+
+
 local function eventHandler(self, event, arg1, arg2, arg3, arg4)
     if event == "ADDON_LOADED" and arg1 == addonName then
         if ATFResetBlockList == nil then
@@ -292,6 +326,7 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                     or string.format(ERR_RAID_MEMBER_ADDED_S, reseter_context.player) == message then
                 L.F.whisper("请抓紧时间下线，我将在您下线后立即重置副本。", reseter_context.player)
                 reseter_context.invite_ts = GetTime()
+                reseter_context.class = UnitClass(reseter_context.player)
             elseif string.format(ERR_LEFT_GROUP_S, reseter_context.player) == message
                     or string.format(ERR_RAID_MEMBER_REMOVED_S, reseter_context.player) == message
                     or ERR_GROUP_DISBANDED == message then
@@ -300,6 +335,8 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                 reseter_context = {}
             elseif string.format(ERR_BAD_PLAYER_NAME_S, reseter_context.player) == message then
                 reseter_context = {}
+            elseif may_record_success(message) then
+                -- do nothing
             end
         end
     elseif event == "CHAT_MSG_ADDON" and arg1 == "ATF" then

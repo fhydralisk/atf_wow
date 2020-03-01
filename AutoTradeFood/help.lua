@@ -185,11 +185,62 @@ function L.F.say_statistics(to_player, day)
 end
 
 
+function L.F.say_statistics_backend(to_player, day)
+  if day == nil then
+    day = 0
+  end
+  local ts = math.modf(time()) - day * 24 * 60 * 60
+  local date_to_stat = date("%x", ts)
+  whisper_or_say("米豪"..date_to_stat.."数据：", to_player)
+
+  local gate_count = L.F.query_statistics_int("reset.count."..date_to_stat)
+  whisper_or_say("总计重置：【"..gate_count.."】次", to_player)
+
+  whisper_or_say("职业排行：", to_player)
+  local reset_by_class = L.F.query_statistics("reset.class."..date_to_stat)
+  local class_count = {}
+  for class, cnt in pairs(reset_by_class) do
+    table.insert(class_count, {class=class, count=cnt})
+  end
+  table.sort(class_count, function(a, b) return a.count > b.count end)
+  for i, class in ipairs(class_count) do
+    whisper_or_say(""..i..". "..class.class.." 重置：【"..class.count.."】次", to_player)
+  end
+
+  whisper_or_say("副本排行：", to_player)
+  local reset_by_instance = L.F.query_statistics("reset.instance."..date_to_stat)
+  local instance_count = {}
+  for instance, cnt in pairs(reset_by_instance) do
+    table.insert(instance_count, {instance=instance, count=cnt})
+  end
+  table.sort(instance_count, function(a, b) return a.count > b.count end)
+  for i, instance in ipairs(instance_count) do
+    whisper_or_say(""..i..". ".. instance.instance.." 重置：【".. instance.count.."】次", to_player)
+  end
+
+  whisper_or_say("肝帝排行：", to_player)
+  local reset_by_ind = L.F.query_statistics("reset.ind."..date_to_stat)
+  local ind_count = {}
+  for ind, cnt in pairs(reset_by_ind) do
+    table.insert(ind_count, {name=ind, count=cnt})
+  end
+  table.sort(ind_count, function(a, b) return a.count > b.count end)
+  for i, ind in ipairs(ind_count) do
+    whisper_or_say(""..i..". ".. ind.name.." 重置：【".. ind.count.."】次", to_player)
+    if i >= 3 then break end
+  end
+end
+
+
 function L.F.may_say_statistics(msg, author)
   local pattern = L.cmds.statistics.."%-(%d+)"
   local day = string.match(msg, pattern)
   if day or msg == L.cmds.statistics then
-    L.F.say_statistics(author, day)
+    if L.F.is_frontend() then
+      L.F.say_statistics(author, day)
+    else
+      L.F.say_statistics_backend(author, day)
+    end
     return true
   end
   return false
