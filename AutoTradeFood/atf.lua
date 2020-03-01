@@ -140,6 +140,7 @@ function SlashCmdList.ATFCmd(msg)
     L.F.ping_backends()
     L.F.drive_enlarge_baggage_frontend()
     L.F.may_cleanup_baggage()
+    L.F.may_cleanup_group()
   else
     auto_bind_backend()
     L.F.drive_reset_instance()

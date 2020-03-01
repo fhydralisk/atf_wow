@@ -56,6 +56,20 @@ function L.F.set_msg_fwd(msg)
 end
 
 
+local cleanup_group
+
+
+function L.F.may_cleanup_group()
+  if cleanup_group then
+    local _, _, offline = L.F.get_party_member_count()
+    for _, unit in ipairs(offline) do
+      UninviteUnit(unit)
+    end
+    cleanup_group = nil
+  end
+end
+
+
 local function execute_command(msg, author)
   author = string.match(author, "([^-]+)")
 
@@ -79,10 +93,7 @@ local function execute_command(msg, author)
       local members, online = L.F.get_party_member_count()
       L.F.whisper("成员数量："..members.."，在线数量："..#online, author)
     elseif msg == L.cmds.kick_offline and L.F.player_is_admin(author) then
-      local _, _, offline = L.F.get_party_member_count()
-      for _, unit in ipairs(offline) do
-        UninviteUnit(unit)
-      end
+      cleanup_group = true
     elseif L.F.may_say_agent(msg, author) then
       -- agent speaking
     elseif msg == "3" then
