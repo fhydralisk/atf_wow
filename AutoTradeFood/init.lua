@@ -111,6 +111,9 @@ local function eventHandler(self, event, msg)
         if ATFResetBlockList == nil then
             ATFResetBlockList = {}
         end
+        if ForwardIgnoreSource == nil then
+            ForwardIgnoreSource = {}
+        end
     end
 end
 

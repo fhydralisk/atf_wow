@@ -14,6 +14,7 @@ SLASH_ATF_SWITCH1 = "/atfs"
 SLASH_ATF_DEBUG1 = "/atfd"
 SLASH_ATG_WHITELIST1 = "/atgwl"
 SLASH_ATF_FWD1 = "/atff"
+SLASH_ATF_FWD_IGNORE1 = "/atffignore"
 SLASH_RESET_BACKEND1 = "/atrb"
 SLASH_REPORT_STATISTICS1 = "/atrs"
 
@@ -256,6 +257,10 @@ function SlashCmdList.ATF_FWD(msg)
   print("fwd to "..msg)
 end
 
+
+function SlashCmdList.ATF_FWD_IGNORE(msg)
+  L.F.ignore_fwd_source(msg)
+end
 
 function SlashCmdList.RESET_BACKEND(msg)
   local cmd, player = string.match(msg, "(.-) (.+)")

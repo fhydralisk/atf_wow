@@ -165,9 +165,9 @@ function L.F.drive_reset_instance()
             print("reseted")
             reseter_context.reset = true
             if reseter_context.frontend then
-                SendChatMessage("米豪已帮【"..player.."】重置副本。请M "..reseter_context.frontend.." 【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
+                --SendChatMessage("米豪已帮【"..player.."】重置副本。请M "..reseter_context.frontend.." 【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
             else
-                SendChatMessage("米豪已帮【"..player.."】重置副本。请M我【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
+                --SendChatMessage("米豪已帮【"..player.."】重置副本。请M我【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
             end
         end
     else

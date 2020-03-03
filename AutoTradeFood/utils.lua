@@ -127,16 +127,18 @@ end
 function L.F.get_party_member_count()
   local members_count = GetNumGroupMembers()
   local prefix
+  local online, offline = {}, {}
+
   if UnitInRaid("player") then
     prefix = "raid"
   elseif UnitInParty("player") then
+    table.insert(online, "player")
     prefix = "party"
   else
     prefix = nil
   end
 
   if prefix then
-    local online, offline = {"player"}, {}
     for i = 1, members_count do
       local unit = prefix..i
       if UnitIsConnected(unit) then
