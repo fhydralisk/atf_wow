@@ -20,7 +20,7 @@ end
 
 
 local function queue_agent_message(msg, author)
-    L.F.queue_message("(代理人)"..msg)
+    L.F.queue_message("(代理人)"..msg, true)
 end
 
 

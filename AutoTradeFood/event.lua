@@ -231,7 +231,7 @@ local function eventHandlerBackend(self, event, arg1, arg2, arg3, arg4, ...)
       elseif L.F.may_say_statistics(message, author) then
         -- do nothing
       elseif message == "test" and L.F.player_is_admin(author) then
-        SendChatMessage("语言自检测试", "say")
+        L.F.queue_message("语言系统自检", true)
       else
         L.F.whisper_or_say("重置工具人不接受任何密语指令，请M我的大号FS们哦！", author)
       end
@@ -253,7 +253,7 @@ local function eventHandlerInviter(self, event, arg1, arg2, arg3, arg4, ...)
       if message == L.cmds.invite_cmd then
         L.F.invite_player(author)
       elseif message == "test" and L.F.player_is_admin(author) then
-        SendChatMessage("语言自检测试", "say")
+        L.F.queue_message("语言系统自检", true)
       else
         L.F.whisper_or_say("请M我的大号FS们您需要的指令哦！", author)
       end
@@ -283,20 +283,29 @@ end
 
 
 local message_queue = {}
+local message_queue_force = {}
 
 
-function L.F.queue_message(message)
-  table.insert(message_queue, message)
+function L.F.queue_message(message, force)
+  if force then
+      table.insert(message_queue_force, message)
+  else
+      table.insert(message_queue, message)
+  end
 end
 
 
 function L.F.dequeue_say_messages()
+  for _, message in ipairs(message_queue_force) do
+    SendChatMessage(message, "say")
+  end
   if not ATFClientSettings.silent then
     for _, message in ipairs(message_queue) do
       SendChatMessage(message, "say")
     end
   end
   message_queue = {}
+  message_queue_force = {}
 end
 
 
