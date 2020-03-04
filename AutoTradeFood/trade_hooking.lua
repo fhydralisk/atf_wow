@@ -7,13 +7,16 @@
 local addonName, L = ...
 
 
-if L.F.is_frontend() then
-    L.F.append_trade_hook(L.trade_hooks.trade_stone)
-    L.F.append_trade_hook(L.trade_hooks.enlarge)
-    L.F.append_trade_hook(L.trade_hooks.trade_refill)
-    L.F.append_trade_hook(L.trade_hooks.trade_low_level_food)
-    L.F.append_trade_hook(L.trade_hooks.trade_food)
-elseif L.F.is_enlarger() then
-    L.F.append_trade_hook(L.trade_hooks.enlarge)
-    L.F.append_trade_hook(L.trade_hooks.backend_default)
+function L.F.start_trade_hook()
+    if L.F.is_frontend() then
+        L.F.append_trade_hook(L.trade_hooks.trade_stone)
+        L.F.append_trade_hook(L.trade_hooks.enlarge)
+        L.F.append_trade_hook(L.trade_hooks.trade_refill)
+        L.F.append_trade_hook(L.trade_hooks.trade_low_level_food)
+        L.F.append_trade_hook(L.trade_hooks.trade_food)
+    elseif L.F.is_enlarger() then
+        L.F.append_trade_hook(L.trade_hooks.enlarge)
+        L.F.append_trade_hook(L.trade_hooks.backend_default)
+    end
 end
+

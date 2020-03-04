@@ -267,12 +267,14 @@ local function eventHandlerInviter(self, event, arg1, arg2, arg3, arg4, ...)
 end
 
 
-if L.F.is_frontend() then
-  frame:SetScript("OnEvent", eventHandlerFrontend)
-elseif L.F.is_backend() then
-  frame:SetScript("OnEvent", eventHandlerBackend)
-elseif L.F.is_inviter() then
-  frame:SetScript("OnEvent", eventHandlerInviter)
+function L.F.start_handler()
+  if L.F.is_frontend() then
+    frame:SetScript("OnEvent", eventHandlerFrontend)
+  elseif L.F.is_backend() then
+    frame:SetScript("OnEvent", eventHandlerBackend)
+  elseif L.F.is_inviter() then
+    frame:SetScript("OnEvent", eventHandlerInviter)
+  end
 end
 
 

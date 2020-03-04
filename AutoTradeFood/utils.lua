@@ -163,28 +163,32 @@ function L.F.whisper_or_say(message, to_player)
 end
 
 
-function L.F.client_type()
-  return ATFClientSettings.client_types
+function L.F.is_client_type(t)
+  if ATFClientSettings then
+    return ATFClientSettings.client_types[t]
+  else
+    return false
+  end
 end
 
 
 function L.F.is_frontend()
-  return L.F.client_type().frontend
+  return L.F.is_client_type("frontend")
 end
 
 
 function L.F.is_backend()
-  return L.F.client_type().backend
+  return L.F.is_client_type("backend")
 end
 
 
 function L.F.is_inviter()
-  return L.F.client_type().inviter
+  return L.F.is_client_type("inviter")
 end
 
 
-function L.F.is_inviter()
-  return L.F.client_type().enlarger
+function L.F.is_enlarger()
+  return L.F.is_client_type("enlarger")
 end
 
 

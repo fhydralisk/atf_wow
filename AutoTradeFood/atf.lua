@@ -17,7 +17,6 @@ SLASH_ATF_FWD1 = "/atff"
 SLASH_ATF_FWD_IGNORE1 = "/atffignore"
 SLASH_RESET_BACKEND1 = "/atrb"
 SLASH_REPORT_STATISTICS1 = "/atrs"
-SLASH_SET_SETTINGS1 = "/atfset"
 
 
 local AtfFrame = L.F.create_macro_button("ATFButton", "/atf")
@@ -185,6 +184,8 @@ function SlashCmdList.ATF_SWITCH(msg)
     L.atfr_run = true
     SetBindingClick(atf_key, "ATFButton")
     SetBindingClick(atfr_key, "ATFRButton")
+    L.F.start_handler()
+    L.F.start_trade_hook()
   elseif msg == "off" then
     if L.atfr_run then
       SendChatMessage("自动模式已关闭，人工介入")
@@ -264,6 +265,7 @@ end
 
 
 function SlashCmdList.ATF_FWD(msg)
+  L.F.start_handler()
   L.F.set_msg_fwd(msg)
   print("fwd to "..msg)
 end
@@ -293,17 +295,4 @@ function SlashCmdList.REPORT_STATISTICS(msg)
   else
     L.F.say_statistics()
   end
-end
-
-
-function SlashCmdList.SET_SETTINGS(msg)
-  local key, value = string.match(msg, "(.-) (.+)")
-  key = L.F.split(key)
-  local root = ATFClientSettings
-  for i = 1, #key - 1 do
-    root = root[key[i]]
-  end
-  if root[key[#key]] then print("origin:"..root[key[#key]]) end
-  root[key[#key]] = value
-  print("set "..key[#key].."to "..value)
 end
