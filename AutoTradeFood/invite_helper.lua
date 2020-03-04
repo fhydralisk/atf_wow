@@ -10,6 +10,8 @@ local addonName, L = ...
 local frame = CreateFrame("FRAME")
 frame:RegisterEvent("CHAT_MSG_ADDON")
 
+local frontend = nil
+
 local function eventHandler(self, event, arg1, arg2, arg3, arg4)
     if L.F.is_inviter() then
         if event == "CHAT_MSG_ADDON" and arg1 == "ATF" then
@@ -19,6 +21,9 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
             if cmd and msg then
                 if cmd == "invite" then
                     L.F.invite_player(msg)
+                    if msg == author then
+                        frontend = author
+                    end
                 elseif cmd == "/s" then
                     L.F.whisper_or_say(msg)
                 elseif cmd == "/w" then
@@ -27,6 +32,14 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                 end
             end
         end
+    end
+end
+
+
+function L.F.drive_inviter()
+    if frontend and GetRaidTargetIndex(frontend) == nil and UnitInRaid(frontend) then
+        SetRaidTarget(frontend, 6)
+        PromoteToAssistant(frontend)
     end
 end
 
