@@ -15,19 +15,17 @@ L.gate.gating_context = {
   requester = "",
   cooldown_ts = 0,
   city = "",
-  invited = false,
-  invite_ts = 0,
 }
 L.gate.gating_contexts = {}
 
 
 function L.F.say_gate_help(to_player)
   L.F.whisper_or_say("4步便捷开门！请花1分钟仔细阅读，简单高效无需求人开门即可达成！", to_player)
-  L.F.whisper_or_say("1. 在材料NPC处购买【传送门符文】1枚，也可以AH购买，我原价放了许多。", to_player)
---  L.F.whisper_or_say("**！！！请注意！！！，原价是20银！！！认准我的名字【米豪】或【米豪的维修师】**", to_player)
-  L.F.whisper_or_say("2. 【先】M我主城的名字，“暴风城”、“铁炉堡”或“达纳苏斯”", to_player)
+  L.F.whisper_or_say("1. 在【隔壁】材料NPC处购买【传送门符文】1枚。", to_player)
+  L.F.whisper_or_say("2. 【先】M我主城的名字，“暴风城”、“铁炉堡”或“达纳苏斯”，M语后我将自动邀请您进组。", to_player)
   L.F.whisper_or_say("3. 【然后】将石头主动交易给我：【传送门符文】【1枚】", to_player)
-  L.F.whisper_or_say("4. 【交易成功后】，我将【自动】向您发起组队邀请，并在短时间内施放传送门法术，请确保您已退组哈", to_player)
+  L.F.whisper_or_say("4. 【交易成功后】，我将在短时间内施放传送门法术。", to_player)
+  L.F.whisper_or_say("注. 如果交易成功后10秒内未能施放传送门，请您试上述步骤，并邮件与我联系索赔，感谢！", to_player)
   L.F.whisper_or_say("请您使用传送门后自行离队，祝您旅途愉快！", to_player)
 end
 
@@ -66,9 +64,7 @@ local function transit_to_gate_state(player)
   invalidate_requests(player, L.gate.gating_context.city)
   L.next_state = 3
   L.gate.gating_context.cooldown_ts = GetTime() + 60
-  L.gate.gating_context.invited = false
-  L.gate.gating_context.invite_ts = GetTime()
-  L.F.invite_player(player)
+  if not UnitInParty(player) then L.F.invite_player(player) end
 end
 
 
@@ -116,9 +112,10 @@ function L.F.gate_request(player, msg)
     spell = spell,
   }
   L.F.whisper_or_say(
-    city.."传送门指定成功，请于"..gate_request_timeout..
-        "秒内交易我【1】枚【传送门符文】。请于施法材料商或AH原价从我手中购买该材料。请注意，原价为20Y，如果没有这个价格的，请寻找材料NPC！", player
+    city.."传送门指定成功，请接受组队邀请，并于"..gate_request_timeout..
+        "秒内交易我【1】枚【传送门符文】。隔壁施法材料商20Y出售该材料，烦请移步！", player
   )
+  L.F.invite_player(player)
 end
 
 
@@ -127,19 +124,6 @@ function L.F.drive_gate()
     if GetTime() - gc.request_ts > gate_request_timeout then
       L.F.whisper_or_say("传送门未能成功开启，未收到符文石", player)
       L.gate.gating_contexts[player] = nil
-    end
-  end
-  if GetTime() < L.gate.gating_context.cooldown_ts and L.gate.gating_context.invited == false then
-    if UnitInParty(L.gate.gating_context.requester) then
-      L.gate.gating_context.invited = true
-    elseif GetTime() - L.gate.gating_context.invite_ts >= 4 then
-      L.F.whisper_or_say(
-              "上次邀请未成功！请您确认离队，我会在传送门消失前重复尝试邀请您！", L.gate.gating_context.requester
-      )
-      L.gate.gating_context.invite_ts = GetTime()
-      L.F.invite_player(L.gate.gating_context.requester)
-    else
-      -- pending. do nothing.
     end
   end
 end
@@ -156,7 +140,12 @@ end
 
 local function should_trade_stone(trade)
   if L.gate.gating_contexts[trade.npc_name] then
-    return true, false
+    if UnitInParty(trade.npc_name) then
+      return true, false
+    else
+      L.F.whisper_or_say("您需要进组后，方能交易我传送门符文。请M我【"..L.cmds.invite_cmd.."】进组。如果未能成功，请您多次尝试。", trade.npc_name)
+      return true, true
+    end
   end
   return false, false
 end
@@ -181,7 +170,7 @@ local function on_trade_complete(trade)
   local city = L.gate.gating_contexts[npc_name]["city"]
   local spell = L.gate.gating_contexts[npc_name]["spell"]
   L.F.whisper_or_say(
-          "符文石交易成功，请接受组队邀请。稍等几秒将为您开门...若未邀请成功，请M我水水水进组", npc_name)
+          "符文石交易成功。稍等几秒将为您开门...若未邀请成功，请M我【"..L.cmds.invite_cmd.."】进组", npc_name)
   L.gate.gating_context["spell"] = spell
   L.gate.gating_context["city"] = city
   L.gate.gating_context["requester"] = npc_name
