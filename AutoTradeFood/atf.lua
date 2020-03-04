@@ -152,6 +152,7 @@ function SlashCmdList.ATFCmd(msg)
   if L.F.is_inviter() then
     auto_bind_backend()
     L.F.drive_inviter()
+    L.F.may_cleanup_group()
   end
 
   if L.F.is_enlarger() then
