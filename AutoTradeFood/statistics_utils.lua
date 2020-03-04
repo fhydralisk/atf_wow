@@ -7,18 +7,6 @@
 local addonName, L = ...
 
 
-local function split(inputstr, sep)
-    if sep == nil then
-        sep = "."
-    end
-    local t = {}
-    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
-        table.insert(t, str)
-    end
-    return t
-end
-
-
 local function get_target_table(tbl, keys)
     local tbl_next = tbl
     for _, key in ipairs(keys) do
@@ -32,7 +20,7 @@ end
 
 
 function L.F.merge_statistics_plus_table(key, tbl)
-    local rec = split(key)
+    local rec = L.F.split(key)
     local target_tbl = get_target_table(ATFStatistics, rec)
     for k, v in pairs(tbl) do
         if target_tbl[k] == nil then
@@ -45,7 +33,7 @@ end
 
 
 function L.F.merge_statistics_plus_int(key, value)
-    local rec = split(key)
+    local rec = L.F.split(key)
     local k = rec[#rec]
     table.remove(rec, #rec)
     local target_tbl = get_target_table(ATFStatistics, rec)
@@ -58,14 +46,14 @@ end
 
 
 function L.F.query_statistics(key)
-    local rec = split(key)
+    local rec = L.F.split(key)
     local target = get_target_table(ATFStatistics, rec)
     return target
 end
 
 
 function L.F.query_statistics_int(key)
-    local rec = split(key)
+    local rec = L.F.split(key)
     local k = rec[#rec]
     table.remove(rec, #rec)
     local target = get_target_table(ATFStatistics, rec)

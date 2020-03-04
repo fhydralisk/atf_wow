@@ -163,20 +163,20 @@ local function should_give_food(trade)
   local npc_name = trade.npc_name
 
   if tclass == "法师" and tlevel == 60 and L.F.get_water_count() < 25 then
-    L.F.whisper("60级法师仅能在米豪货存充足时取水。如希望为我补充货存，请M我【"..L.cmds.refill_cmd.."】。", npc_name)
+    L.F.whisper_or_say("60级法师仅能在米豪货存充足时取水。如希望为我补充货存，请M我【"..L.cmds.refill_cmd.."】。", npc_name)
     return true, true
   end
 
   if L.F.get_busy_state() then
     if npc_name == last_trade_player and not(last_fail_player_is_trade_player) and GetTime() - last_trade_success_ts < 120 then
-      L.F.whisper("当前为用餐高峰时间，请勿连续取用食物，给其他朋友些机会哦，谢谢支持！", npc_name)
+      L.F.whisper_or_say("当前为用餐高峰时间，请勿连续取用食物，给其他朋友些机会哦，谢谢支持！", npc_name)
       return true, true
     end
   end
   if not check_stock() then
     local water = L.F.get_water_count()
     local bread = L.F.get_bread_count()
-    L.F.whisper(
+    L.F.whisper_or_say(
             "库存不足，请稍等一小会儿...当前存货：【大水】"..water.."组，【面包】"..bread.."组", npc_name
     )
     return true, true
@@ -223,11 +223,11 @@ local buff_asked = {}
 local function ask_buff(name, class)
   if not(buff_asked[name] and GetTime() - buff_asked[name] < 240) then
     if class == "牧师" then
-      L.F.append_trade_say_messages(name.."，精神可以提高我的制作效率，如果您有该技能，麻烦给一手哦！")
+      L.F.whisper_or_say(name.."，精神可以提高我的制作效率，如果您有该技能，麻烦给一手哦！", name)
     elseif class == "德鲁伊" then
-      L.F.append_trade_say_messages(name.."，激活、爪子可以提高我的制作效率，如果您有该技能，麻烦给一手哦！")
+      L.F.whisper_or_say(name.."，激活、爪子可以提高我的制作效率，如果您有该技能，麻烦给一手哦！", name)
     elseif class == "圣骑士" then
-      L.F.append_trade_say_messages(name.."，王者、智慧可以提高我的制作效率，如果您有该技能，麻烦给一手哦！")
+      L.F.whisper_or_say(name.."，王者、智慧可以提高我的制作效率，如果您有该技能，麻烦给一手哦！", name)
     else
       return
     end
@@ -245,11 +245,11 @@ local function trade_completed(trade)
 
   ask_buff(name, class)
   if class == "法师" and level == 60 then
-    L.F.append_trade_say_messages("法爷需自强，不当伸手党，嘿嘿嘿...")
+    L.F.whisper_or_say("法爷需自强，不当伸手党，嘿嘿嘿...", name)
   end
   local words = trade_count_words[last_trade_player_count]
   if words then
-    L.F.append_trade_say_messages(name.."，"..words)
+    L.F.whisper_or_say(name.."，"..words, name)
   end
 
   statistics_food(trade)

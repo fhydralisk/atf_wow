@@ -66,7 +66,7 @@ end
 local function forward_to_agent(msg, author)
     local agent = get_agent()
     if agent then
-        L.F.whisper(author..":"..msg, agent)
+        L.F.whisper_or_say(author..":"..msg, agent)
     end
 end
 

@@ -18,18 +18,18 @@ local fwd
 
 
 local function say_pos(to_player)
-  SendChatMessage(
-    "我目前位于坐标"..L.F.my_position()..", 如不便查看，可M我“"..L.cmds.invite_cmd.."”进组", "WHISPER", "Common", to_player
+  L.F.whisper_or_say(
+    "我目前位于坐标"..L.F.my_position()..", 如不便查看，可M我“"..L.cmds.invite_cmd.."”进组", to_player
   )
 end
 
 
 local function say_scale(to_player)
-  L.F.whisper("食水分配比例如下：", to_player)
+  L.F.whisper_or_say("食水分配比例如下：", to_player)
   for tclass, sc in pairs(tclass_food) do
-    SendChatMessage(string.format("%s: 水%d 面包%d", tclass, sc[1], sc[2]), "WHISPER", "Common", to_player)
+    L.F.whisper_or_say(string.format("%s: 水%d 面包%d", tclass, sc[1], sc[2]), to_player)
   end
-  L.F.whisper("萨满: 6根寒冰箭", to_player)
+  L.F.whisper_or_say("萨满: 6根寒冰箭", to_player)
 end
 
 
@@ -91,19 +91,19 @@ local function execute_command(msg, author)
     elseif msg == L.cmds.reset_instance_cmd then
       L.F.reset_instance_request_frontend(author)
     elseif msg == L.cmds.invite_cmd then
-      L.F.whisper("米豪公益已搬迁至石火旅店，烦请您移步。重置副本功能恢复，详情M我【"..L.cmds.reset_instance_help.."】。", author)
+      L.F.whisper_or_say("米豪公益已搬迁至石火旅店，烦请您移步。重置副本功能恢复，详情M我【"..L.cmds.reset_instance_help.."】。", author)
       L.F.invite_player(author)
     elseif msg == L.cmds.stat and L.F.player_is_admin(author) then
-      L.F.whisper("大水库存："..L.F.get_water_count(), author)
-      L.F.whisper("面包库存："..L.F.get_bread_count(), author)
+      L.F.whisper_or_say("大水库存："..L.F.get_water_count(), author)
+      L.F.whisper_or_say("面包库存："..L.F.get_bread_count(), author)
       local members, online = L.F.get_party_member_count()
-      L.F.whisper("成员数量："..members.."，在线数量："..#online, author)
+      L.F.whisper_or_say("成员数量："..members.."，在线数量："..#online, author)
     elseif msg == L.cmds.kick_offline and L.F.player_is_admin(author) then
       cleanup_group = true
     elseif L.F.may_say_agent(msg, author) then
       -- agent speaking
     elseif msg == "3" then
-      L.F.whisper("请M我【"..L.cmds.invite_cmd.."】进组，而不是M我3，zu，组，位面，谢谢", author)
+      L.F.whisper_or_say("请M我【"..L.cmds.invite_cmd.."】进组，而不是M我3，zu，组，位面，谢谢", author)
     elseif msg == "4" or msg == L.cmds.refill_help_cmd then
       L.F.refill_help(author)
     elseif L.F.search_str_contains(msg, {L.cmds.refill_cmd}) then
@@ -117,14 +117,14 @@ local function execute_command(msg, author)
     elseif L.F.search_str_contains(msg, {"交易", "收到"}) then
       -- do nothing, auto sent by BurningTrade addons.
     elseif player_want_trade_gold(msg) then
-      L.F.whisper("米豪不收取任何金币，需要开门，请M我【传送门】查看步骤；需要吃喝，请直接交易。详情M我【帮助】", author)
+      L.F.whisper_or_say("米豪不收取任何金币，需要开门，请M我【传送门】查看步骤；需要吃喝，请直接交易。详情M我【帮助】", author)
     elseif L.F.may_set_scale(msg, author) then
       -- do nothing
     elseif L.F.search_str_contains(msg, {"水", "面包"}) then
-      L.F.whisper(
+      L.F.whisper_or_say(
               "请问您要多少组水或面包？请这样回复：【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】，或者【2水】等。", author)
     elseif msg == "5" then
-      L.F.whisper(
+      L.F.whisper_or_say(
               "请这样M我来设置比例： 【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】或者，【2水】，等等，然后交易我。", author)
     elseif L.F.search_str_contains(msg, {"暴风城", "铁炉堡", "苏斯"}) then
       L.F.gate_request(author, msg)
@@ -135,14 +135,14 @@ local function execute_command(msg, author)
     elseif L.F.may_say_statistics(msg, author) then
       -- do nothing
     elseif L.F.search_str_contains(msg, {"位面", "组", "zu"}) and not L.F.search_str_contains(msg, {"水", "面包", "吃", "喝"}) then
-      L.F.whisper("请M我【"..L.cmds.invite_cmd.."】进组，而不是M我3，zu，组，位面，谢谢", author)
+      L.F.whisper_or_say("请M我【"..L.cmds.invite_cmd.."】进组，而不是M我3，zu，组，位面，谢谢", author)
     elseif L.F.search_str_contains(msg, {"脚本", "外挂", "机器", "自动", "宏"}) then
-      L.F.whisper("是的，我是纯公益机器人，请亲手下留情，爱你哦！", author)
+      L.F.whisper_or_say("是的，我是纯公益机器人，请亲手下留情，爱你哦！", author)
     elseif L.F.search_str_contains(msg, {"谢", "蟹", "xie", "3q"}, "left") then
-      L.F.whisper("小事不言谢，欢迎随时回来薅羊毛！", author)
+      L.F.whisper_or_say("小事不言谢，欢迎随时回来薅羊毛！", author)
     else
       if not(author == UnitName("player")) then
-        L.F.whisper(
+        L.F.whisper_or_say(
                 "【免费餐饮（请您直接交易）、传送门（请看帮助）？找米豪！跨位面，请M我【"
                         ..L.cmds.invite_cmd.."】，查看完整帮助，请M我【"
                         ..L.cmds.help_cmd.."】】", author
@@ -150,7 +150,7 @@ local function execute_command(msg, author)
       end
     end
   elseif L.atfr_run == "maintain" then
-    L.F.whisper("米豪正在停机维护，暂时无法为您提供服务……", author)
+    L.F.whisper_or_say("米豪正在停机维护，暂时无法为您提供服务……", author)
   end
 end
 
@@ -175,7 +175,7 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
         if author_name == fwd then
           return
         end
-        L.F.whisper("您的密语已转发至-"..fwd, author)
+        L.F.whisper_or_say("您的密语已转发至-"..fwd, author)
         C_ChatInfo.SendAddonMessage("ATF", fwdstr, "WHISPER", fwd)
       end
     elseif L.F.is_in_backends(author_name) then
@@ -185,16 +185,21 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
     end
   elseif event == "PARTY_INVITE_REQUEST" then
     local inviter = arg1
-    if L.no_party then
-      DeclineGroup()
-      StaticPopup_Hide("PARTY_INVITE")
-      L.F.whisper("米豪正在人工打本或进行其他的事情，希望您在向任何人组队前都要礼貌的询问哦！", inviter)
-      return
-    end
     if L.atfr_run then
-      DeclineGroup()
+      if inviter == ATFClientSettings.inviter then
+        AcceptGroup()
+      else
+        DeclineGroup()
+        L.F.whisper_or_say("请勿邀请我进组，您可以M我【"..L.cmds.invite_cmd.."】进组，谢谢！", inviter)
+      end
       StaticPopup_Hide("PARTY_INVITE")
-      L.F.whisper("请勿邀请我进组，您可以M我【"..L.cmds.invite_cmd.."】进组，谢谢！", inviter)
+    else
+      if L.no_party then
+        DeclineGroup()
+        StaticPopup_Hide("PARTY_INVITE")
+        L.F.whisper_or_say("米豪正在人工打本或进行其他的事情，希望您在向任何人组队前都要礼貌的询问哦！", inviter)
+        return
+      end
     end
   elseif event == "CHAT_MSG_SYSTEM" then
     if L.atfr_run then
@@ -202,7 +207,7 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
       local player = string.match(message, pattern_already_in_group)
       if player and not UnitInParty(player) then
         local name = UnitName("player")
-        L.F.whisper("【提示】"..name.."对您的组队邀请失败：您已有队伍。", player)
+        L.F.whisper_or_say("【提示】"..name.."对您的组队邀请失败：您已有队伍。", player)
       end
     end
   end
@@ -226,7 +231,36 @@ local function eventHandlerBackend(self, event, arg1, arg2, arg3, arg4, ...)
       elseif L.F.may_say_statistics(message, author) then
         -- do nothing
       else
-        L.F.whisper("重置工具人不接受任何密语指令，请M我的大号FS们哦！", author)
+        L.F.whisper_or_say("重置工具人不接受任何密语指令，请M我的大号FS们哦！", author)
+      end
+    end
+  end
+end
+
+
+local function eventHandlerInviter(self, event, arg1, arg2, arg3, arg4, ...)
+  if event == "PARTY_INVITE_REQUEST" then
+    if L.atfr_run then
+      DeclineGroup()
+      StaticPopup_Hide("PARTY_INVITE")
+    end
+  elseif event == "CHAT_MSG_WHISPER" then
+    if L.atfr_run then
+      local message, author = arg1, arg2
+      author = string.match(author, "([^-]+)")
+      if message == L.cmds.invite_cmd then
+        L.F.invite_player(author)
+      else
+        L.F.whisper_or_say("请M我的大号FS们您需要的指令哦！", author)
+      end
+    end
+  elseif event == "CHAT_MSG_SYSTEM" then
+    if L.atfr_run then
+      local message = arg1
+      local player = string.match(message, pattern_already_in_group)
+      if player and not UnitInParty(player) then
+        local name = UnitName("player")
+        L.F.whisper_or_say("【提示】"..name.."对您的组队邀请失败：您已有队伍。", player)
       end
     end
   end
@@ -235,8 +269,10 @@ end
 
 if L.F.is_frontend() then
   frame:SetScript("OnEvent", eventHandlerFrontend)
-else
+elseif L.F.is_backend() then
   frame:SetScript("OnEvent", eventHandlerBackend)
+elseif L.F.is_inviter() then
+  frame:SetScript("OnEvent", eventHandlerInviter)
 end
 
 
@@ -249,8 +285,10 @@ end
 
 
 function L.F.dequeue_say_messages()
-  for _, message in ipairs(message_queue) do
-    SendChatMessage(message, "say")
+  if not ATFClientSettings.silent then
+    for _, message in ipairs(message_queue) do
+      SendChatMessage(message, "say")
+    end
   end
   message_queue = {}
 end
@@ -273,7 +311,6 @@ local emote_challenge = {
 
 
 local function reply_to_emotes(message, player)
-
   local k = string.gsub(message, player, "")
   local challenge = emote_challenge[k]
   if challenge then

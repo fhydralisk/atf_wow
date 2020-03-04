@@ -34,8 +34,6 @@ local hook_example = {
 }
 
 local current_trade = {}
-local trade_say_messages = {}
-
 
 
 function L.F.feed(itemname, icount, count_min)
@@ -146,7 +144,7 @@ local function trade_on_event(self, event, arg1, arg2)
   if event == "TRADE_SHOW" then
     if not (L.F.watch_dog_ok()) then
       local trader = UnitName("NPC")
-      L.F.whisper("米豪的驱动程序出现故障，暂时无法进行交易，请等待米豪的维修师进行修复。十分抱歉！", trader)
+      L.F.whisper_or_say("米豪的驱动程序出现故障，暂时无法进行交易，请等待米豪的维修师进行修复。十分抱歉！", trader)
       CloseTrade()
       return
     end
@@ -232,21 +230,10 @@ end
 
 
 function L.F.accept_accepted_trade()  -- HW
-  if trade_say_messages then
-    for _, message in ipairs(trade_say_messages) do
-      SendChatMessage(message, "say")
-    end
-    trade_say_messages = {}
-  end
   if current_trade.accepted then
     AcceptTrade()
   elseif current_trade.start_ts and GetTime() - current_trade.start_ts > L.trade_timeout then
     print("closing outdated trade...")
     CloseTrade()
   end
-end
-
-
-function L.F.append_trade_say_messages(message)
-  table.insert(trade_say_messages, message)
 end

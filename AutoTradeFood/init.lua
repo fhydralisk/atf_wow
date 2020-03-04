@@ -114,6 +114,14 @@ local function eventHandler(self, event, msg)
         if ForwardIgnoreSource == nil then
             ForwardIgnoreSource = {}
         end
+        if ATFClientSettings == nil then
+            ATFClientSettings = {
+                client_types={frontend=true, backend=false, inviter=false, enlarger=false}, -- "backend", "inviter", "enlarger"
+                adv=false,
+                inviter="米豪的接待员",
+                silent=true,
+            }
+        end
     end
 end
 

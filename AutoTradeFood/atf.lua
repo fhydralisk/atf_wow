@@ -17,6 +17,7 @@ SLASH_ATF_FWD1 = "/atff"
 SLASH_ATF_FWD_IGNORE1 = "/atffignore"
 SLASH_RESET_BACKEND1 = "/atrb"
 SLASH_REPORT_STATISTICS1 = "/atrs"
+SLASH_SET_SETTINGS1 = "/atfset"
 
 
 local AtfFrame = L.F.create_macro_button("ATFButton", "/atf")
@@ -142,11 +143,21 @@ function SlashCmdList.ATFCmd(msg)
     L.F.drive_enlarge_baggage_frontend()
     L.F.may_cleanup_baggage()
     L.F.may_cleanup_group()
-  else
+  end
+
+  if L.F.is_backend() then
     auto_bind_backend()
     L.F.drive_reset_instance()
+  end
+
+  if L.F.is_inviter() then
+    auto_bind_backend()
+  end
+
+  if L.F.is_enlarger() then
     L.F.drive_enlarge_baggage_backend()
   end
+
   L.F.accept_accepted_trade()
   L.F.dequeue_say_messages()
 end
@@ -189,10 +200,10 @@ function SlashCmdList.ATF_SWITCH(msg)
     L.no_party = nil
   elseif msg == "adv" then
     print("say adv")
-    AtfAdv = true
+    ATFATFClientSettings.adv = true
   elseif msg == "noadv" then
     print("disable say adv")
-    AtfAdv = nil
+    ATFClientSettings.adv = false
   end
 end
 
@@ -282,4 +293,17 @@ function SlashCmdList.REPORT_STATISTICS(msg)
   else
     L.F.say_statistics()
   end
+end
+
+
+function SlashCmdList.REPORT_STATISTICS(msg)
+  local key, value = string.match(msg, "(.-) (.+)")
+  key = L.F.split(key)
+  local root = ATFClientSettings
+  for i = 1, #key - 1 do
+    root = root[key[i]]
+  end
+  if root[key[#key]] then print("origin:"..root[key[#key]]) end
+  root[key[#key]] = value
+  print("set "..key[#key].."to "..value)
 end

@@ -24,9 +24,9 @@ function L.F.refill_request(player)
             ["last_refill_ts"] = 0,
             thanked=false,
         }
-        L.F.whisper("补货请求成功，我将在"..L.refill_timeout.."秒内接受您的补货，感谢支持！", player)
+        L.F.whisper_or_say("补货请求成功，我将在"..L.refill_timeout.."秒内接受您的补货，感谢支持！", player)
     else
-        L.F.whisper("目前货存充足，暂时无需补货，谢谢支持！", player)
+        L.F.whisper_or_say("目前货存充足，暂时无需补货，谢谢支持！", player)
     end
 
 end
@@ -69,12 +69,12 @@ end
 
 
 function L.F.refill_help(to_player)
-    L.F.whisper("【在货存不足时】，米豪将接受其他有共同志向玩家的补货救急，降低食客等待时间。", to_player)
-    L.F.whisper("1. 如需补货，请首先M我【"..L.cmds.refill_cmd.."】，如果成功，我会向您回复消息。", to_player)
-    L.F.whisper("2. 然后请在"..L.refill_timeout.."秒内与我进行交易，将食水放至您的交易栏内，并点击交易", to_player)
-    L.F.whisper("3. 我将对您的补货内容进行验证，接受合法的补货，并广播致谢信息。", to_player)
-    L.F.whisper("注1，每次提交补货申请，有效期内可以一直补货，如需取消补货，请对我进行一次空的交易。", to_player)
-    L.F.whisper("注2，请勿交易我除了大水大面包之外的任何物品或金币哦，谢谢支持！", to_player)
+    L.F.whisper_or_say("【在货存不足时】，米豪将接受其他有共同志向玩家的补货救急，降低食客等待时间。", to_player)
+    L.F.whisper_or_say("1. 如需补货，请首先M我【"..L.cmds.refill_cmd.."】，如果成功，我会向您回复消息。", to_player)
+    L.F.whisper_or_say("2. 然后请在"..L.refill_timeout.."秒内与我进行交易，将食水放至您的交易栏内，并点击交易", to_player)
+    L.F.whisper_or_say("3. 我将对您的补货内容进行验证，接受合法的补货，并广播致谢信息。", to_player)
+    L.F.whisper_or_say("注1，每次提交补货申请，有效期内可以一直补货，如需取消补货，请对我进行一次空的交易。", to_player)
+    L.F.whisper_or_say("注2，请勿交易我除了大水大面包之外的任何物品或金币哦，谢谢支持！", to_player)
 end
 
 
@@ -109,7 +109,7 @@ local function send_thanks_message(trade)
             L.cmds.refill_cmd,
             L.cmds.statistics
         )
-        L.F.append_trade_say_messages(msg)
+        L.F.whisper_or_say(msg)
         refill_context.refillers[player].thanked = true
     end
     statistics_refill(trade)
@@ -121,12 +121,12 @@ local function should_accept_refill(trade)
     local items = trade.items.target.items
     local cnt = trade.items.target.count
     if cnt == 0 then
-        L.F.whisper("未收到任何补货，为您取消补货请求。", player)
+        L.F.whisper_or_say("未收到任何补货，为您取消补货请求。", player)
         remove_refiller(player)
         return false
     end
     if items["Gold"] and items["Gold"] > 0 then
-        L.F.whisper("请勿交易我任何金币，谢谢支持", player)
+        L.F.whisper_or_say("请勿交易我任何金币，谢谢支持", player)
         return false
     end
     local water, bread = 0, 0
@@ -136,7 +136,7 @@ local function should_accept_refill(trade)
         elseif item_name == L.items.food_name then
             bread = bread + c
         else
-            L.F.whisper(
+            L.F.whisper_or_say(
                 "补货模式仅仅接受大水和大面包，请勿交易其他物品或金币，感谢支持！", player
             )
             return false
@@ -148,12 +148,12 @@ local function should_accept_refill(trade)
         elseif refill_check_result == "water" and water > 0 then
             item_too_many = L.items.water_name
         elseif refill_check_result == "full" then
-            L.F.whisper("米豪背包几乎已满，请稍后尝试补货，谢谢！", player)
+            L.F.whisper_or_say("米豪背包几乎已满，请稍后尝试补货，谢谢！", player)
             return false
         end
 
         if item_too_many then
-            L.F.whisper("目前库存中【"..item_too_many.."】数量过多，暂时不需要补充，谢谢支持！", player)
+            L.F.whisper_or_say("目前库存中【"..item_too_many.."】数量过多，暂时不需要补充，谢谢支持！", player)
             return false
         end
         return true

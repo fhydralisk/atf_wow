@@ -2,8 +2,8 @@
 ## Title: 食物交易助手
 ## Notes: 食物交易助手
 ## Author: 米豪
-## SavedVariables: PlayerDefinedScale, GateWhiteList, BusyHistory, ATFStatistics, ATFResetBlockList, InstanceResetQueue, AtfAdv
-## SavedVariablesPerCharacter: InstanceResetBackends, ForwardIgnoreSource
+## SavedVariables: PlayerDefinedScale, GateWhiteList, BusyHistory, ATFStatistics, ATFResetBlockList, InstanceResetQueue
+## SavedVariablesPerCharacter: InstanceResetBackends, ForwardIgnoreSource, ATFClientSettings
 
 init.lua
 utils.lua
@@ -23,4 +23,5 @@ agent.lua
 instance_reseter.lua
 event.lua
 atf.lua
+invite_helper.lua
 trade_hooking.lua

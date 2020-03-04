@@ -9,6 +9,21 @@ local addonName, L = ...
 local watch_dog_ts = 0
 
 
+local whisper_protect = {}
+
+
+function L.F.split(inputstr, sep)
+    if sep == nil then
+        sep = "."
+    end
+    local t = {}
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+        table.insert(t, str)
+    end
+    return t
+end
+
+
 function L.F.create_macro_button(button_name, macro_text)
   local cframe = CreateFrame("Button", button_name, UIParent, "SecureActionButtonTemplate");
 --  cframe:RegisterForClicks("AnyUp");
@@ -16,6 +31,7 @@ function L.F.create_macro_button(button_name, macro_text)
   cframe:SetAttribute("macrotext", macro_text);
   return cframe
 end
+
 
 function L.F.search_str_contains(s, tbl, position)
   for _, ss in pairs(tbl) do
@@ -70,12 +86,15 @@ end
 
 
 function L.F.invite_player(player)
-  if GetNumGroupMembers() >= 5 and not(IsInRaid()) then
-    ConvertToRaid()
-  elseif GetNumGroupMembers() <= 3 and IsInRaid() then
-    ConvertToParty()
+  if L.F.is_inviter() or ATFClientSettings.inviter == nil then
+    InviteUnit(player)
+  else
+    if not UnitInParty(ATFClientSettings.inviter) then
+      C_ChatInfo.SendAddonMessage("ATF", "invite:"..UnitName("player"), "WHISPER", ATFClientSettings.inviter)
+    end
+    C_ChatInfo.SendAddonMessage("ATF", "invite:"..player, "WHISPER", ATFClientSettings.inviter)
   end
-  InviteUnit(player)
+  ConvertToRaid()
 end
 
 
@@ -111,16 +130,61 @@ function L.F.watch_dog_ok()
 end
 
 
-function L.F.whisper(message, to_player, enqueue)
-  if enqueue then
+local function may_whisper_to(to_player)
+  local interval = 400
+  local exceed = 40
+  if whisper_protect[to_player] == nil or GetTime() - whisper_protect[to_player].sent > interval then
+    whisper_protect[to_player] = {
+      sent=GetTime(),
+      num=0,
+    }
+  end
+  whisper_protect[to_player].num = whisper_protect[to_player].num + 1
+  return whisper_protect[to_player].num <= exceed
+end
+
+
+function L.F.whisper_or_say(message, to_player)
+  if L.F.is_inviter() or ATFClientSettings.inviter == nil then
+    if to_player then
+      if may_whisper_to(to_player) then
+        SendChatMessage(message, "WHISPER", nil, to_player)
+      end
+    else
+      L.F.queue_message(message)
+    end
   else
-    SendChatMessage(message, "WHISPER", "Common", to_player)
+    if to_player then
+      C_ChatInfo.SendAddonMessage("ATF", "/w:"..to_player..":"..message, "WHISPER", ATFClientSettings.inviter)
+    else
+      C_ChatInfo.SendAddonMessage("ATF", "/s:"..message)
+    end
   end
 end
 
 
+function L.F.client_type()
+  return ATFClientSettings.client_types
+end
+
+
 function L.F.is_frontend()
-  return UnitClass("player") == "法师" and UnitLevel("player") == 60
+  return L.F.client_type().frontend
+end
+
+
+function L.F.is_backend()
+  return L.F.client_type().backend
+end
+
+
+function L.F.is_inviter()
+  return L.F.client_type().inviter
+end
+
+
+function L.F.is_inviter()
+  return L.F.client_type().enlarger
 end
 
 

@@ -43,51 +43,50 @@ local ad_msg_busy = {
 }
 
 function L.F.say_help(to_player)
-  L.F.whisper(
+  L.F.whisper_or_say(
     "需要吃喝，直接交易。勿交易金币和物品。如有有建议或希望捐赠，请使用魔兽邮箱，谢谢支持！", to_player
   )
-  L.F.whisper(
+  L.F.whisper_or_say(
     "=========我目前支持如下命令：", to_player
   )
-  SendChatMessage(
-    string.format("1.【%s】打印本命令列表", L.cmds.help_cmd), "WHISPER", "Common", to_player
+  L.F.whisper_or_say(
+    string.format("1.【%s】打印本命令列表", L.cmds.help_cmd), to_player
   )
-  SendChatMessage(
-    string.format("2.【%s】查看重置副本方法", L.cmds.reset_instance_help), "WHISPER", "Common", to_player
+  L.F.whisper_or_say(
+    string.format("2.【%s】查看重置副本方法", L.cmds.reset_instance_help), to_player
   )
-  SendChatMessage(
-    string.format("3.【%s】向您发起组队邀请，以便发送位置、跨位面", L.cmds.invite_cmd), "WHISPER", "Common", to_player
+  L.F.whisper_or_say(
+    string.format("3.【%s】向您发起组队邀请，以便发送位置、跨位面", L.cmds.invite_cmd), to_player
   )
-  SendChatMessage(
-    string.format("4.【%s】查看高峰期补货方式", L.cmds.refill_help_cmd), "WHISPER", "Common", to_player
+  L.F.whisper_or_say(
+    string.format("4.【%s】查看高峰期补货方式", L.cmds.refill_help_cmd), to_player
   )
-  L.F.whisper(
+  L.F.whisper_or_say(
     "5.【自定义分配】为您定制水和面包比例，例如您可说“4水2面包”", to_player
   )
-  SendChatMessage(
-    string.format("6.【%s】查看开门步骤", L.cmds.gate_help_cmd), "WHISPER", "Common", to_player
+  L.F.whisper_or_say(
+    string.format("6.【%s】查看开门步骤", L.cmds.gate_help_cmd), to_player
   )
-  SendChatMessage(
-    string.format("7.【%s】查看获取小号食物方法", L.cmds.low_level_help_cmd), "WHISPER", "Common", to_player
+  L.F.whisper_or_say(
+    string.format("7.【%s】查看获取小号食物方法", L.cmds.low_level_help_cmd), to_player
   )
-  SendChatMessage("其他命令：【"..L.cmds.say_ack.."】，【"
+  L.F.whisper_or_say("其他命令：【"..L.cmds.say_ack.."】，【"
           ..L.cmds.scale_cmd.."】，【"
           ..L.cmds.retrieve_position.."】,【"
           ..L.cmds.statistics.."】，【"
-          ..L.cmds.busy_cmd.."】",
-          "WHISPER", "Common", to_player)
+          ..L.cmds.busy_cmd.."】", to_player)
 end
 
 
 local is_odd = false
 
 function L.F.send_ad()
-  if AtfAdv then
+  if ATFClientSettings.adv then
     is_odd = not is_odd
     if is_odd then
       local water = L.F.get_water_count()
       local bread = L.F.get_bread_count()
-      SendChatMessage(date("%X").."存货：【大水】"..water.."组，【面包】"..bread.."组。【免费】【直接交易】","say","Common")
+      L.F.whisper_or_say(date("%X").."存货：【大水】"..water.."组，【面包】"..bread.."组。【免费】【直接交易】")
     else
       local admsgs;
       if L.F.get_busy_state() then
@@ -95,37 +94,22 @@ function L.F.send_ad()
       else
         admsgs = ad_msg
       end
-      SendChatMessage(date("%X")..admsgs[math.random(1, #admsgs)], "say", "Common")
+      L.F.whisper_or_say(date("%X")..admsgs[math.random(1, #admsgs)])
     end
   end
 end
 
 
 function L.F.say_acknowledgements(to_player)
-  L.F.whisper("感谢下列玩家对米豪一直以来的支持！", to_player)
-  L.F.whisper("云缠绕星光丶、阿信的小可爱", to_player)
-  L.F.whisper("留白丶、梦魇丶", to_player)
-  L.F.whisper("大头菜咖喱酱", to_player)
-  L.F.whisper("嘟嘟歪嘟嘟", to_player)
-  L.F.whisper("且洛", to_player)
-  L.F.whisper("蛋蛋放中间", to_player)
-  L.F.whisper("皇额娘", to_player)
-  L.F.whisper("路过一只小软", to_player)
-end
-
-
-local function whisper_or_say(message, to_player)
-  local say
-  if to_player then
-    say = function()
-      L.F.whisper(message, to_player)
-    end
-  else
-    say = function()
-      SendChatMessage(message, "SAY")
-    end
-  end
-  say()
+  L.F.whisper_or_say("感谢下列玩家对米豪一直以来的支持！", to_player)
+  L.F.whisper_or_say("云缠绕星光丶、阿信的小可爱", to_player)
+  L.F.whisper_or_say("留白丶、梦魇丶", to_player)
+  L.F.whisper_or_say("大头菜咖喱酱", to_player)
+  L.F.whisper_or_say("嘟嘟歪嘟嘟", to_player)
+  L.F.whisper_or_say("且洛", to_player)
+  L.F.whisper_or_say("蛋蛋放中间", to_player)
+  L.F.whisper_or_say("皇额娘", to_player)
+  L.F.whisper_or_say("路过一只小软", to_player)
 end
 
 
@@ -135,18 +119,18 @@ function L.F.say_statistics(to_player, day)
   end
   local ts = math.modf(time()) - day * 24 * 60 * 60
   local date_to_stat = date("%x", ts)
-  whisper_or_say("米豪"..date_to_stat.."数据：", to_player)
+  L.F.whisper_or_say("米豪"..date_to_stat.."数据：", to_player)
 
   local gate_count = L.F.query_statistics_int("trade.gate.count."..date_to_stat)
-  whisper_or_say("总计开门：【"..gate_count.."】次", to_player)
+  L.F.whisper_or_say("总计开门：【"..gate_count.."】次", to_player)
 
   local water_count = L.F.query_statistics_int("trade.food.all."..date_to_stat.."."..L.items.water_name)
   local food_count = L.F.query_statistics_int("trade.food.all."..date_to_stat.."."..L.items.food_name)
-  whisper_or_say("总计送水：【"..
+  L.F.whisper_or_say("总计送水：【"..
           math.modf(water_count / 20).."】组，送面包：【"..
           math.modf(food_count / 20).."】组", to_player)
 
-  whisper_or_say("职业需求排序：", to_player)
+  L.F.whisper_or_say("职业需求排序：", to_player)
   local trade_by_class = L.F.query_statistics("trade.food.class."..date_to_stat)
   local class_count = {}
   for class, items in pairs(trade_by_class) do
@@ -154,10 +138,10 @@ function L.F.say_statistics(to_player, day)
   end
   table.sort(class_count, function(a, b) return a.count > b.count end)
   for i, class in ipairs(class_count) do
-    whisper_or_say(""..i..". "..class.class.." 交易成功：【"..math.modf(class.count / 20).."】组", to_player)
+    L.F.whisper_or_say(""..i..". "..class.class.." 交易成功：【"..math.modf(class.count / 20).."】组", to_player)
   end
 
-  whisper_or_say("吃货排行：", to_player)
+  L.F.whisper_or_say("吃货排行：", to_player)
   local trade_by_ind = L.F.query_statistics("trade.food.ind."..date_to_stat)
   local trade_count = {}
   for name, items in pairs(trade_by_ind) do
@@ -165,11 +149,11 @@ function L.F.say_statistics(to_player, day)
   end
   table.sort(trade_count, function(a, b) return a.count > b.count end)
   for i, ind in ipairs(trade_count) do
-    whisper_or_say(""..i..". "..ind.name.." 取走【"..math.modf(ind.count / 20).."】组", to_player)
+    L.F.whisper_or_say(""..i..". "..ind.name.." 取走【"..math.modf(ind.count / 20).."】组", to_player)
     if i >= 3 then break end
   end
 
-  whisper_or_say("补货排行：", to_player)
+  L.F.whisper_or_say("补货排行：", to_player)
   local refill_by_ind = L.F.query_statistics("trade.refill.ind."..date_to_stat)
   local refill_count = {}
   for name, items in pairs(refill_by_ind) do
@@ -177,7 +161,7 @@ function L.F.say_statistics(to_player, day)
   end
   table.sort(refill_count, function(a, b) return a.water_count > b.water_count end)
   for i, ind in ipairs(refill_count) do
-    whisper_or_say(""..i..". "..ind.name.." 补充大水：【"..math.modf(ind.water_count / 20)..
+    L.F.whisper_or_say(""..i..". "..ind.name.." 补充大水：【"..math.modf(ind.water_count / 20)..
             "】组，面包【"..math.modf(ind.food_count / 20).."】组", to_player)
     if i >= 3 then break end
   end
@@ -191,12 +175,12 @@ function L.F.say_statistics_backend(to_player, day)
   end
   local ts = math.modf(time()) - day * 24 * 60 * 60
   local date_to_stat = date("%x", ts)
-  whisper_or_say("米豪"..date_to_stat.."数据：", to_player)
+  L.F.whisper_or_say("米豪"..date_to_stat.."数据：", to_player)
 
   local gate_count = L.F.query_statistics_int("reset.count."..date_to_stat)
-  whisper_or_say("总计重置：【"..gate_count.."】次", to_player)
+  L.F.whisper_or_say("总计重置：【"..gate_count.."】次", to_player)
 
-  whisper_or_say("职业排行：", to_player)
+  L.F.whisper_or_say("职业排行：", to_player)
   local reset_by_class = L.F.query_statistics("reset.class."..date_to_stat)
   local class_count = {}
   for class, cnt in pairs(reset_by_class) do
@@ -204,10 +188,10 @@ function L.F.say_statistics_backend(to_player, day)
   end
   table.sort(class_count, function(a, b) return a.count > b.count end)
   for i, class in ipairs(class_count) do
-    whisper_or_say(""..i..". "..class.class.." 重置：【"..class.count.."】次", to_player)
+    L.F.whisper_or_say(""..i..". "..class.class.." 重置：【"..class.count.."】次", to_player)
   end
 
-  whisper_or_say("副本排行：", to_player)
+  L.F.whisper_or_say("副本排行：", to_player)
   local reset_by_instance = L.F.query_statistics("reset.instance."..date_to_stat)
   local instance_count = {}
   for instance, cnt in pairs(reset_by_instance) do
@@ -215,10 +199,10 @@ function L.F.say_statistics_backend(to_player, day)
   end
   table.sort(instance_count, function(a, b) return a.count > b.count end)
   for i, instance in ipairs(instance_count) do
-    whisper_or_say(""..i..". ".. instance.instance.." 重置：【".. instance.count.."】次", to_player)
+    L.F.whisper_or_say(""..i..". ".. instance.instance.." 重置：【".. instance.count.."】次", to_player)
   end
 
-  whisper_or_say("肝帝排行：", to_player)
+  L.F.whisper_or_say("肝帝排行：", to_player)
   local reset_by_ind = L.F.query_statistics("reset.ind."..date_to_stat)
   local ind_count = {}
   for ind, cnt in pairs(reset_by_ind) do
@@ -226,7 +210,7 @@ function L.F.say_statistics_backend(to_player, day)
   end
   table.sort(ind_count, function(a, b) return a.count > b.count end)
   for i, ind in ipairs(ind_count) do
-    whisper_or_say(""..i..". ".. ind.name.." 重置：【".. ind.count.."】次", to_player)
+    L.F.whisper_or_say(""..i..". ".. ind.name.." 重置：【".. ind.count.."】次", to_player)
     if i >= 3 then break end
   end
 end
@@ -238,7 +222,7 @@ function L.F.may_say_statistics(msg, author)
   if day or msg == L.cmds.statistics then
     if L.F.is_frontend() then
       L.F.say_statistics(author, day)
-    else
+    elseif L.F.is_backend() then
       L.F.say_statistics_backend(author, day)
     end
     return true

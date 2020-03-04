@@ -102,15 +102,15 @@ local function do_set_scale(water, food, author)
     ["food"] = food
   }
   if L.F.get_busy_state() then
-    SendChatMessage(
+    L.F.whisper_or_say(
             string.format("【用餐高峰、数量减半！】配比成功，您在交易我时，非高峰时将获得%d组水，%d组面包（如果库存充足）。", water, food),
-            "WHISPER", "Common", author
+            author
     )
   else
-    SendChatMessage(
+    L.F.whisper_or_say(
             string.format("配比成功，您在交易我时，将获得%d组水，%d组面包（如果库存充足）。" ..
                     "如果和预期的不同，请按如下例子进行定制：“4组水，2组面包”。", water, food),
-            "WHISPER", "Common", author
+            author
     )
   end
 
@@ -133,11 +133,11 @@ function L.F.may_set_scale(msg, author)
   if water + food > 0 then
     if water + food > 6 then
       if water == 45 or water == 35 then
-        L.F.whisper("如需【25-54】小号食物，请M我【"
+        L.F.whisper_or_say("如需【25-54】小号食物，请M我【"
                 ..L.cmds.low_level_cmd.."】进行预约。查看预约流程，行M我【"
                 ..L.cmds.low_level_help_cmd.."】", author)
       else
-        L.F.whisper("定制面包和水的数量，请确保水和面包加和不要大于6哦，不然我怎么交易给您？", author)
+        L.F.whisper_or_say("定制面包和水的数量，请确保水和面包加和不要大于6哦，不然我怎么交易给您？", author)
       end
     else
       do_set_scale(water, food, author)
@@ -157,21 +157,21 @@ function L.F.check_food_trade_target_items(trade)
     return true
   else
     if items[L.items.stone_name] then
-      L.F.append_trade_say_messages(
+      L.F.whisper_or_say(
               npc_name.."，请首先M我需要去的城市名称，例如“达纳苏斯”，再交易我【传送门符文】！"..
                       "如果您已经M过我，可能已经过期，请重试，谢谢！",
               "say", "Common"
       )
     elseif items[L.items.water_name] or items[L.items.food_name] then
-      L.F.append_trade_say_messages(
+      L.F.whisper_or_say(
               npc_name.."，如希望为我补货，请M我【"..L.cmds.refill_cmd.."】。如果您觉得水或面包多余，请在交易我之前M我配比情况，例如“我要3组水，1组面包”，然后再进行交易。",
               "say", "Common"
       )
 
     elseif items["Gold"] then
-      L.F.append_trade_say_messages(npc_name.."，餐饮完全免费，请勿交易我任何金币，谢谢您的鼓励！", "say", "Common")
+      L.F.whisper_or_say(npc_name.."，餐饮完全免费，请勿交易我任何金币，谢谢您的鼓励！", "say", "Common")
     else
-      L.F.append_trade_say_messages(npc_name.."，背包有限，请勿交易我任何物品，感谢支持！", "say", "Common")
+      L.F.whisper_or_say(npc_name.."，背包有限，请勿交易我任何物品，感谢支持！", "say", "Common")
     end
     return false
   end
