@@ -254,7 +254,7 @@ local function eventHandlerInviter(self, event, arg1, arg2, arg3, arg4, ...)
         L.F.invite_player(author)
       elseif message == "test" and L.F.player_is_admin(author) then
         L.F.queue_message("语言系统自检", true)
-      elseif msg == L.cmds.kick_offline and L.F.player_is_admin(author) then
+      elseif message == L.cmds.kick_offline and L.F.player_is_admin(author) then
         cleanup_group = true
       else
         L.F.whisper_or_say("请M我的大号FS们您需要的指令哦！", author)
