@@ -296,7 +296,7 @@ function SlashCmdList.REPORT_STATISTICS(msg)
 end
 
 
-function SlashCmdList.REPORT_STATISTICS(msg)
+function SlashCmdList.SET_SETTINGS(msg)
   local key, value = string.match(msg, "(.-) (.+)")
   key = L.F.split(key)
   local root = ATFClientSettings
