@@ -230,6 +230,8 @@ local function eventHandlerBackend(self, event, arg1, arg2, arg3, arg4, ...)
         L.F.say_reset_instance_help(author)
       elseif L.F.may_say_statistics(message, author) then
         -- do nothing
+      elseif message == "test" and L.F.player_is_admin(author) then
+        SendChatMessage("语言自检测试", "say")
       else
         L.F.whisper_or_say("重置工具人不接受任何密语指令，请M我的大号FS们哦！", author)
       end
@@ -250,6 +252,8 @@ local function eventHandlerInviter(self, event, arg1, arg2, arg3, arg4, ...)
       author = string.match(author, "([^-]+)")
       if message == L.cmds.invite_cmd then
         L.F.invite_player(author)
+      elseif message == "test" and L.F.player_is_admin(author) then
+        SendChatMessage("语言自检测试", "say")
       else
         L.F.whisper_or_say("请M我的大号FS们您需要的指令哦！", author)
       end
