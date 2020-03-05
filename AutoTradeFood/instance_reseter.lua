@@ -317,7 +317,7 @@ local function boom_predict(player)
         for _, ir in ipairs(InstanceResetRecord[player]) do
             if cts - ir.ts < 3600 then
                 cnt = cnt + 1
-                if ts_in_1h == cts then
+                if ts_in_1h == cts - 3600 then
                     ts_in_1h = ir.ts
                 end
             end
