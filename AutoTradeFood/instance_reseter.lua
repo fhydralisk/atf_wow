@@ -238,6 +238,8 @@ function L.F.reset_instance_request(player, frontend)
         return
     end
 
+    pcall(L.F.say_boom_predict, player)
+
     if UnitInParty(player) then
         if reseter_context.player == player then
             L.F.whisper_or_say("【重置流程变更】当前版本只需在【未进组】的情况下M我一次请求即可。无需再次请求。", player)
@@ -268,6 +270,24 @@ function L.F.say_reset_instance_help(to_player)
 end
 
 
+local function record_instance_reset(player, instance)
+    local irs
+    if InstanceResetRecord[player] then
+        irs = InstanceResetRecord[player]
+    else
+        irs = {}
+    end
+    InstanceResetRecord[player] = {}
+    local cts = math.modf(time())
+    for _, ir in ipairs(irs[player]) do
+        if cts - ir.ts < 3600 then
+            table.insert(InstanceResetRecord[player], ir)
+        end
+    end
+    table.insert(InstanceResetRecord[player], {ts=cts, instance=instance})
+end
+
+
 function L.F.bind_reseter_backend()
     SetBinding(L.hotkeys.interact_key, "JUMP")
 end
@@ -285,6 +305,41 @@ local function statistics_reset_instance(reset_ctx)
     L.F.merge_statistics_plus_int(key_instance_class, 1)
     L.F.merge_statistics_plus_int(key_instance_instance, 1)
     L.F.merge_statistics_plus_int(key_instance_count, 1)
+    record_instance_reset(name, instance)
+end
+
+
+local function boom_predict(player)
+    if InstanceResetRecord[player] then
+        local cnt = 0
+        local cts = math.modf(time())
+        local ts_in_1h
+        for _, ir in InstanceResetRecord[player] do
+            if cts - ir.ts < 3600 then
+                cnt = cnt + 1
+                if ts_in_1h == nil then
+                    ts_in_1h = ir.ts
+                end
+            end
+        end
+        return math.max(0, 5 - cnt), cts - ts_in_1h
+    else
+        return 5, 0
+    end
+end
+
+
+function L.F.say_boom_predict(to_player)
+    local remain, unlock_dur = boom_predict(to_player)
+    L.F.whisper_or_say("【爆本预警（测试版）】如果您一直使用米豪服务重置，我会尝试推测您的爆本情况，数据仅供参考。M我的重置工具人【"..L.cmds.boom_predict.."】可以获取该信息。", to_player)
+    if remain == 1 then
+        L.F.whisper_or_say("【爆本预警：危险】您当前时段的下次重置副本可能导致爆本。若执行重置，您可能会被传送回炉石点。", to_player)
+        L.F.whisper_or_say("【爆本预警：危险】预计爆本封印将于"..math.modf(unlock_dur / 60).."分钟后解除。", to_player)
+    elseif remain == 0 then
+        L.F.whisper_or_say("【爆本预警：爆本】您已爆本，无法进入副本。预计爆本封印将于"..math.modf(unlock_dur / 60).."分钟后解除。", to_player)
+    else
+        L.F.whisper_or_say("【爆本预警：安全】您目前时间段可以重置副本而不爆本的剩余次数为【"..(remain - 1).."】次", to_player)
+    end
 end
 
 
@@ -307,6 +362,9 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
         end
         if InstanceResetQueue == nil then
             InstanceResetQueue = {}
+        end
+        if InstanceResetRecord == nil then
+            InstanceResetRecord = {}
         end
         return
     end

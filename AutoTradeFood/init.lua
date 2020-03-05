@@ -27,6 +27,7 @@ L.cmds.say_ack = "致谢"
 L.cmds.statistics = "数据"
 L.cmds.reset_instance_help = "重置帮助"
 L.cmds.reset_instance_cmd = "重置"
+L.cmds.boom_predict = "爆本"
 
 L.items = {}
 L.items.water_name = "魔法晶水"

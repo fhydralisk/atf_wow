@@ -230,6 +230,8 @@ local function eventHandlerBackend(self, event, arg1, arg2, arg3, arg4, ...)
         L.F.say_reset_instance_help(author)
       elseif L.F.may_say_statistics(message, author) then
         -- do nothing
+      elseif message == L.cmds.boom_predict then
+        L.F.say_boom_predict(author)
       elseif message == "test" and L.F.player_is_admin(author) then
         L.F.queue_message("语言系统自检", true)
       else
