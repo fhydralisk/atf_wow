@@ -279,7 +279,7 @@ local function record_instance_reset(player, instance)
     end
     InstanceResetRecord[player] = {}
     local cts = math.modf(time())
-    for _, ir in ipairs(irs[player]) do
+    for _, ir in ipairs(irs) do
         if cts - ir.ts < 3600 then
             table.insert(InstanceResetRecord[player], ir)
         end
@@ -313,11 +313,11 @@ local function boom_predict(player)
     if InstanceResetRecord[player] then
         local cnt = 0
         local cts = math.modf(time())
-        local ts_in_1h
-        for _, ir in InstanceResetRecord[player] do
+        local ts_in_1h = cts
+        for _, ir in ipairs(InstanceResetRecord[player]) do
             if cts - ir.ts < 3600 then
                 cnt = cnt + 1
-                if ts_in_1h == nil then
+                if ts_in_1h == cts then
                     ts_in_1h = ir.ts
                 end
             end
