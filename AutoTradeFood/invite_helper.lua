@@ -7,6 +7,8 @@
 
 local addonName, L = ...
 
+local dance_macro = L.F.create_macro_button("InviterDance", "/dance")
+
 local frame = CreateFrame("FRAME")
 frame:RegisterEvent("CHAT_MSG_ADDON")
 
@@ -36,11 +38,66 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
 end
 
 
+local last_in_range, last_out_range = {}, {}
+
+
+local function detect_member_range_change()
+    local n = GetNumGroupMembers()
+    local in_range, out_range = {}, {}
+    local in_range_diff, out_range_diff = {}, {}
+    for i = 2, n do
+        local unit = "raid"..i
+        local name = UnitName(unit)
+        if CheckInteractDistance(unit, 2) then
+            in_range[name] = true
+            if last_out_range[name] then
+                table.insert(in_range_diff, name)
+            end
+        else
+            out_range[name] = true
+            if last_in_range[name] then
+                table.insert(out_range_diff, name)
+            end
+        end
+    end
+    last_in_range = in_range
+    last_out_range = out_range
+    return in_range_diff, out_range_diff
+end
+
+
 function L.F.drive_inviter()
     if frontend and GetRaidTargetIndex(frontend) == nil and UnitInRaid(frontend) then
         SetRaidTarget(frontend, 6)
         PromoteToAssistant(frontend)
     end
+    local in_range_diff, out_range_diff = detect_member_range_change()
+
+    if #in_range_diff > 0 then
+        DoEmote("hello", in_range_diff[1])
+    end
 end
+
+
+local last_bind_time = 0
+local last_bind_cnt = 0
+local bind_interval = 300
+
+
+function L.F.auto_bind_inviter()
+    if GetTime() - last_bind_time > bind_interval then
+        if last_bind_cnt % 2 == 0 then
+            SetBindingClick(L.hotkeys.interact_key, "InviterDance")
+            last_bind_time = GetTime()
+        else
+            SetBinding(L.hotkeys.interact_key, "JUMP")
+            last_bind_time = GetTime() - bind_interval + 10
+        end
+        last_bind_cnt = last_bind_cnt + 1
+    else
+        SetBinding(L.hotkeys.interact_key, "")
+    end
+end
+
 
 frame:SetScript("OnEvent", eventHandler)
