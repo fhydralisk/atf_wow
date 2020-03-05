@@ -313,7 +313,7 @@ local function boom_predict(player)
     if InstanceResetRecord[player] then
         local cnt = 0
         local cts = math.modf(time())
-        local ts_in_1h = cts
+        local ts_in_1h = cts - 3600
         for _, ir in ipairs(InstanceResetRecord[player]) do
             if cts - ir.ts < 3600 then
                 cnt = cnt + 1
@@ -322,7 +322,7 @@ local function boom_predict(player)
                 end
             end
         end
-        return math.max(0, 5 - cnt), cts - ts_in_1h
+        return math.max(0, 5 - cnt), 3600 - cts + ts_in_1h
     else
         return 5, 0
     end
