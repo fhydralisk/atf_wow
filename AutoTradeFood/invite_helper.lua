@@ -66,16 +66,32 @@ local function detect_member_range_change()
 end
 
 
+local function may_emote()
+    local in_range_diff, out_range_diff = detect_member_range_change()
+    for _, ird in ipairs(in_range_diff) do
+        if L.F.is_facing(ird) then
+            DoEmote("hello", ird)
+            return
+        end
+    end
+
+    for _, ord in ipairs(out_range_diff) do
+        if L.F.is_facing(ord) then
+            DoEmote("bye", ord)
+            return
+        end
+    end
+end
+
+
 function L.F.drive_inviter()
     if frontend and GetRaidTargetIndex(frontend) == nil and UnitInRaid(frontend) then
         SetRaidTarget(frontend, 6)
         PromoteToAssistant(frontend)
     end
-    local in_range_diff, out_range_diff = detect_member_range_change()
 
-    if #in_range_diff > 0 then
-        DoEmote("hello", in_range_diff[1])
-    end
+    may_emote()
+
 end
 
 

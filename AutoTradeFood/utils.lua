@@ -51,11 +51,26 @@ function L.F.search_str_contains(s, tbl, position)
   return false
 end
 
+
+function L.F.unit_position(unit)
+  local mapID = C_Map.GetBestMapForUnit(unit)
+  local tempTable = C_Map.GetPlayerMapPosition(mapID, unit)
+  return tempTable.x, tempTable.y
+end
+
+
 function L.F.my_position()
-  local mapID = C_Map.GetBestMapForUnit("player")
-  local tempTable = C_Map.GetPlayerMapPosition(mapID, "player")
-  local x, y = tempTable.x, tempTable.y
+  local x, y = L.F.unit_position("player")
   return string.format("(%.1f,%.1f)", x * 100, y * 100)
+end
+
+
+function L.F.is_facing(unit)
+  local x1, y1 = L.F.unit_position("player")
+  local x2, y2 = L.F.unit_position(unit)
+  local deg = (GetPlayerFacing() - math.atan2(x1-x2, y1-y2))/ math.pi * 180
+  if deg > 180 then deg = deg - 360 end
+  return (deg > -180 and deg < 180)
 end
 
 function L.F.check_buff(buff_name, remain, is_debuff)

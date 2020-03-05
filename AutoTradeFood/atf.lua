@@ -239,6 +239,16 @@ function SlashCmdList.ATF_DEBUG(msg)
     print("Exit debug mode")
     L.debug.enabled = false
   end
+  if msg == "targetpos" then
+    print(L.F.unit_position("target"))
+  end
+  if msg == "radab" then
+    local x1, y1 = L.F.unit_position("player")
+    local x2, y2 = L.F.unit_position("target")
+    local deg = (GetPlayerFacing() - math.atan2(x1-x2, y1-y2))/ math.pi * 180
+    if deg > 180 then deg = deg - 360 end
+    print(deg)
+  end
   local statics_match = string.match(msg, "statics (.+)")
   if statics_match then
     print(L.F.query_statistics_int(statics_match))
