@@ -123,7 +123,7 @@ local bind_interval = 300
 
 function L.F.auto_bind_inviter()
     if GetTime() - last_bind_time > bind_interval then
-        if last_bind_cnt % 2 == 0 then
+        if last_bind_cnt % 2 == 1 then
             SetBindingClick(L.hotkeys.interact_key, "InviterDance")
             last_bind_time = GetTime()
         else
