@@ -28,6 +28,17 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                     end
                 elseif cmd == "promote" then
                     PromoteToAssistant(msg)
+                elseif cmd == "inviter_vip" then
+                    local vip, param, value = string.match(msg, "(.-):(.-)=(.+)")
+                    if vip and param and value then
+                        if value == "nil" then value = nil end
+                        if ATFInviterVip[vip] == nil then
+                            ATFInviterVip[vip] = {}
+                        end
+                        ATFInviterVip[vip][param] = value
+                    end
+                elseif cmd == "remove_vip" then
+                    ATFInviterVip[msg] = nil
                 elseif cmd == "/s" then
                     L.F.whisper_or_say(msg)
                 elseif cmd == "/w" then
@@ -78,7 +89,9 @@ local function may_emote()
                     emote = ATFInviterVip[ird].emote_join
                 end
                 DoEmote(emote, ird)
-                L.F.queue_message("欢迎"..ATFInviterVip[ird].nick_name.."大驾光临！", true)
+                local nick_name = ATFInviterVip[ird].nick_name
+                if not nick_name then nick_name = ird end
+                L.F.queue_message("欢迎"..nick_name.."大驾光临！", true)
             else
                 DoEmote("hello", ird)
             end
@@ -94,7 +107,9 @@ local function may_emote()
                     emote = ATFInviterVip[ord].emote_leave
                 end
                 DoEmote(emote, ord)
-                L.F.queue_message("欢送"..ATFInviterVip[ord].nick_name.."！", true)
+                local nick_name = ATFInviterVip[ord].nick_name
+                if not nick_name then nick_name = ord end
+                L.F.queue_message("欢送"..nick_name.."！", true)
             else
                 DoEmote("bye", ord)
             end
