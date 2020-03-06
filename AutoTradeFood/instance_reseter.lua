@@ -290,7 +290,7 @@ end
 
 function L.F.reset_instance_manual(player)
     record_instance_reset(player, "Manual")
-    L.F.whisper_or_say("【爆本预警】我已为您记录此次重置时间。请M我【"..L.cmds.boom_predict.."】查看爆本情况。")
+    L.F.whisper_or_say("【爆本预警】我已为您记录此次重置时间。请M我【"..L.cmds.boom_predict.."】查看爆本情况。", player)
 end
 
 
