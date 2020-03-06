@@ -72,14 +72,32 @@ local function may_emote()
     local in_range_diff, out_range_diff = detect_member_range_change()
     for _, ird in ipairs(in_range_diff) do
         if L.F.is_facing(ird) then
-            DoEmote("hello", ird)
+            if ATFInviterVip[ird] then
+                local emote = "salute"
+                if ATFInviterVip[ird].emote_join then
+                    emote = ATFInviterVip[ird].emote_join
+                end
+                DoEmote(emote, ird)
+                L.F.queue_message("欢迎"..ATFInviterVip[ird].nick_name.."大驾光临！", true)
+            else
+                DoEmote("hello", ird)
+            end
             return
         end
     end
 
     for _, ord in ipairs(out_range_diff) do
         if L.F.is_facing(ord) then
-            DoEmote("bye", ord)
+            if ATFInviterVip[ord] then
+                local emote = "bye"
+                if ATFInviterVip[ord].emote_leave then
+                    emote = ATFInviterVip[ord].emote_leave
+                end
+                DoEmote(emote, ord)
+                L.F.queue_message("欢送"..ATFInviterVip[ord].nick_name.."！", true)
+            else
+                DoEmote("bye", ord)
+            end
             return
         end
     end

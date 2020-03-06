@@ -3,7 +3,7 @@
 ## Notes: 食物交易助手
 ## Author: 米豪
 ## SavedVariables: PlayerDefinedScale, GateWhiteList, BusyHistory, ATFStatistics, ATFResetBlockList, InstanceResetQueue, InstanceResetRecord
-## SavedVariablesPerCharacter: InstanceResetBackends, ForwardIgnoreSource, ATFClientSettings
+## SavedVariablesPerCharacter: InstanceResetBackends, ForwardIgnoreSource, ATFClientSettings, ATFInviterVip
 
 init.lua
 utils.lua

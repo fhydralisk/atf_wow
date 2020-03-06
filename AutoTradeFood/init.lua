@@ -124,6 +124,9 @@ local function eventHandler(self, event, msg)
                 silent=true,
             }
         end
+        if ATFInviterVip == nil then
+            ATFInviterVip = {}
+        end
     end
 end
 
