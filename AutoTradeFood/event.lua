@@ -349,11 +349,11 @@ local function easter_eggs(self, event, message, author, ...)
       end
       L.F.may_forward_message_to_agent(message, author)
       if L.F.search_str_contains(message, {"卑微的侏儒"}) then
-        L.F.queue_message("卑微？！伙计。{player}不在乎你是谁，没有人敢说强大的米尔豪斯是一个”卑微“的侏儒！")
+        L.F.queue_message("卑微？！伙计。我不在乎你是谁，没有人敢说强大的米尔豪斯是一个”卑微“的侏儒！")
       elseif L.F.search_str_contains(message, {"十点法力值", "10点法力值"}) then
         L.F.queue_message("愿青龙指引你钓上一整天的鱼")
       elseif L.F.search_str_contains(message, {"等死吧"}) then
-        L.F.queue_message("等等，{player}要先准备一下。你们先上，{player}先来做点水")
+        L.F.queue_message("等等，我要先准备一下。你们先上，我先来做点水")
       end
     elseif event == "CHAT_MSG_TEXT_EMOTE" then
       reply_to_emotes(message, author)
