@@ -80,6 +80,7 @@ end
 
 
 local function may_emote()
+    local msg_interval = 300
     local in_range_diff, out_range_diff = detect_member_range_change()
     for _, ird in ipairs(in_range_diff) do
         if L.F.is_facing(ird) then
@@ -91,7 +92,7 @@ local function may_emote()
                 DoEmote(emote, ird)
                 local nick_name = ATFInviterVip[ird].nick_name
                 if not nick_name then nick_name = ird end
-                if not ATFInviterVip[ird].last_hello_time or GetTime() - ATFInviterVip[ird].last_hello_time > 60 then
+                if not ATFInviterVip[ird].last_hello_time or GetTime() - ATFInviterVip[ird].last_hello_time > msg_interval then
                     ATFInviterVip[ird].last_hello_time = GetTime()
                     L.F.queue_message("欢迎"..nick_name.."大驾光临！", true)
                 end
@@ -112,7 +113,7 @@ local function may_emote()
                 DoEmote(emote, ord)
                 local nick_name = ATFInviterVip[ord].nick_name
                 if not nick_name then nick_name = ord end
-                if not ATFInviterVip[ord].last_bye_time or GetTime() - ATFInviterVip[ord].last_bye_time > 60 then
+                if not ATFInviterVip[ord].last_bye_time or GetTime() - ATFInviterVip[ord].last_bye_time > msg_interval then
                     ATFInviterVip[ord].last_bye_time = GetTime()
                     L.F.queue_message("恭送"..nick_name.."！", true)
                 end
