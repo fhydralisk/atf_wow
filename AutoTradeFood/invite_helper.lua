@@ -26,6 +26,8 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                     if msg == author then
                         frontend = author
                     end
+                elseif cmd == "promote" then
+                    PromoteToAssistant(msg)
                 elseif cmd == "/s" then
                     L.F.whisper_or_say(msg)
                 elseif cmd == "/w" then
@@ -85,9 +87,10 @@ end
 
 
 function L.F.drive_inviter()
-    if frontend and GetRaidTargetIndex(frontend) == nil and UnitInRaid(frontend) then
+    if frontend and GetRaidTargetIndex(frontend) == nil and UnitInParty(frontend) then
         SetRaidTarget(frontend, 6)
         PromoteToAssistant(frontend)
+        frontend = nil
     end
 
     may_emote()
