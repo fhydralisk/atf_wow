@@ -19,7 +19,7 @@ local fwd
 
 local function say_pos(to_player)
   L.F.whisper_or_say(
-    "我目前位于坐标"..L.F.my_position()..", 如不便查看，可M我“"..L.cmds.invite_cmd.."”进组", to_player
+    "{player}目前位于坐标"..L.F.my_position()..", 如不便查看，可M{player}“"..L.cmds.invite_cmd.."”进组", to_player
   )
 end
 
@@ -91,7 +91,7 @@ local function execute_command(msg, author)
     elseif msg == L.cmds.reset_instance_cmd then
       L.F.reset_instance_request_frontend(author)
     elseif msg == L.cmds.invite_cmd then
-      L.F.whisper_or_say("米豪公益已搬迁至石火旅店，烦请您移步。重置副本功能恢复，详情M我【"..L.cmds.reset_instance_help.."】。", author)
+      L.F.whisper_or_say("米豪公益已搬迁至石火旅店，烦请您移步。重置副本功能恢复，详情M{player}【"..L.cmds.reset_instance_help.."】。", author)
       L.F.invite_player(author)
     elseif msg == L.cmds.stat and L.F.player_is_admin(author) then
       L.F.whisper_or_say("大水库存："..L.F.get_water_count(), author)
@@ -103,7 +103,7 @@ local function execute_command(msg, author)
     elseif L.F.may_say_agent(msg, author) then
       -- agent speaking
     elseif msg == "3" then
-      L.F.whisper_or_say("请M我【"..L.cmds.invite_cmd.."】进组，而不是M我3，zu，组，位面，谢谢", author)
+      L.F.whisper_or_say("请M{player}【"..L.cmds.invite_cmd.."】进组，而不是M{player}3，zu，组，位面，谢谢", author)
     elseif msg == "4" or msg == L.cmds.refill_help_cmd then
       L.F.refill_help(author)
     elseif L.F.search_str_contains(msg, {L.cmds.refill_cmd}) then
@@ -117,7 +117,7 @@ local function execute_command(msg, author)
     elseif L.F.search_str_contains(msg, {"交易", "收到"}) then
       -- do nothing, auto sent by BurningTrade addons.
     elseif player_want_trade_gold(msg) then
-      L.F.whisper_or_say("米豪不收取任何金币，需要开门，请M我【传送门】查看步骤；需要吃喝，请直接交易。详情M我【帮助】", author)
+      L.F.whisper_or_say("米豪不收取任何金币，需要开门，请M{player}【传送门】查看步骤；需要吃喝，请直接交易。详情M{player}【帮助】", author)
     elseif L.F.may_set_scale(msg, author) then
       -- do nothing
     elseif L.F.search_str_contains(msg, {"水", "面包"}) then
@@ -125,7 +125,7 @@ local function execute_command(msg, author)
               "请问您要多少组水或面包？请这样回复：【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】，或者【2水】等。", author)
     elseif msg == "5" then
       L.F.whisper_or_say(
-              "请这样M我来设置比例： 【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】或者，【2水】，等等，然后交易我。", author)
+              "请这样M{player}来设置比例： 【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】或者，【2水】，等等，然后交易{player}。", author)
     elseif L.F.search_str_contains(msg, {"暴风城", "铁炉堡", "苏斯"}) then
       L.F.gate_request(author, msg)
     elseif L.F.search_str_contains(msg, {"门", "暴风", "铁", "精灵", L.cmds.gate_help_cmd}) or msg == "6" then
@@ -135,16 +135,16 @@ local function execute_command(msg, author)
     elseif L.F.may_say_statistics(msg, author) then
       -- do nothing
     elseif L.F.search_str_contains(msg, {"位面", "组", "zu"}) and not L.F.search_str_contains(msg, {"水", "面包", "吃", "喝"}) then
-      L.F.whisper_or_say("请M我【"..L.cmds.invite_cmd.."】进组，而不是M我3，zu，组，位面，谢谢", author)
+      L.F.whisper_or_say("请M{player}【"..L.cmds.invite_cmd.."】进组，而不是M{player}3，zu，组，位面，谢谢", author)
     elseif L.F.search_str_contains(msg, {"脚本", "外挂", "机器", "自动", "宏"}) then
-      L.F.whisper_or_say("是的，我是纯公益机器人，请亲手下留情，爱你哦！", author)
+      L.F.whisper_or_say("是的，{player}是纯公益机器人，请亲手下留情，爱你哦！", author)
     elseif L.F.search_str_contains(msg, {"谢", "蟹", "xie", "3q"}, "left") then
       L.F.whisper_or_say("小事不言谢，欢迎随时回来薅羊毛！", author)
     else
       if not(author == UnitName("player")) then
         L.F.whisper_or_say(
-                "【免费餐饮（请您直接交易）、传送门（请看帮助）？找米豪！跨位面，请M我【"
-                        ..L.cmds.invite_cmd.."】，查看完整帮助，请M我【"
+                "【免费餐饮（请您直接交易）、传送门（请看帮助）？找米豪！跨位面，请M{player}【"
+                        ..L.cmds.invite_cmd.."】，查看完整帮助，请M{player}【"
                         ..L.cmds.help_cmd.."】】", author
         )
       end
@@ -190,7 +190,7 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
         AcceptGroup()
       else
         DeclineGroup()
-        L.F.whisper_or_say("请勿邀请我进组，您可以M我【"..L.cmds.invite_cmd.."】进组，谢谢！", inviter)
+        L.F.whisper_or_say("请勿邀请{player}进组，您可以M{player}【"..L.cmds.invite_cmd.."】进组，谢谢！", inviter)
       end
       StaticPopup_Hide("PARTY_INVITE")
     else
@@ -237,7 +237,7 @@ local function eventHandlerBackend(self, event, arg1, arg2, arg3, arg4, ...)
       elseif message == "test" and L.F.player_is_admin(author) then
         L.F.queue_message("语言系统自检", true)
       else
-        L.F.whisper_or_say("重置工具人不接受任何密语指令，请M我的大号FS们哦！", author)
+        L.F.whisper_or_say("重置工具人不接受任何密语指令，请M{player}的大号FS们哦！", author)
       end
     end
   end
@@ -261,7 +261,7 @@ local function eventHandlerInviter(self, event, arg1, arg2, arg3, arg4, ...)
       elseif message == L.cmds.kick_offline and L.F.player_is_admin(author) then
         cleanup_group = true
       else
-        L.F.whisper_or_say("请M我的大号FS们您需要的指令哦！", author)
+        L.F.whisper_or_say("请M{player}的大号FS们您需要的指令哦！", author)
       end
     end
   elseif event == "CHAT_MSG_SYSTEM" then
@@ -349,11 +349,11 @@ local function easter_eggs(self, event, message, author, ...)
       end
       L.F.may_forward_message_to_agent(message, author)
       if L.F.search_str_contains(message, {"卑微的侏儒"}) then
-        L.F.queue_message("卑微？！伙计。我不在乎你是谁，没有人敢说强大的米尔豪斯是一个”卑微“的侏儒！")
+        L.F.queue_message("卑微？！伙计。{player}不在乎你是谁，没有人敢说强大的米尔豪斯是一个”卑微“的侏儒！")
       elseif L.F.search_str_contains(message, {"十点法力值", "10点法力值"}) then
         L.F.queue_message("愿青龙指引你钓上一整天的鱼")
       elseif L.F.search_str_contains(message, {"等死吧"}) then
-        L.F.queue_message("等等，我要先准备一下。你们先上，我先来做点水")
+        L.F.queue_message("等等，{player}要先准备一下。你们先上，{player}先来做点水")
       end
     elseif event == "CHAT_MSG_TEXT_EMOTE" then
       reply_to_emotes(message, author)

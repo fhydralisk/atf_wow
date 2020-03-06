@@ -72,7 +72,7 @@ local function level_acquire_success(player, class, level, w, b, info)
     else
         change_state("level_acquired")
         L.F.whisper_or_say(
-                "预约成功，您的职业为"..class..", 等级为"..level.."。烹饪完毕后，您将收到我的密语，请您收到密语后来我身边交易我。",
+                "预约成功，您的职业为"..class..", 等级为"..level.."。烹饪完毕后，您将收到{player}的密语，请您收到密语后来{player}身边交易{player}。",
                 player
         )
         L.F.whisper_or_say(
@@ -84,7 +84,7 @@ end
 
 local function level_acquire_failed(player, reason)
     if reason == "oor" then
-        L.F.whisper_or_say("预约失败，您不在附近。请在我附近进行预约哦！", player)
+        L.F.whisper_or_say("预约失败，您不在附近。请在{player}附近进行预约哦！", player)
     elseif reason == "lnir" then
         L.F.whisper_or_say("预约失败，您的等级不在小号服务范围【25--54】！", player)
     end
@@ -168,7 +168,7 @@ function L.F.low_level_food_request(player)
         )
     elseif low_level_trade_context.state == nil then
         low_level_trade_context.player = player
-        L.F.whisper_or_say("预约已记录，请勿离开，我需要查询您的等级与职业。", player)
+        L.F.whisper_or_say("预约已记录，请勿离开，{player}需要查询您的等级与职业。", player)
         change_state("requested")
     else
         if low_level_trade_context.player == player then
@@ -253,7 +253,7 @@ function L.F.check_low_level_food()
         if low_level_bread_count >= low_level_trade_context.count.bread * 20 and
                 low_level_water_count >= low_level_trade_context.count.water * 20 then
             L.F.whisper_or_say(
-                    "您的小号食物已烹饪完成，请于"..L.low_level_wait_timeout.."秒内交易我，过期将自动摧毁。", low_level_trade_context.player
+                    "您的小号食物已烹饪完成，请于"..L.low_level_wait_timeout.."秒内交易{player}，过期将自动摧毁。", low_level_trade_context.player
             )
             change_state("cooked")
         end
@@ -288,11 +288,11 @@ end
 
 function L.F.say_low_level_help(to_player)
     L.F.whisper_or_say("米豪可以为【25-54】级小号烹饪符合小号等级的专属烹饪。请按如下步骤进行。", to_player)
-    L.F.whisper_or_say("1. 请位于我的视线内，M我【"..L.cmds.low_level_cmd.."】。", to_player)
-    L.F.whisper_or_say("2. 我将在成功获取您的等级信息后回复您，并开始烹饪。", to_player)
-    L.F.whisper_or_say("3. 【烹饪完毕后】，我将发送一条密语给您，请收到后立即前来取用。", to_player)
-    L.F.whisper_or_say("4. 我会为您保管烹饪完成的食物"..L.low_level_wait_timeout.."秒，过期将自动摧毁。", to_player)
-    L.F.whisper_or_say("注：如果需要自定义需要多少水，多少面包，请先M我需要多少水和多少面包，例如“来2组水，1组面包”。", to_player)
+    L.F.whisper_or_say("1. 请位于{player}的视线内，M{player}【"..L.cmds.low_level_cmd.."】。", to_player)
+    L.F.whisper_or_say("2. {player}将在成功获取您的等级信息后回复您，并开始烹饪。", to_player)
+    L.F.whisper_or_say("3. 【烹饪完毕后】，{player}将发送一条密语给您，请收到后立即前来取用。", to_player)
+    L.F.whisper_or_say("4. {player}会为您保管烹饪完成的食物"..L.low_level_wait_timeout.."秒，过期将自动摧毁。", to_player)
+    L.F.whisper_or_say("注：如果需要自定义需要多少水，多少面包，请先M{player}需要多少水和多少面包，例如“来2组水，1组面包”。", to_player)
     -- if L.F.get_busy_state() then
     if false then
         L.F.whisper_or_say("**现在是用餐高峰期，因此无法提供小号食品服务。**", to_player)
@@ -314,7 +314,7 @@ local function should_trade_low_level(trade)
             end
         else
             L.F.whisper_or_say(
-                "米豪目前可为【25-54】级小号烹饪小号食品，但需要预约。请M我【"..L.cmds.low_level_cmd.."】进行预约。", name
+                "米豪目前可为【25-54】级小号烹饪小号食品，但需要预约。请M{player}【"..L.cmds.low_level_cmd.."】进行预约。", name
             )
             return true, true
         end

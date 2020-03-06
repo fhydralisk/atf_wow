@@ -24,7 +24,7 @@ function L.F.refill_request(player)
             ["last_refill_ts"] = 0,
             thanked=false,
         }
-        L.F.whisper_or_say("补货请求成功，我将在"..L.refill_timeout.."秒内接受您的补货，感谢支持！", player)
+        L.F.whisper_or_say("补货请求成功，{player}将在"..L.refill_timeout.."秒内接受您的补货，感谢支持！", player)
     else
         L.F.whisper_or_say("目前货存充足，暂时无需补货，谢谢支持！", player)
     end
@@ -70,11 +70,11 @@ end
 
 function L.F.refill_help(to_player)
     L.F.whisper_or_say("【在货存不足时】，米豪将接受其他有共同志向玩家的补货救急，降低食客等待时间。", to_player)
-    L.F.whisper_or_say("1. 如需补货，请首先M我【"..L.cmds.refill_cmd.."】，如果成功，我会向您回复消息。", to_player)
-    L.F.whisper_or_say("2. 然后请在"..L.refill_timeout.."秒内与我进行交易，将食水放至您的交易栏内，并点击交易", to_player)
-    L.F.whisper_or_say("3. 我将对您的补货内容进行验证，接受合法的补货，并广播致谢信息。", to_player)
-    L.F.whisper_or_say("注1，每次提交补货申请，有效期内可以一直补货，如需取消补货，请对我进行一次空的交易。", to_player)
-    L.F.whisper_or_say("注2，请勿交易我除了大水大面包之外的任何物品或金币哦，谢谢支持！", to_player)
+    L.F.whisper_or_say("1. 如需补货，请首先M{player}【"..L.cmds.refill_cmd.."】，如果成功，{player}会向您回复消息。", to_player)
+    L.F.whisper_or_say("2. 然后请在"..L.refill_timeout.."秒内与{player}进行交易，将食水放至您的交易栏内，并点击交易", to_player)
+    L.F.whisper_or_say("3. {player}将对您的补货内容进行验证，接受合法的补货，并广播致谢信息。", to_player)
+    L.F.whisper_or_say("注1，每次提交补货申请，有效期内可以一直补货，如需取消补货，请对{player}进行一次空的交易。", to_player)
+    L.F.whisper_or_say("注2，请勿交易{player}除了大水大面包之外的任何物品或金币哦，谢谢支持！", to_player)
 end
 
 
@@ -104,7 +104,7 @@ local function send_thanks_message(trade)
     DoEmote("thank", player)
     if refill_context.refillers[player] and not refill_context.refillers[player].thanked then
         local msg = string.format(
-            "感谢%s为我补货。M我【%s】可为我补货，M我【%s】查看贡献榜。",
+            "感谢%s为{player}补货。M{player}【%s】可为{player}补货，M{player}【%s】查看贡献榜。",
             player,
             L.cmds.refill_cmd,
             L.cmds.statistics
@@ -126,7 +126,7 @@ local function should_accept_refill(trade)
         return false
     end
     if items["Gold"] and items["Gold"] > 0 then
-        L.F.whisper_or_say("请勿交易我任何金币，谢谢支持", player)
+        L.F.whisper_or_say("请勿交易{player}任何金币，谢谢支持", player)
         return false
     end
     local water, bread = 0, 0

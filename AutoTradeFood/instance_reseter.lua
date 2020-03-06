@@ -167,7 +167,7 @@ function L.F.drive_reset_instance()
             if reseter_context.frontend then
                 --SendChatMessage("米豪已帮【"..player.."】重置副本。请M "..reseter_context.frontend.." 【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
             else
-                --SendChatMessage("米豪已帮【"..player.."】重置副本。请M我【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
+                --SendChatMessage("米豪已帮【"..player.."】重置副本。请M{player}【"..L.cmds.reset_instance_help.."】查看使用方法。", "say")
             end
         end
     else
@@ -233,7 +233,7 @@ function L.F.reset_instance_request(player, frontend)
         if block_duration > 0 then
             L.F.whisper_or_say("由于刷屏或其他原因，您已被暂停该服务【"..math.ceil(block_duration / 60).."】分钟。请解禁后避免刷屏操作，谢谢合作！", player)
         else
-            L.F.whisper_or_say("由于您的不当使用，该服务已向您永久关闭，请邮件联系我咨询解禁事宜，抱歉！", player)
+            L.F.whisper_or_say("由于您的不当使用，该服务已向您永久关闭，请邮件联系{player}咨询解禁事宜，抱歉！", player)
         end
         return
     end
@@ -242,9 +242,9 @@ function L.F.reset_instance_request(player, frontend)
 
     if UnitInParty(player) then
         if reseter_context.player == player then
-            L.F.whisper_or_say("【重置流程变更】当前版本只需在【未进组】的情况下M我一次请求即可。无需再次请求。", player)
+            L.F.whisper_or_say("【重置流程变更】当前版本只需在【未进组】的情况下M{player}一次请求即可。无需再次请求。", player)
         else
-            L.F.whisper_or_say("【重置流程变更】为避免高峰期重置冲突，重置流程发生变化，您务必在【未进组】的前提下想我发起请求。本次请求失败。", player)
+            L.F.whisper_or_say("【重置流程变更】为避免高峰期重置冲突，重置流程发生变化，您务必在【未进组】的前提下想{player}发起请求。本次请求失败。", player)
         end
         return
     elseif reseter_context.player == player then
@@ -262,9 +262,9 @@ end
 
 function L.F.say_reset_instance_help(to_player)
     L.F.whisper_or_say("重置副本功能可以帮您迅速传送至副本门口，并对副本内怪物进行重置。请按如下步骤操作", to_player)
-    L.F.whisper_or_say("1. 请确保您不在队伍中，且副本内没有其他玩家，然后M我【"..L.cmds.reset_instance_cmd.."】", to_player)
-    L.F.whisper_or_say("2. 如果请求成功，我的【重置工具人】会向您发起组队邀请。请您进入队伍后在"..timeout.."秒内下线。", to_player)
-    L.F.whisper_or_say("3. 一旦您下线，我会立即重置副本。", to_player)
+    L.F.whisper_or_say("1. 请确保您不在队伍中，且副本内没有其他玩家，然后M{player}【"..L.cmds.reset_instance_cmd.."】", to_player)
+    L.F.whisper_or_say("2. 如果请求成功，{player}的【重置工具人】会向您发起组队邀请。请您进入队伍后在"..timeout.."秒内下线。", to_player)
+    L.F.whisper_or_say("3. 一旦您下线，{player}会立即重置副本。", to_player)
     L.F.whisper_or_say("4. 如果您未爆本，下次上线您将会出现在副本门口，且副本内怪物已重置。", to_player)
     L.F.whisper_or_say("注：如果下次上线您发现在炉石点，说明：您已爆本或服务器总副本数量达到上限。", to_player)
 end
@@ -290,7 +290,7 @@ end
 
 function L.F.reset_instance_manual(player)
     record_instance_reset(player, "Manual")
-    L.F.whisper_or_say("【爆本预警】我已为您记录此次重置时间。请M我【"..L.cmds.boom_predict.."】查看爆本情况。", player)
+    L.F.whisper_or_say("【爆本预警】{player}已为您记录此次重置时间。请M{player}【"..L.cmds.boom_predict.."】查看爆本情况。", player)
 end
 
 
@@ -337,7 +337,7 @@ end
 
 function L.F.say_boom_predict(to_player)
     local remain, unlock_dur = boom_predict(to_player)
-    L.F.whisper_or_say("【爆本预警（测试版）】如果您一直使用米豪服务重置，我会尝试推测您的爆本情况，数据仅供参考。M我的重置工具人【"..L.cmds.boom_predict.."】可以获取该信息。", to_player)
+    L.F.whisper_or_say("【爆本预警（测试版）】如果您一直使用米豪服务重置，{player}会尝试推测您的爆本情况，数据仅供参考。M{player}的重置工具人【"..L.cmds.boom_predict.."】可以获取该信息。", to_player)
     if remain == 1 then
         L.F.whisper_or_say("【爆本预警：危险】您当前时段的下次重置副本可能导致爆本。若执行重置，您可能会被传送回炉石点。", to_player)
         L.F.whisper_or_say("【爆本预警：危险】预计爆本封印将于"..math.modf(unlock_dur / 60).."分钟后解除。", to_player)
@@ -388,7 +388,7 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                 reseter_context = {}
             elseif string.format(ERR_JOINED_GROUP_S, reseter_context.player) == message
                     or string.format(ERR_RAID_MEMBER_ADDED_S, reseter_context.player) == message then
-                L.F.whisper_or_say("请抓紧时间下线，我将在您下线后立即重置副本。", reseter_context.player)
+                L.F.whisper_or_say("请抓紧时间下线，{player}将在您下线后立即重置副本。", reseter_context.player)
                 reseter_context.invite_ts = GetTime()
                 reseter_context.class = UnitClass(reseter_context.player)
             elseif string.format(ERR_LEFT_GROUP_S, reseter_context.player) == message

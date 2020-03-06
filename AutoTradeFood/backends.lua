@@ -95,7 +95,7 @@ end
 
 -- default hook for backends
 local function should_hook(trade)
-    L.F.whisper_or_say("您想从我这个弱小可爱又无助的"..UnitLevel("player").."级"..UnitClass("player").."这里得到什么？一丝安慰嘛~~", trade.npc_name)
+    L.F.whisper_or_say("您想从{player}这个弱小可爱又无助的"..UnitLevel("player").."级"..UnitClass("player").."这里得到什么？一丝安慰嘛~~", trade.npc_name)
     return true, true
 end
 

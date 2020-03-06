@@ -76,7 +76,7 @@ function L.F.may_connect_reverse_proxy(msg, author)
     if not(author == UnitName("player")) and not(author == agent) then
         if L.F.search_str_contains(msg, {"米豪", "豪豪", "豪哥"}) then
             if connected_reverse_proxy[author] == nil and agent then
-                L.F.queue_message(author.."，您的会话已与代我的理人（"..agent.."）连接。")
+                L.F.queue_message(author.."，您的会话已与代理人（"..agent.."）连接。")
             end
             connected_reverse_proxy[author] = {
                 connected_ts=GetTime()

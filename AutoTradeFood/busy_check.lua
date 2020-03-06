@@ -96,5 +96,5 @@ function L.F.say_busy(to_player)
   L.F.whisper_or_say("1. 每次交易时，供应餐饮数量减半。", to_player)
   L.F.whisper_or_say("2. 在多个角色同时交易时，将阻止某一玩家连续（成功的）交易。", to_player)
   L.F.whisper_or_say("3. 阻止60级法师进行交易。", to_player)
-  L.F.whisper_or_say("谢谢您的理解与支持，如有任何建议，请邮件与我联系哈！", to_player)
+  L.F.whisper_or_say("谢谢您的理解与支持，如有任何建议，请邮件与{player}联系哈！", to_player)
 end
