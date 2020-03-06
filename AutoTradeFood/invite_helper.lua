@@ -78,7 +78,7 @@ local function may_emote()
                     emote = ATFInviterVip[ird].emote_join
                 end
                 DoEmote(emote, ird)
-                L.F.queue_message("欢迎"..ATFInviterVip[ird].nick_name.."大驾光临！", true)
+                L.F.queue_message("恭送"..ATFInviterVip[ird].nick_name.."大驾光临！", true)
             else
                 DoEmote("hello", ird)
             end
