@@ -93,6 +93,16 @@ L.F.register_item_to_use("思维加速宝石", function()
 end)
 
 
+L.F.register_item_to_use("洞察法袍", function()
+  return true
+end)
+
+
+L.F.register_item_to_use("大法师之袍", function()
+  return true
+end)
+
+
 local function use_enforce_item()
   for t = 1, 18 do
     local itemLink = GetInventoryItemLink("player", t)
