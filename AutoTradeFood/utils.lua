@@ -161,7 +161,7 @@ end
 
 function L.F.whisper_or_say(message, to_player)
   if L.F.is_inviter() or ATFClientSettings.inviter == nil then
-    string.gsub(message, "{player}", "我")
+    message = string.gsub(message, "{player}", "我")
     if to_player then
       if may_whisper_to(to_player) then
         SendChatMessage(message, "WHISPER", nil, to_player)
@@ -170,7 +170,7 @@ function L.F.whisper_or_say(message, to_player)
       L.F.queue_message(message)
     end
   else
-    string.gsub(message, "{player}", "["..UnitName("player").."]")
+    message = string.gsub(message, "{player}", "["..UnitName("player").."]")
     if to_player then
       C_ChatInfo.SendAddonMessage("ATF", "/w:"..to_player..":"..message, "WHISPER", ATFClientSettings.inviter)
     else
