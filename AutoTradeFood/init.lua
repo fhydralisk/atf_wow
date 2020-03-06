@@ -28,6 +28,7 @@ L.cmds.statistics = "数据"
 L.cmds.reset_instance_help = "重置帮助"
 L.cmds.reset_instance_cmd = "重置"
 L.cmds.boom_predict = "爆本"
+L.cmds.boom_record = "手动重置"
 
 L.items = {}
 L.items.water_name = "魔法晶水"
