@@ -91,7 +91,10 @@ local function may_emote()
                 DoEmote(emote, ird)
                 local nick_name = ATFInviterVip[ird].nick_name
                 if not nick_name then nick_name = ird end
-                L.F.queue_message("欢迎"..nick_name.."大驾光临！", true)
+                if not ATFInviterVip[ird].last_hello_time or GetTime() - ATFInviterVip[ird].last_hello_time > 60 then
+                    ATFInviterVip[ird].last_hello_time = GetTime()
+                    L.F.queue_message("欢迎"..nick_name.."大驾光临！", true)
+                end
             else
                 DoEmote("hello", ird)
             end
@@ -109,7 +112,10 @@ local function may_emote()
                 DoEmote(emote, ord)
                 local nick_name = ATFInviterVip[ord].nick_name
                 if not nick_name then nick_name = ord end
-                L.F.queue_message("恭送"..nick_name.."！", true)
+                if not ATFInviterVip[ord].last_bye_time or GetTime() - ATFInviterVip[ord].last_bye_time > 60 then
+                    ATFInviterVip[ord].last_bye_time = GetTime()
+                    L.F.queue_message("恭送"..nick_name.."！", true)
+                end
             else
                 DoEmote("bye", ord)
             end
