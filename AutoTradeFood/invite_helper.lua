@@ -109,7 +109,7 @@ local function may_emote()
                 DoEmote(emote, ord)
                 local nick_name = ATFInviterVip[ord].nick_name
                 if not nick_name then nick_name = ord end
-                L.F.queue_message("欢送"..nick_name.."！", true)
+                L.F.queue_message("恭送"..nick_name.."！", true)
             else
                 DoEmote("bye", ord)
             end
