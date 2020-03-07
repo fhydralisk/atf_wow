@@ -134,10 +134,10 @@ function L.F.may_set_scale(msg, author)
     if water + food > 6 then
       if water == 45 or water == 35 then
         L.F.whisper_or_say("如需【25-54】小号食物，请M{player}【"
-                ..L.cmds.low_level_cmd.."】进行预约。查看预约流程，行M{player}【"
+                ..L.cmds.low_level_cmd.."】进行预约。查看预约流程，请M{player}【"
                 ..L.cmds.low_level_help_cmd.."】", author)
       else
-        L.F.whisper_or_say("定制面包和水的数量，请确保水和面包加和不要大于6哦，不然{player}怎么交易给您？", author)
+        L.F.whisper_or_say("定制面包和水的数量，请确保水和面包加和不要大于6哦，不然怎么交易给您？", author)
       end
     else
       do_set_scale(water, food, author)
@@ -159,19 +159,18 @@ function L.F.check_food_trade_target_items(trade)
     if items[L.items.stone_name] then
       L.F.whisper_or_say(
               npc_name.."，请首先M{player}需要去的城市名称，例如“达纳苏斯”，再交易{player}【传送门符文】！"..
-                      "如果您已经M过{player}，可能已经过期，请重试，谢谢！",
-              "say", "Common"
+                      "如果您已经M过{player}，可能已经过期，请重试，谢谢！", npc_name
       )
     elseif items[L.items.water_name] or items[L.items.food_name] then
       L.F.whisper_or_say(
               npc_name.."，如希望为{player}补货，请M{player}【"..L.cmds.refill_cmd.."】。如果您觉得水或面包多余，请在交易{player}之前M{player}配比情况，例如“{player}要3组水，1组面包”，然后再进行交易。",
-              "say", "Common"
+              npc_name
       )
 
     elseif items["Gold"] then
-      L.F.whisper_or_say(npc_name.."，餐饮完全免费，请勿交易{player}任何金币，谢谢您的鼓励！", "say", "Common")
+      L.F.whisper_or_say(npc_name.."，餐饮完全免费，请勿交易{player}任何金币，谢谢您的鼓励！", npc_name)
     else
-      L.F.whisper_or_say(npc_name.."，背包有限，请勿交易{player}任何物品，感谢支持！", "say", "Common")
+      L.F.whisper_or_say(npc_name.."，背包有限，请勿交易{player}任何物品，感谢支持！", npc_name)
     end
     return false
   end
