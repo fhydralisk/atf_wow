@@ -186,25 +186,25 @@ local function should_accept_trade(trade)
   local npc_name = trade.npc_name
 
   if cnt == 0 then
-    L.F.whisper_or_say(npc_name.."，需要交易我1枚【传送门符文】才能够施法哦！")
+    L.F.whisper_or_say(npc_name.."，需要交易我1枚【传送门符文】才能够施法哦！", npc_name)
     return false
   end
   if L.gate.gating_contexts[npc_name] == nil then
     -- already canceled.
-    L.F.whisper_or_say(npc_name.."，由于"..gate_request_timeout.."秒已过，交易已取消，请重新M{player}主城名字。")
+    L.F.whisper_or_say(npc_name.."，由于"..gate_request_timeout.."秒已过，交易已取消，请重新M{player}主城名字。", npc_name)
     return false
   end
   if items[L.items.stone_name] == 1 and cnt == 1 then
     return true
   end
   if items["Gold"] and items["Gold"] > 0 then
-    L.F.whisper_or_say(npc_name.."，开门服务只收【传送门符文】，不收金币，详情烦请M我【传送门】，仅需1分钟，轻松开门！")
+    L.F.whisper_or_say(npc_name.."，开门服务只收【传送门符文】，不收金币，详情烦请M我【传送门】，仅需1分钟，轻松开门！", npc_name)
   elseif items[L.items.stone_name] and items[L.items.stone_name] > 1 then
-    L.F.whisper_or_say(npc_name.."，请交易我【1枚】传送门符文，多余的请您保留以备后用，谢谢！")
+    L.F.whisper_or_say(npc_name.."，请交易我【1枚】传送门符文，多余的请您保留以备后用，谢谢！", npc_name)
   elseif items[L.items.stone_name_incorrect] then
-    L.F.whisper_or_say(npc_name.."，您交易的材料有误，材料名字是【传送“门”符文】而非【传送符文】，请您重新购买哦。")
+    L.F.whisper_or_say(npc_name.."，您交易的材料有误，材料名字是【传送“门”符文】而非【传送符文】，请您重新购买哦。", npc_name)
   else
-    L.F.whisper_or_say(npc_name.."，请勿交易我额外的物品，谢谢！")
+    L.F.whisper_or_say(npc_name.."，请勿交易我额外的物品，谢谢！", npc_name)
   end
   return false
 end
