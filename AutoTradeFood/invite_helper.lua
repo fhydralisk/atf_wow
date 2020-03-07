@@ -79,24 +79,48 @@ local function detect_member_range_change()
 end
 
 
-local function may_emote()
+local function vip_emote(player, direction)
     local msg_interval = 300
+    local emote, say
+    if direction == "join" then
+        emote = "salute"
+        say = "欢迎{t}大驾光临！"
+    elseif direction == "leave" then
+        emote = "bye"
+        say = "恭送{t}!"
+    else
+        emote = "question"
+        say = ""
+    end
+
+    if ATFInviterVip[player] then
+        if ATFInviterVip[player]["emote_"..direction] then
+            emote = ATFInviterVip[player]["emote_"..direction]
+        end
+        if ATFInviterVip[player]["say_"..direction] then
+            say = ATFInviterVip[player]["say_"..direction]
+        end
+        DoEmote(emote, player)
+        local nick_name = ATFInviterVip[player].nick_name
+        if not nick_name then nick_name = player end
+        if not ATFInviterVip[player]["last_"..direction] or GetTime() - ATFInviterVip[player]["last_"..direction] > msg_interval then
+            ATFInviterVip[player]["last_"..direction] = GetTime()
+            say = string.gsub(say, "{t}", nick_name)
+            say = string.gsub(say, "{n}", player)
+            L.F.queue_message(say, true)
+        end
+        return true
+    else
+        return false
+    end
+end
+
+
+local function may_emote()
     local in_range_diff, out_range_diff = detect_member_range_change()
     for _, ird in ipairs(in_range_diff) do
         if L.F.is_facing(ird) then
-            if ATFInviterVip[ird] then
-                local emote = "salute"
-                if ATFInviterVip[ird].emote_join then
-                    emote = ATFInviterVip[ird].emote_join
-                end
-                DoEmote(emote, ird)
-                local nick_name = ATFInviterVip[ird].nick_name
-                if not nick_name then nick_name = ird end
-                if not ATFInviterVip[ird].last_hello_time or GetTime() - ATFInviterVip[ird].last_hello_time > msg_interval then
-                    ATFInviterVip[ird].last_hello_time = GetTime()
-                    L.F.queue_message("欢迎"..nick_name.."大驾光临！", true)
-                end
-            else
+            if not vip_emote(ird, "join") then
                 DoEmote("hello", ird)
             end
             return
@@ -105,19 +129,7 @@ local function may_emote()
 
     for _, ord in ipairs(out_range_diff) do
         if L.F.is_facing(ord) then
-            if ATFInviterVip[ord] then
-                local emote = "bye"
-                if ATFInviterVip[ord].emote_leave then
-                    emote = ATFInviterVip[ord].emote_leave
-                end
-                DoEmote(emote, ord)
-                local nick_name = ATFInviterVip[ord].nick_name
-                if not nick_name then nick_name = ord end
-                if not ATFInviterVip[ord].last_bye_time or GetTime() - ATFInviterVip[ord].last_bye_time > msg_interval then
-                    ATFInviterVip[ord].last_bye_time = GetTime()
-                    L.F.queue_message("恭送"..nick_name.."！", true)
-                end
-            else
+            if not vip_emote(ord, "leave") then
                 DoEmote("bye", ord)
             end
             return
