@@ -142,6 +142,9 @@ function SlashCmdList.ATFCmd(msg)
     L.F.drive_enlarge_baggage_frontend()
     L.F.may_cleanup_baggage()
     L.F.may_cleanup_group()
+    if ATFClientSettings.inviter and not(UnitIsGroupLeader(ATFClientSettings.inviter)) and UnitInParty("player") then
+      LeaveParty()
+    end
   end
 
   if L.F.is_backend() then

@@ -163,8 +163,12 @@ function L.F.whisper_or_say(message, to_player)
   if L.F.is_inviter() or ATFClientSettings.inviter == nil then
     message = string.gsub(message, "{player}", "我")
     if to_player then
-      if may_whisper_to(to_player) then
-        SendChatMessage(message, "WHISPER", nil, to_player)
+      if to_player == "/g" then
+        SendChatMessage(message, "guild")
+      else
+        if may_whisper_to(to_player) then
+          SendChatMessage(message, "WHISPER", nil, to_player)
+        end
       end
     else
       L.F.queue_message(message)

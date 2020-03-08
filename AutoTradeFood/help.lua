@@ -113,24 +113,25 @@ function L.F.say_acknowledgements(to_player)
 end
 
 
-function L.F.say_statistics(to_player, day)
+function L.F.say_statistics(day)
   if day == nil then
     day = 0
   end
+  local words = {}
   local ts = math.modf(time()) - day * 24 * 60 * 60
   local date_to_stat = date("%x", ts)
-  L.F.whisper_or_say("米豪"..date_to_stat.."数据：", to_player)
+  table.insert(words, "米豪"..date_to_stat.."数据：")
 
   local gate_count = L.F.query_statistics_int("trade.gate.count."..date_to_stat)
-  L.F.whisper_or_say("总计开门：【"..gate_count.."】次", to_player)
+  table.insert(words, "总计开门：【"..gate_count.."】次")
 
   local water_count = L.F.query_statistics_int("trade.food.all."..date_to_stat.."."..L.items.water_name)
   local food_count = L.F.query_statistics_int("trade.food.all."..date_to_stat.."."..L.items.food_name)
-  L.F.whisper_or_say("总计送水：【"..
+  table.insert(words, "总计送水：【"..
           math.modf(water_count / 20).."】组，送面包：【"..
-          math.modf(food_count / 20).."】组", to_player)
+          math.modf(food_count / 20).."】组")
 
-  L.F.whisper_or_say("职业需求排序：", to_player)
+  table.insert(words, "职业需求排序：")
   local trade_by_class = L.F.query_statistics("trade.food.class."..date_to_stat)
   local class_count = {}
   for class, items in pairs(trade_by_class) do
@@ -138,10 +139,10 @@ function L.F.say_statistics(to_player, day)
   end
   table.sort(class_count, function(a, b) return a.count > b.count end)
   for i, class in ipairs(class_count) do
-    L.F.whisper_or_say(""..i..". "..class.class.." 交易成功：【"..math.modf(class.count / 20).."】组", to_player)
+    table.insert(words, ""..i..". "..class.class.." 交易成功：【"..math.modf(class.count / 20).."】组")
   end
 
-  L.F.whisper_or_say("吃货排行：", to_player)
+  table.insert(words, "吃货排行：")
   local trade_by_ind = L.F.query_statistics("trade.food.ind."..date_to_stat)
   local trade_count = {}
   for name, items in pairs(trade_by_ind) do
@@ -149,11 +150,11 @@ function L.F.say_statistics(to_player, day)
   end
   table.sort(trade_count, function(a, b) return a.count > b.count end)
   for i, ind in ipairs(trade_count) do
-    L.F.whisper_or_say(""..i..". "..ind.name.." 取走【"..math.modf(ind.count / 20).."】组", to_player)
+    table.insert(words, ""..i..". "..ind.name.." 取走【"..math.modf(ind.count / 20).."】组")
     if i >= 3 then break end
   end
 
-  L.F.whisper_or_say("补货排行：", to_player)
+  table.insert(words, "补货排行：")
   local refill_by_ind = L.F.query_statistics("trade.refill.ind."..date_to_stat)
   local refill_count = {}
   for name, items in pairs(refill_by_ind) do
@@ -161,26 +162,27 @@ function L.F.say_statistics(to_player, day)
   end
   table.sort(refill_count, function(a, b) return a.water_count > b.water_count end)
   for i, ind in ipairs(refill_count) do
-    L.F.whisper_or_say(""..i..". "..ind.name.." 补充大水：【"..math.modf(ind.water_count / 20)..
-            "】组，面包【"..math.modf(ind.food_count / 20).."】组", to_player)
+    table.insert(words, ""..i..". "..ind.name.." 补充大水：【"..math.modf(ind.water_count / 20)..
+            "】组，面包【"..math.modf(ind.food_count / 20).."】组")
     if i >= 3 then break end
   end
-
+  return words
 end
 
 
-function L.F.say_statistics_backend(to_player, day)
+function L.F.say_statistics_backend(day)
   if day == nil then
     day = 0
   end
+  local words = {}
   local ts = math.modf(time()) - day * 24 * 60 * 60
   local date_to_stat = date("%x", ts)
-  L.F.whisper_or_say("米豪"..date_to_stat.."数据：", to_player)
+  table.insert(words, "米豪"..date_to_stat.."数据：")
 
   local gate_count = L.F.query_statistics_int("reset.count."..date_to_stat)
-  L.F.whisper_or_say("总计重置：【"..gate_count.."】次", to_player)
+  table.insert(words, "总计重置：【"..gate_count.."】次")
 
-  L.F.whisper_or_say("职业排行：", to_player)
+  table.insert(words, "职业排行：")
   local reset_by_class = L.F.query_statistics("reset.class."..date_to_stat)
   local class_count = {}
   for class, cnt in pairs(reset_by_class) do
@@ -188,10 +190,10 @@ function L.F.say_statistics_backend(to_player, day)
   end
   table.sort(class_count, function(a, b) return a.count > b.count end)
   for i, class in ipairs(class_count) do
-    L.F.whisper_or_say(""..i..". "..class.class.." 重置：【"..class.count.."】次", to_player)
+    table.insert(words, ""..i..". "..class.class.." 重置：【"..class.count.."】次")
   end
 
-  L.F.whisper_or_say("副本排行：", to_player)
+  table.insert(words, "副本排行：")
   local reset_by_instance = L.F.query_statistics("reset.instance."..date_to_stat)
   local instance_count = {}
   for instance, cnt in pairs(reset_by_instance) do
@@ -199,10 +201,10 @@ function L.F.say_statistics_backend(to_player, day)
   end
   table.sort(instance_count, function(a, b) return a.count > b.count end)
   for i, instance in ipairs(instance_count) do
-    L.F.whisper_or_say(""..i..". ".. instance.instance.." 重置：【".. instance.count.."】次", to_player)
+    table.insert(words, ""..i..". ".. instance.instance.." 重置：【".. instance.count.."】次")
   end
 
-  L.F.whisper_or_say("肝帝排行：", to_player)
+  table.insert(words, "肝帝排行：")
   local reset_by_ind = L.F.query_statistics("reset.ind."..date_to_stat)
   local ind_count = {}
   for ind, cnt in pairs(reset_by_ind) do
@@ -210,20 +212,29 @@ function L.F.say_statistics_backend(to_player, day)
   end
   table.sort(ind_count, function(a, b) return a.count > b.count end)
   for i, ind in ipairs(ind_count) do
-    L.F.whisper_or_say(""..i..". ".. ind.name.." 重置：【".. ind.count.."】次", to_player)
+    table.insert(words, ""..i..". ".. ind.name.." 重置：【".. ind.count.."】次")
     if i >= 3 then break end
   end
+  return words
 end
 
 
 function L.F.may_say_statistics(msg, author)
+  if string.match(msg, "/g") == "/g" then
+    msg = string.gsub(msg, "/g", "")
+    author = "/g"
+  end
   local pattern = L.cmds.statistics.."%-(%d+)"
   local day = string.match(msg, pattern)
   if day or msg == L.cmds.statistics then
+    local words
     if L.F.is_frontend() then
-      L.F.say_statistics(author, day)
+      words = L.F.say_statistics(day)
     elseif L.F.is_backend() then
-      L.F.say_statistics_backend(author, day)
+      words = L.F.say_statistics_backend(day)
+    end
+    for _, w in ipairs(words) do
+      L.F.whisper_or_say(w, author)
     end
     return true
   end

@@ -139,6 +139,10 @@ end
 
 
 function L.F.drive_inviter()
+    if UnitInParty("player") and not UnitIsGroupLeader("player") then
+        LeaveParty()
+        return
+    end
     if frontend and GetRaidTargetIndex(frontend) == nil and UnitInParty(frontend) then
         SetRaidTarget(frontend, 6)
         PromoteToAssistant(frontend)
