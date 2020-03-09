@@ -103,8 +103,8 @@ local function vip_emote(player, direction)
         DoEmote(emote, player)
         local nick_name = ATFInviterVip[player].nick_name
         if not nick_name then nick_name = player end
-        if not ATFInviterVip[player]["last_"..direction] or GetTime() - ATFInviterVip[player]["last_"..direction] > msg_interval then
-            ATFInviterVip[player]["last_"..direction] = GetTime()
+        if not ATFInviterVip[player]["last_"..direction] or time() - ATFInviterVip[player]["last_"..direction] > msg_interval then
+            ATFInviterVip[player]["last_"..direction] = time()
             say = string.gsub(say, "{t}", nick_name)
             say = string.gsub(say, "{n}", player)
             L.F.queue_message(say, true)
