@@ -11,6 +11,7 @@ frame:RegisterEvent("CHAT_MSG_SYSTEM")
 frame:RegisterEvent("CHAT_MSG_ADDON")
 frame:RegisterEvent("ADDON_LOADED")
 
+SLASH_REMOVE_BLACKLIST1 = "/atrrbl"
 
 local timeout = L.reset_instance_timeout
 
@@ -421,3 +422,9 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
 end
 
 frame:SetScript("OnEvent", eventHandler)
+
+
+function SlashCmdList.REMOVE_BLACKLIST(msg)
+    ATFResetBlockList[msg] = nil
+    print(msg.." removed")
+end

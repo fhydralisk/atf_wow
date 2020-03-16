@@ -191,6 +191,7 @@ function SlashCmdList.ATF_SWITCH(msg)
     SetBindingClick(atfr_key, "ATFRButton")
     L.F.start_handler()
     L.F.start_trade_hook()
+    CloseTrade()
   elseif msg == "off" then
     if L.atfr_run then
       SendChatMessage("自动模式已关闭，人工介入")
