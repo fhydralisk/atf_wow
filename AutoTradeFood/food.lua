@@ -171,6 +171,13 @@ local function should_give_food(trade)
   local tclass = trade.npc_class
   local tlevel = trade.npc_level
   local npc_name = trade.npc_name
+  local guild = GetGuildInfo("npc")
+  local guild_player = GetGuildInfo("player")
+  if ATFClientSettings.is_internal and not guild == guild_player then
+    local myname = UnitName("player")
+    L.F.whisper_or_say(myname.."为供货员，仅用于为楼下供货以及为【"..guild_player.."】工会内部成员提供食物，烦请您移步楼下交易前台。", npc_name)
+    return true, true
+  end
 
   if tclass == "法师" and tlevel == 60 and L.F.get_water_count() < 25 then
     L.F.whisper_or_say("60级法师仅能在米豪货存充足时取水。如希望为我补充货存，请M我【"..L.cmds.refill_cmd.."】。", npc_name)

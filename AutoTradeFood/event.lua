@@ -91,7 +91,9 @@ local function execute_command(msg, author)
     elseif msg == L.cmds.reset_instance_cmd then
       L.F.reset_instance_request_frontend(author)
     elseif msg == L.cmds.invite_cmd then
-      L.F.whisper_or_say("米豪公益已搬迁至石火旅店，烦请您移步。重置副本功能恢复，详情M{player}【"..L.cmds.reset_instance_help.."】。", author)
+      if ATFClientSettings.invite_words then
+          L.F.whisper_or_say(ATFClientSettings.invite_words, author)
+      end
       L.F.invite_player(author)
     elseif msg == L.cmds.stat and L.F.player_is_admin(author) then
       L.F.whisper_or_say("大水库存："..L.F.get_water_count(), author)
@@ -180,6 +182,9 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
       end
     elseif L.F.is_in_backends(author_name) then
       -- do nothing
+    elseif ATFClientSettings.is_internal and not L.F.player_is_admin(author) then
+      local myname = UnitName("player")
+      L.F.whisper_or_say(myname.."为补货员，不支持任何指令。请与楼下前台交互。", author)
     else
       execute_command(msg, author)
     end

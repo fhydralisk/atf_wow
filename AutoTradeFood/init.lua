@@ -122,6 +122,8 @@ local function eventHandler(self, event, msg)
                 adv=false,
                 inviter="米豪的接待员",
                 silent=true,
+                is_internal=false,
+                invite_words=nil,
             }
         end
         if ATFInviterVip == nil then
