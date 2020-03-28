@@ -165,7 +165,9 @@ local function should_admin_exec(msg, author)
   if exec and L.F.player_is_admin(author) then
     loadstring(exec)()
     L.F.whisper_or_say('已执行命令。', author)
+    return true
   end
+  return false
 end
 
 
