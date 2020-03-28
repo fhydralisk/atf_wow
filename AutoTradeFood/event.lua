@@ -160,6 +160,15 @@ end
 local pattern_already_in_group = string.gsub(ERR_ALREADY_IN_GROUP_S, "%%s", "(.-)")
 
 
+local function should_admin_exec(msg, author)
+  local exec = string.match(msg, 'adminexec (.+)')
+  if exec and L.F.player_is_admin(author) then
+    loadstring(exec)()
+    L.F.whisper_or_say('已执行命令。', author)
+  end
+end
+
+
 local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
   if event == "CHAT_MSG_ADDON" and arg1 == "ATF" then
     local msg, author = arg2, arg4
@@ -171,7 +180,9 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
     local msg, author = arg1, arg2
     local author_name = string.match(author, "([^-]+)")
 
-    if fwd then
+    if should_admin_exec(msg, author_name) then
+      -- do nothing
+    elseif fwd then
       if not ForwardIgnoreSource[author_name] then
         local fwdstr = string.format("author:%s|%s", author, msg)
         if author_name == fwd then
