@@ -141,10 +141,17 @@ local function trade_on_event(self, event, arg1, arg2)
   if not (L.atfr_run == true) then
     return
   end
+
   if event == "TRADE_SHOW" then
+    local trader = UnitName("NPC")
     if not (L.F.watch_dog_ok()) then
-      local trader = UnitName("NPC")
       L.F.whisper_or_say("米豪的驱动程序出现故障，暂时无法进行交易，请等待米豪的维修师进行修复。十分抱歉！", trader)
+      CloseTrade()
+      return
+    end
+
+    if ATFBlockList[trader] then
+      L.F.whisper_or_say("由于您曾经的不当使用，您已被禁止使用米豪的服务，请联系米豪申请解封。", trader)
       CloseTrade()
       return
     end

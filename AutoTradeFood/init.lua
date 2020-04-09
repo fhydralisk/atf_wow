@@ -129,6 +129,9 @@ local function eventHandler(self, event, msg)
         if ATFInviterVip == nil then
             ATFInviterVip = {}
         end
+        if ATFBlockList == nil then
+            ATFBlockList = {}
+        end
     end
 end
 

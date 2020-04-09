@@ -12,6 +12,7 @@ frame:RegisterEvent("CHAT_MSG_ADDON")
 frame:RegisterEvent("CHAT_MSG_SYSTEM")
 frame:RegisterEvent("TRADE_ACCEPT_UPDATE")
 frame:RegisterEvent("PARTY_INVITE_REQUEST")
+frame:RegisterEvent("PLAYER_DEAD")
 
 local tclass_food = L.food.tclass_food
 local fwd
@@ -198,6 +199,8 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
     elseif ATFClientSettings.is_internal and not L.F.player_is_admin(author) then
       local myname = UnitName("player")
       L.F.whisper_or_say(myname.."为补货员，不支持任何指令。请与楼下前台交互。", author)
+    elseif ATFBlockList[author] then
+      L.F.whisper_or_say("由于您曾经的不当使用，您已被禁止使用米豪的服务，请联系米豪申请解封。", author)
     else
       execute_command(msg, author)
     end
@@ -228,6 +231,15 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
         L.F.whisper_or_say("【提示】"..name.."对您的组队邀请失败：您已有队伍。", player)
       end
     end
+  elseif event == "PLAYER_DEAD" then
+    if L.atfr_run then
+      local last_in_range_recent = L.F.get_recent_player_enter()
+      for player, _ in pairs(last_in_range_recent) do
+        L.F.whisper_or_say("您的不当使用导致米豪角色死亡，因此您已被全面禁止使用米豪服务。如您认为这是错判，请与【米豪】联系解封", player)
+        ATFBlockList[player] = true
+        L.F.block_all_other(player)
+      end
+    end
   end
 end
 
@@ -242,7 +254,9 @@ local function eventHandlerBackend(self, event, arg1, arg2, arg3, arg4, ...)
     if L.atfr_run then
       local message, author = arg1, arg2
       author = string.match(author, "([^-]+)")
-      if message == L.cmds.reset_instance_cmd then
+      if ATFBlockList[author] then
+        L.F.whisper_or_say("由于您曾经的不当使用，您已被禁止使用米豪的服务，请联系米豪申请解封。", author)
+      elseif message == L.cmds.reset_instance_cmd then
         L.F.reset_instance_request(author, nil)
       elseif message == L.cmds.reset_instance_help then
         L.F.say_reset_instance_help(author)

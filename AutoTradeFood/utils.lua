@@ -11,6 +11,10 @@ local watch_dog_ts = 0
 
 local whisper_protect = {}
 
+local frame = CreateFrame("FRAME")
+frame:RegisterEvent("CHAT_MSG_ADDON")
+
+
 
 function L.F.split(inputstr, sep)
     if sep == nil then
@@ -242,3 +246,79 @@ function L.F.get_party_member_count()
   end
 
 end
+
+
+local last_in_range, last_out_range = {}, {}
+local in_range_player_recent = {}
+
+
+local function detect_member_range_change()
+    local n = GetNumGroupMembers()
+    local in_range, out_range = {}, {}
+    local in_range_diff, out_range_diff = {}, {}
+    for i = 2, n do
+        local unit = "raid"..i
+        local name = UnitName(unit)
+        if CheckInteractDistance(unit, 4) then
+            in_range[name] = true
+            if last_out_range[name] then
+                table.insert(in_range_diff, name)
+            end
+        else
+            out_range[name] = true
+            if last_in_range[name] then
+                table.insert(out_range_diff, name)
+            end
+        end
+    end
+    last_in_range = in_range
+    last_out_range = out_range
+    return in_range_diff, out_range_diff
+end
+
+
+function L.F.record_player_enter()
+  local in_range_diff = detect_member_range_change()
+  for _, player in ipairs(in_range_diff) do
+    in_range_player_recent[player] = GetTime()
+  end
+  for player, ts in pairs(in_range_player_recent) do
+    if GetTime() - ts > 15 then
+      in_range_player_recent[player] = nil
+    end
+  end
+end
+
+
+function L.F.get_recent_player_enter()
+  return in_range_player_recent
+end
+
+
+function L.F.block_all_other(player)
+  if ATFClientSettings.servers == nil then
+    ATFClientSettings.servers = {}
+  end
+
+  for _, server in ipairs(ATFClientSettings.servers) do
+    C_ChatInfo.SendAddonMessage("ATF", "block:"..player, "whisper", server)
+  end
+end
+
+
+local function eventHandler(self, event, arg1, arg2, arg3, arg4)
+  if L.atfr_run then
+    if event == "CHAT_MSG_ADDON" and arg1 == "ATF" then
+      local message, author = arg2, arg4
+      author = string.match(author, "([^-]+)")
+      local cmd, target = string.match(message, "(.-):(.+)")
+      if cmd and target then
+        if cmd == "block" then
+          ATFBlockList[target] = true
+        end
+      end
+    end
+  end
+end
+
+frame:SetScript("OnEvent", eventHandler)
