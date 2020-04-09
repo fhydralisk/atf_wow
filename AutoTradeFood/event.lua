@@ -199,7 +199,7 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
     elseif ATFClientSettings.is_internal and not L.F.player_is_admin(author) then
       local myname = UnitName("player")
       L.F.whisper_or_say(myname.."为补货员，不支持任何指令。请与楼下前台交互。", author)
-    elseif ATFBlockList[author] then
+    elseif ATFBlockList[author_name] then
       L.F.whisper_or_say("由于您曾经的不当使用，您已被禁止使用米豪的服务，请联系米豪申请解封。", author)
     else
       execute_command(msg, author)
