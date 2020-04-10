@@ -256,8 +256,15 @@ local function detect_member_range_change()
     local n = GetNumGroupMembers()
     local in_range, out_range = {}, {}
     local in_range_diff, out_range_diff = {}, {}
-    for i = 2, n do
-        local unit = "raid"..i
+    local prefix = "party"
+    local istart, iend = 1, n - 1
+    if UnitInRaid("player") then
+      prefix = "raid"
+      istart = 2
+      iend = n
+    end
+    for i = istart, iend do
+        local unit = prefix..i
         local name = UnitName(unit)
         if CheckInteractDistance(unit, 4) then
             in_range[name] = true
