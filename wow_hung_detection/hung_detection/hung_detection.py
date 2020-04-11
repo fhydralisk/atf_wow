@@ -18,7 +18,7 @@ def get_wow_process_id(hwnd):
 
 def close_wow(hwnd):
     process_id = get_wow_process_id(hwnd)
-    print process_id
+    print(process_id)
     h_process = win32api.OpenProcess(win32con.PROCESS_TERMINATE, win32con.FALSE, process_id)
     if h_process > 0:
         win32process.TerminateProcess(h_process, 0)

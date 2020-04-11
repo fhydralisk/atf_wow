@@ -138,6 +138,7 @@ function L.F.drive_reset_instance()
                         class=UnitClass("party1"),
                         frontend=nil,
                     }
+                    last_ctx = reseter_context
                 else
                     ResetInstances()
                     LeaveParty()
