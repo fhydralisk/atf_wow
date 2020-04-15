@@ -290,7 +290,7 @@ function L.F.record_player_enter()
     in_range_player_recent[player] = GetTime()
   end
   for player, ts in pairs(in_range_player_recent) do
-    if GetTime() - ts > 15 then
+    if GetTime() - ts > L.block_detect_duration then
       in_range_player_recent[player] = nil
     end
   end

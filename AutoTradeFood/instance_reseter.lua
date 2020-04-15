@@ -235,7 +235,7 @@ function L.F.reset_instance_request(player, frontend)
         if block_duration > 0 then
             L.F.whisper_or_say("由于刷屏或其他原因，您已被暂停该服务【"..math.ceil(block_duration / 60).."】分钟。请解禁后避免刷屏操作，谢谢合作！", player)
         else
-            L.F.whisper_or_say("由于您的不当使用，该服务已向您永久关闭，请邮件联系{player}咨询解禁事宜，抱歉！", player)
+            L.F.whisper_or_say("由于您的不当使用，该服务已向您永久关闭，请邮件联系【米豪】咨询解禁事宜，抱歉！", player)
         end
         return
     end

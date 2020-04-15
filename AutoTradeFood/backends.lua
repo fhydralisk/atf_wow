@@ -11,20 +11,20 @@ local frame = CreateFrame("FRAME")
 frame:RegisterEvent("CHAT_MSG_ADDON")
 
 
-local last_pind_ts = 0
+local last_ping_ts = 0
 local backends_available = {}
 local ping_interval = 10
 local max_latency = 5
 
 
 local function should_ping()
-    return GetTime() - last_pind_ts > ping_interval
+    return GetTime() - last_ping_ts > ping_interval
 end
 
 
 function L.F.ping_backends()
     if should_ping() then
-        last_pind_ts = GetTime()
+        last_ping_ts = GetTime()
         for backend, _ in pairs(InstanceResetBackends) do
             print("pinging ".. backend)
             local t = math.modf(time())
