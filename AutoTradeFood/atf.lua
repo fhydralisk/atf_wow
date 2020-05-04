@@ -130,6 +130,26 @@ local function drive_state()
 end
 
 
+local revive_rw_last = 0
+local revive_rw_interval = 15
+
+local function may_revive()
+  if UnitIsDeadOrGhost("player") then
+    AcceptResurrect()
+    if GetTime() - revive_rw_last > revive_rw_interval then
+      revive_rw_last = GetTime()
+      local chat_type = "party"
+      if UnitInRaid("player") then
+        chat_type = "raid_warning"
+      elseif not UnitInParty("player") then
+        return
+      end
+      SendChatMessage("工具人已阵亡，如您有复活技能或工具，烦请在我的尸体位置安全复活我，感谢！", chat_type)
+    end
+  end
+end
+
+
 function SlashCmdList.ATFCmd(msg)
   L.F.watch_dog_hit()
   if L.F.is_frontend() then
@@ -165,6 +185,7 @@ function SlashCmdList.ATFCmd(msg)
 
   L.F.accept_accepted_trade()
   L.F.dequeue_say_messages()
+  may_revive()
 end
 
 

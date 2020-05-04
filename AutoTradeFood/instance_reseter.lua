@@ -403,6 +403,7 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                 reseter_context = {}
             elseif may_record_success(message) then
                 -- do nothing
+                L.F.whisper_or_say("已帮["..last_ctx.player.."]重置["..last_ctx.instance.."]，需要重置服务，请M我【"..L.cmds.help_cmd.."】")
             end
         end
     elseif event == "CHAT_MSG_ADDON" and arg1 == "ATF" then

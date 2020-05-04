@@ -258,6 +258,8 @@ local function eventHandlerBackend(self, event, arg1, arg2, arg3, arg4, ...)
         -- do nothing
       elseif ATFBlockList[author] then
         L.F.whisper_or_say("由于您曾经的不当使用，您已被禁止使用米豪的服务，请联系米豪申请解封。", author)
+      elseif message == L.cmds.help_cmd then
+        L.F.say_reset_instance_help(author)
       elseif message == L.cmds.reset_instance_cmd then
         L.F.reset_instance_request(author, nil)
       elseif message == L.cmds.reset_instance_help then
