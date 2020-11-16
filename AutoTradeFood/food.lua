@@ -125,6 +125,10 @@ local function use_enforce_item()
 end
 
 
+local function should_restrict(class, level, name)
+  return class == "法师" and level == 60 and L.admin_names[name] == nil
+end
+
 function L.F.bind_make_food_or_water()
   if L.F.target_level_to_acquire() then
     L.F.bind_acquire_target_level()
@@ -206,7 +210,7 @@ local function should_give_food(trade)
     return true, true
   end
 
-  if tclass == "法师" and tlevel == 60 and L.F.get_water_count() < 25 then
+  if should_restrict(trade.npc_class, trade.npc_level, trade.npc_name) and L.F.get_water_count() < 25 then
     L.F.whisper_or_say("60级法师仅能在米豪货存充足时取水。如希望为我补充货存，请M我【"..L.cmds.refill_cmd.."】。", npc_name)
     return true, true
   end
@@ -237,7 +241,7 @@ local function feed_foods(trade)
   if L.F.get_busy_state() then
     scale = 0.5
   end
-  if trade.npc_class == "法师" and trade.npc_level == 60 then
+  if should_restrict(trade.npc_class, trade.npc_level, trade.npc_name) then
     scale = scale * 0.5
   end
   w = math.ceil(w * scale)
@@ -288,7 +292,7 @@ local function trade_completed(trade)
   set_last_trade_player(name)
 
   ask_buff(name, class)
-  if class == "法师" and level == 60 then
+  if should_restrict(class, level, name) then
     L.F.whisper_or_say("法爷需自强，不当伸手党，嘿嘿嘿...", name)
   end
   local words = trade_count_words[last_trade_player_count]

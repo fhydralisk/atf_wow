@@ -13,6 +13,14 @@ SLASH_AcquireLevelCmd1 = "/atal"
 
 local low_level_spell = {
     {
+        ["level_min"] = 15,
+        ["level_max"] = 24,
+        ["spell_bread"] = "造食术(等级 3)",
+        ["bread_name"] = "魔法黑面包",
+        ["spell_water"] = "造水术(等级 3)",
+        ["water_name"] = "魔法纯净水",
+    },
+    {
         ["level_min"] = 25,
         ["level_max"] = 34,
         ["spell_bread"] = "造食术(等级 4)",
@@ -86,7 +94,7 @@ local function level_acquire_failed(player, reason)
     if reason == "oor" then
         L.F.whisper_or_say("预约失败，您不在附近。请在{player}附近进行预约哦！", player)
     elseif reason == "lnir" then
-        L.F.whisper_or_say("预约失败，您的等级不在小号服务范围【25--54】！", player)
+        L.F.whisper_or_say("预约失败，您的等级不在小号服务范围【15--54】！", player)
     end
     low_level_trade_context = {}
 end
@@ -287,7 +295,7 @@ end
 
 
 function L.F.say_low_level_help(to_player)
-    L.F.whisper_or_say("米豪可以为【25-54】级小号烹饪符合小号等级的专属烹饪。请按如下步骤进行。", to_player)
+    L.F.whisper_or_say("米豪可以为【15-54】级小号烹饪符合小号等级的专属烹饪。请按如下步骤进行。", to_player)
     L.F.whisper_or_say("1. 请位于{player}的视线内，M{player}【"..L.cmds.low_level_cmd.."】。", to_player)
     L.F.whisper_or_say("2. {player}将在成功获取您的等级信息后回复您，并开始烹饪。", to_player)
     L.F.whisper_or_say("3. 【烹饪完毕后】，{player}将发送一条密语给您，请收到后立即前来取用。", to_player)
