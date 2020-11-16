@@ -103,8 +103,8 @@ end
 
 function L.F.may_cleanup_baggage()
   if L.F.get_free_slots() == 0 then
-    if math.random(1, 20) == 1 then
-      -- 1/20 possibility
+    if math.random(1, 100) == 1 then
+      -- 1/200 possibility
       L.F.del_fragment()
     end
   end

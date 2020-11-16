@@ -8,6 +8,9 @@ local addonName, L = ...
 
 local check_buff = L.F.check_buff
 local interact_key = L.hotkeys.interact_key
+local dancing_counter = 0
+local is_dancing = false
+local dancing_time = 0
 
 local mw_button = L.F.create_macro_button("MWButton", "")
 
@@ -32,6 +35,8 @@ local tclass_level = {
   ["德鲁伊"]=55,
   ["术士"]=55
 }
+
+SLASH_ATF_IDLE1 = "/atfidle"
 
 
 local trade_count_words = {
@@ -124,14 +129,21 @@ function L.F.bind_make_food_or_water()
   if L.F.target_level_to_acquire() then
     L.F.bind_acquire_target_level()
   elseif check_buff("喝水", 0) then
+    dancing_counter = 0
     SetBinding(interact_key, "JUMP")
   elseif L.F.should_cook_low_level_food() then
+    dancing_counter = 0
     L.F.bind_low_level_cook()
   else
     SetBindingClick(interact_key, "MWButton")
     if L.F.get_free_slots() == 0 then
-      mw_button:SetAttribute("macrotext", "/cast 魔爆术")
+      if ATFClientSettings.idle_dance then
+        mw_button:SetAttribute("macrotext", "/atfidle")
+      else
+        mw_button:SetAttribute("macrotext", "/cast 魔爆术")
+      end
     else
+      dancing_counter = 0
       local w = L.F.get_water_count(1)
       local b = L.F.get_bread_count(1)
       local may_use_item = use_enforce_item()
@@ -141,6 +153,21 @@ function L.F.bind_make_food_or_water()
         mw_button:SetAttribute("macrotext", may_use_item .."/cast 造水术")
       end
     end
+  end
+end
+
+
+function SlashCmdList.ATF_IDLE()
+  if dancing_counter >= 4 and is_dancing == false then
+    is_dancing = true
+    DoEmote("dance", "player")
+    dancing_time = GetTime()
+  elseif dancing_counter < 4 then
+    print(dancing_counter, is_dancing)
+
+    is_dancing = false
+    dancing_counter = dancing_counter + 1
+    print(dancing_counter, is_dancing)
   end
 end
 

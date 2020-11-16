@@ -297,7 +297,7 @@ end
 
 
 function L.F.bind_reseter_backend()
-    SetBinding(L.hotkeys.interact_key, "JUMP")
+    SetBinding(L.hotkeys.interact_key, "SITORSTAND")
 end
 
 
