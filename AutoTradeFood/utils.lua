@@ -104,9 +104,13 @@ function L.F.check_buff(buff_name, remain, is_debuff)
 end
 
 
+local recently_invited = {}
+
+
 function L.F.invite_player(player)
   if L.F.is_inviter() or ATFClientSettings.inviter == nil then
     InviteUnit(player)
+    table.insert(recently_invited, {player=player, ts=GetTime()})
   else
     if not UnitInParty(ATFClientSettings.inviter) then
       C_ChatInfo.SendAddonMessage("ATF", "invite:"..UnitName("player"), "WHISPER", ATFClientSettings.inviter)
@@ -114,6 +118,11 @@ function L.F.invite_player(player)
     C_ChatInfo.SendAddonMessage("ATF", "invite:"..player, "WHISPER", ATFClientSettings.inviter)
   end
   ConvertToRaid()
+end
+
+
+function L.F.recently_invited_players()
+  return recently_invited
 end
 
 
