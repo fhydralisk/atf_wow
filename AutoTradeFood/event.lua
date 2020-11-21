@@ -273,7 +273,7 @@ local function eventHandlerBackend(self, event, arg1, arg2, arg3, arg4, ...)
       elseif message == "test" and L.F.player_is_admin(author) then
         L.F.queue_message("语言系统自检", true)
       else
-        L.F.whisper_or_say("重置工具人不接受任何密语指令，请M{player}的大号FS们哦！", author)
+        L.F.whisper_or_say("重置工具人仅支持【重置】命令，如需其他帮助，请M{player}的大号FS们哦！", author)
       end
     end
   end
