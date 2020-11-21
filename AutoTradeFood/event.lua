@@ -93,7 +93,7 @@ local function execute_command(msg, author)
       L.F.reset_instance_request_frontend(author)
     elseif msg == L.cmds.invite_cmd then
       if ATFClientSettings.invite_words then
-          L.F.whisper_or_say(ATFClientSettings.invite_words, author)
+        L.F.whisper_or_say(ATFClientSettings.invite_words, author)
       end
       L.F.invite_player(author)
     elseif msg == L.cmds.stat and L.F.player_is_admin(author) then
@@ -125,10 +125,10 @@ local function execute_command(msg, author)
       -- do nothing
     elseif L.F.search_str_contains(msg, {"水", "面包"}) then
       L.F.whisper_or_say(
-              "请问您要多少组水或面包？请这样回复：【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】，或者【2水】等。", author)
+          "请问您要多少组水或面包？请这样回复：【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】，或者【2水】等。", author)
     elseif msg == "5" then
       L.F.whisper_or_say(
-              "请这样M{player}来设置比例： 【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】或者，【2水】，等等，然后交易{player}。", author)
+          "请这样M{player}来设置比例： 【2组水，3组面包】，或者【法师，可不可以来水3组，面包2组？】或者，【2水】，等等，然后交易{player}。", author)
     elseif L.F.search_str_contains(msg, {"暴风城", "铁炉堡", "苏斯"}) then
       L.F.gate_request(author, msg)
     elseif L.F.search_str_contains(msg, {"门", "暴风", "铁", "精灵", L.cmds.gate_help_cmd}) or msg == "6" then
@@ -146,9 +146,9 @@ local function execute_command(msg, author)
     else
       if not(author == UnitName("player")) then
         L.F.whisper_or_say(
-                "【免费餐饮（请您直接交易）、传送门（请看帮助）？找米豪！跨位面，请M{player}【"
-                        ..L.cmds.invite_cmd.."】，查看完整帮助，请M{player}【"
-                        ..L.cmds.help_cmd.."】】", author
+            "【免费餐饮（请您直接交易）、传送门（请看帮助）？找米豪！跨位面，请M{player}【"
+                ..L.cmds.invite_cmd.."】，查看完整帮助，请M{player}【"
+                ..L.cmds.help_cmd.."】】", author
         )
       end
     end

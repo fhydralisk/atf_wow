@@ -54,11 +54,13 @@ end
 
 
 function L.F.drive_enlarge_baggage_frontend()
-    if not(has_transfer_ctx()) then
-        if L.F.get_free_slots() <= 2 then
-            request_transfer(6, "out")
-        elseif L.F.get_water_count() <= 12 then
-            request_transfer(6, "in")
+    if ATFClientSettings.should_enlarge then
+        if not(has_transfer_ctx()) then
+            if L.F.get_free_slots() <= 2 then
+                request_transfer(6, "out")
+            elseif L.F.get_water_count() <= 12 then
+                request_transfer(6, "in")
+            end
         end
     end
 end

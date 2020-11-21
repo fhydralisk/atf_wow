@@ -122,10 +122,11 @@ local function eventHandler(self, event, msg)
             ATFClientSettings = {
                 client_types={frontend=true, backend=false, inviter=false, enlarger=false}, -- "backend", "inviter", "enlarger"
                 adv=false,
-                inviter="米豪的接待员",
+                inviter=nil,
                 silent=true,
                 is_internal=false,
                 invite_words=nil,
+                should_enlarge=false,
             }
         end
         if ATFInviterVip == nil then
