@@ -51,8 +51,6 @@ local trade_count_words = {
 L.food = {}
 L.food.tclass_food = tclass_food
 L.food.tclass_level = tclass_level
-local water_name = L.items.water_name
-local food_name = L.items.food_name
 
 local last_trade_player = ""
 local last_fail_player_is_trade_player = true
@@ -246,8 +244,9 @@ local function feed_foods(trade)
   end
   w = math.ceil(w * scale)
   f = math.ceil(f * scale)
-  L.F.feed(water_name, w, 20)
-  L.F.feed(food_name, f, 20)
+  local info = L.F.get_food_name_level()
+  L.F.feed(info.water.name, w, 20)
+  L.F.feed(info.food.name, f, 20)
 end
 
 

@@ -51,8 +51,9 @@ local function bind_drink()
     SetBinding(interact_key, "")
   else
     local wakeup_cd = GetSpellCooldown(L.buffs.wakeup, "BOOKTYPE_SPELL")
+    local food_info = L.F.get_food_name_level()
     if wakeup_cd > 0 or UnitPower("player") > UnitPowerMax("player") * 0.5 then
-      SetBindingItem(interact_key, L.items.water_name)
+      SetBindingItem(interact_key, food_info.water.name)
     else
       SetBindingSpell(interact_key, L.buffs.wakeup)
     end
@@ -62,7 +63,7 @@ end
 
 local function bind_buff()
   if UnitPower("player") < UnitPowerMax("player") / 3 then
-    SetBindingItem(interact_key, L.items.water_name)
+    SetBindingItem(interact_key, L.F.get_food_name_level().water.name)
   elseif not(UnitName("target") == UnitName("player")) then
     SetBinding(interact_key, "TARGETSELF")
   elseif not check_buff(L.buffs.armor, 300) then

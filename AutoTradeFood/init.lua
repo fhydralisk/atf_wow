@@ -34,6 +34,8 @@ L.items = {}
 L.items.water_name = "魔法晶水"
 L.items.food_name = "魔法甜面包"
 L.items.stone_name = "传送门符文"
+L.items.food = {name="魔法甜面包", level=45}
+L.items.water = {name="魔法晶水", level=55}
 L.items.stone_name_incorrect = "传送符文"
 L.items.pet_name = "恶心的软泥怪"
 
@@ -127,6 +129,7 @@ local function eventHandler(self, event, msg)
                 is_internal=false,
                 invite_words=nil,
                 should_enlarge=false,
+                bread_55=nil,
             }
         end
         if ATFInviterVip == nil then

@@ -125,8 +125,10 @@ function L.F.say_statistics(day)
   local gate_count = L.F.query_statistics_int("trade.gate.count."..date_to_stat)
   table.insert(words, "总计开门：【"..gate_count.."】次")
 
-  local water_count = L.F.query_statistics_int("trade.food.all."..date_to_stat.."."..L.items.water_name)
-  local food_count = L.F.query_statistics_int("trade.food.all."..date_to_stat.."."..L.items.food_name)
+  local food_info = L.F.get_food_name_level()
+
+  local water_count = L.F.query_statistics_int("trade.food.all."..date_to_stat.."."..food_info.water.name)
+  local food_count = L.F.query_statistics_int("trade.food.all."..date_to_stat.."."..food_info.food.name)
   table.insert(words, "总计送水：【"..
           math.modf(water_count / 20).."】组，送面包：【"..
           math.modf(food_count / 20).."】组")
@@ -135,7 +137,7 @@ function L.F.say_statistics(day)
   local trade_by_class = L.F.query_statistics("trade.food.class."..date_to_stat)
   local class_count = {}
   for class, items in pairs(trade_by_class) do
-    table.insert(class_count, {class=class, count= L.F.nil_fallback_zero(items[L.items.food_name]) +  L.F.nil_fallback_zero(items[L.items.water_name])})
+    table.insert(class_count, {class=class, count= L.F.nil_fallback_zero(items[food_info.food.name]) +  L.F.nil_fallback_zero(items[food_info.water.name])})
   end
   table.sort(class_count, function(a, b) return a.count > b.count end)
   for i, class in ipairs(class_count) do
@@ -146,7 +148,7 @@ function L.F.say_statistics(day)
   local trade_by_ind = L.F.query_statistics("trade.food.ind."..date_to_stat)
   local trade_count = {}
   for name, items in pairs(trade_by_ind) do
-    table.insert(trade_count, {name=name, count=L.F.nil_fallback_zero(items[L.items.food_name]) + L.F.nil_fallback_zero(items[L.items.water_name])})
+    table.insert(trade_count, {name=name, count=L.F.nil_fallback_zero(items[food_info.food.name]) + L.F.nil_fallback_zero(items[food_info.water.name])})
   end
   table.sort(trade_count, function(a, b) return a.count > b.count end)
   for i, ind in ipairs(trade_count) do
@@ -158,7 +160,7 @@ function L.F.say_statistics(day)
   local refill_by_ind = L.F.query_statistics("trade.refill.ind."..date_to_stat)
   local refill_count = {}
   for name, items in pairs(refill_by_ind) do
-    table.insert(refill_count, {name=name, food_count= L.F.nil_fallback_zero(items[L.items.food_name]), water_count= L.F.nil_fallback_zero(items[L.items.water_name])})
+    table.insert(refill_count, {name=name, food_count= L.F.nil_fallback_zero(items[food_info.food.name]), water_count= L.F.nil_fallback_zero(items[food_info.water.name])})
   end
   table.sort(refill_count, function(a, b) return a.water_count > b.water_count end)
   for i, ind in ipairs(refill_count) do

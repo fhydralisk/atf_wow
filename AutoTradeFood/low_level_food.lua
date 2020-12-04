@@ -59,10 +59,11 @@ end
 local function level_acquire_success(player, class, level, w, b, info)
     -- check if items are same as high level
     local real_w, real_b = w, b
-    if info.bread_name == L.items.food_name then
+    local food_info = L.F.get_food_name_level()
+    if info.bread_name == food_info.food.name then
         real_b = 0
     end
-    if info.water_name == L.items.water_name then
+    if info.water_name == food_info.water.name then
         real_w = 0
     end
     low_level_trade_context.player = player
@@ -189,10 +190,11 @@ end
 
 
 local function destroy_some_food(count)
+    local info = L.F.get_food_name_level()
     for b = 0, 4 do
         for s = 1, 32 do
             local il = GetContainerItemLink(b, s)
-            if il and (il:find(L.items.water_name) or il:find(L.items.food_name)) then
+            if il and (il:find(info.water.name) or il:find(info.food.name)) then
                 count = count - 1
                 L.F.delete_item_at(b, s)
             end
@@ -234,14 +236,15 @@ end
 
 
 local function low_level_cleanup()
+    local food_info = L.F.get_food_name_level()
     local food_name = low_level_trade_context.info.bread_name
     local water_name = low_level_trade_context.info.water_name
     for b = 0, 4 do
         for s = 1, 32 do
             local il = GetContainerItemLink(b, s)
             if il then
-                if (not (food_name == L.items.food_name) and il:find(food_name)) or
-                        (not (water_name == L.items.water_name) and il:find(water_name)) then
+                if (not (food_name == food_info.food.name) and il:find(food_name)) or
+                        (not (water_name == food_info.water.name) and il:find(water_name)) then
                     L.F.delete_item_at(b, s)
                 end
             end

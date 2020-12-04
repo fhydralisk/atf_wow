@@ -131,9 +131,9 @@ local function should_accept_refill(trade)
     end
     local water, bread = 0, 0
     for item_name, c in pairs(items) do
-        if item_name == L.items.water_name then
+        if item_name == L.F.get_food_name_level().water.name then
             water = water + c
-        elseif item_name == L.items.food_name then
+        elseif item_name == L.F.get_food_name_level().food.name then
             bread = bread + c
         else
             L.F.whisper_or_say(
@@ -144,9 +144,9 @@ local function should_accept_refill(trade)
         local refill_check_result = check_refill_scale()
         local item_too_many
         if refill_check_result == "bread" and bread > 0 then
-            item_too_many = L.items.food_name
+            item_too_many = L.F.get_food_name_level().food.name
         elseif refill_check_result == "water" and water > 0 then
-            item_too_many = L.items.water_name
+            item_too_many = L.F.get_food_name_level().water.name
         elseif refill_check_result == "full" then
             L.F.whisper_or_say("米豪背包几乎已满，请稍后尝试补货，谢谢！", player)
             return false

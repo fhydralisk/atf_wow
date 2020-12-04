@@ -17,10 +17,21 @@ local tclass_food = {
     ["术士"]={3, 3}
 }
 
-local food_level = {
-    ["water"] = 55,
-    ["food"] = 45,
-}
+
+function L.F.get_food_name_level()
+  local food
+
+  if ATFClientSettings.bread_55 then
+    food = {name="魔法肉桂面包", level=55}
+  else
+    food = L.items.food
+  end
+
+  return {
+    water=L.items.water,
+    food=food,
+  }
+end
 
 
 function L.F.get_feed_count(tclass, npc_name)
@@ -37,11 +48,12 @@ end
 
 
 function L.F.can_feed_target(tlevel, tclass, npc_name)
+    local info = L.F.get_food_name_level()
     local w, b = L.F.get_feed_count(tclass, npc_name)
-    if w > 0 and food_level.water > tlevel then
+    if w > 0 and info.water.level > tlevel then
         return false
     end
-    if b > 0 and food_level.food > tlevel then
+    if b > 0 and info.food.level > tlevel then
         return false
     end
     return true
@@ -153,6 +165,7 @@ function L.F.check_food_trade_target_items(trade)
   local npc_name = trade.npc_name
   local items = trade.items.target.items
   local cnt = trade.items.target.count
+  local food_info = L.F.get_food_name_level()
   if cnt == 0 then
     return true
   else
@@ -161,7 +174,7 @@ function L.F.check_food_trade_target_items(trade)
               npc_name.."，请首先M{player}需要去的城市名称，例如“达纳苏斯”，再交易{player}【传送门符文】！"..
                       "如果您已经M过{player}，可能已经过期，请重试，谢谢！", npc_name
       )
-    elseif items[L.items.water_name] or items[L.items.food_name] then
+    elseif items[food_info.water.name] or items[food_info.food.name] then
       L.F.whisper_or_say(
               npc_name.."，如希望为{player}补货，请M{player}【"..L.cmds.refill_cmd.."】。如果您觉得水或面包多余，请在交易{player}之前M{player}配比情况，例如“{player}要3组水，1组面包”，然后再进行交易。",
               npc_name

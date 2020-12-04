@@ -149,7 +149,7 @@ end
 local function feed_foods(trade)
     if has_transfer_ctx() then
         if transfer_ctx.direction == "out" then
-            L.F.feed(L.items.water_name, transfer_ctx.num, 20)
+            L.F.feed(L.F.get_food_name_level().water.name, transfer_ctx.num, 20)
             return true
         end
     end

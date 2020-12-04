@@ -5,22 +5,23 @@
 ---
 
 local addonName, L = ...
-local water_name = L.items.water_name
-local food_name = L.items.food_name
 
 function L.F.get_water_count(identity)
+  local info = L.F.get_food_name_level()
+
   if identity then
-    return GetItemCount(water_name)
+    return GetItemCount(info.water.name)
   else
-    return math.modf(GetItemCount(water_name)/20)
+    return math.modf(GetItemCount(info.water.name)/20)
   end
 end
 
 function L.F.get_bread_count(identity)
+  local info = L.F.get_food_name_level()
   if identity then
-    return GetItemCount(food_name)
+    return GetItemCount(info.food.name)
   else
-    return math.modf(GetItemCount(food_name)/20)
+    return math.modf(GetItemCount(info.food.name)/20)
   end
 end
 
@@ -57,23 +58,25 @@ end
 
 
 function L.F.delete_groups()
-  local water = GetItemCount(L.items.water_name)
-  local food = GetItemCount(L.items.food_name)
+  local info = L.F.get_food_name_level()
+  local water = GetItemCount(info.water.name)
+  local food = GetItemCount(info.food.name)
   if water * 0.5 > food then
     local water_to_delete = math.modf((water * 0.5 - food) / 20)
-    do_delete_groups(L.items.water_name, water_to_delete)
+    do_delete_groups(info.water.name, water_to_delete)
   elseif food > water * 0.9 then
     local food_to_delete = math.modf((food - water * 0.9) / 20)
-    do_delete_groups(L.items.food_name, food_to_delete)
+    do_delete_groups(info.food.name, food_to_delete)
   end
 end
 
 
 function L.F.del_fragment()
+  local info = L.F.get_food_name_level()
   for b = 0, 4 do
     for l = 1, 32 do
       local _, itemCount, _, _, _, _, link = GetContainerItemInfo(b, l)
-      if link and (link:find(L.items.water_name) or link:find(L.items.food_name)) then
+      if link and (link:find(info.water.name) or link:find(info.food.name)) then
         if itemCount < 20 then
           L.F.delete_item_at(b, l)
         end
@@ -90,10 +93,11 @@ end
 
 
 function L.F.do_clean_all()
+  local info L.F.get_food_name_level()
   for b = 0, 4 do
     for l = 1, 32 do
       local _, _, _, _, _, _, link = GetContainerItemInfo(b, l)
-      if link and (link:find(L.items.water_name) or link:find(L.items.food_name)) then
+      if link and (link:find(info.water.name) or link:find(info.food.name)) then
           L.F.delete_item_at(b, l)
       end
     end

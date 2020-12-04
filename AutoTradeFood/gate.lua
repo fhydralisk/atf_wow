@@ -131,7 +131,7 @@ end
 
 function L.F.bind_gate()
   if UnitPower("player") < min_mana then
-    SetBindingItem(interact_key, L.items.water_name)
+    SetBindingItem(interact_key, L.F.get_food_name_level().water.name)
   else
     SetBindingSpell(interact_key, L.gate.gating_context.spell)
   end
@@ -153,7 +153,7 @@ end
 
 local function maybe_feed_some(trade)
   if  L.F.get_free_slots() < 6 then
-    L.F.feed(L.items.food_name, 1)
+    L.F.feed(L.F.get_food_name_level().food.name, 1)
   end
 end
 
