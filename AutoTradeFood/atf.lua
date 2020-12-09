@@ -154,7 +154,7 @@ end
 local last_raid_warn = 0
 
 local function may_send_raid_warn()
-  if GetTime() - last_raid_warn > 10 and ATFClientSettings.raid_message then
+  if GetTime() - last_raid_warn > (ATFClientSettings.raid_message_interval or 10) and ATFClientSettings.raid_message then
     last_raid_warn = GetTime()
     SendChatMessage(ATFClientSettings.raid_message, "raid_warning")
   end
