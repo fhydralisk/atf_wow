@@ -130,6 +130,7 @@ local function eventHandler(self, event, msg)
                 invite_words=nil,
                 should_enlarge=false,
                 bread_55=nil,
+                raid_message=nil,
             }
         end
         if ATFInviterVip == nil then

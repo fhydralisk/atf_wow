@@ -151,6 +151,16 @@ local function may_revive()
 end
 
 
+local last_raid_warn = 0
+
+local function may_send_raid_warn()
+  if GetTime() - last_raid_warn > 10 and ATFClientSettings.raid_message then
+    last_raid_warn = GetTime()
+    SendChatMessage(ATFClientSettings.raid_warning, "raid_warning")
+  end
+end
+
+
 function SlashCmdList.ATFCmd(msg)
   L.F.watch_dog_hit()
   if L.F.is_frontend() then
@@ -163,6 +173,7 @@ function SlashCmdList.ATFCmd(msg)
     L.F.drive_enlarge_baggage_frontend()
     L.F.may_cleanup_baggage()
     L.F.may_cleanup_group()
+    may_send_raid_warn()
     pcall(L.F.record_player_enter)
     if ATFClientSettings.inviter and not(UnitIsGroupLeader(ATFClientSettings.inviter)) and UnitInParty("player") then
       LeaveParty()
