@@ -136,7 +136,7 @@ end
 
 
 function L.F.player_is_admin(player)
-  if L.admin_names[player] then
+  if L.admin_names[player] or ATFAdminList[player] then
     return true
   else
     return false

@@ -134,6 +134,9 @@ local function eventHandler(self, event, msg)
                 raid_message_interval=15,
             }
         end
+        if ATFAdminList == nil then
+            ATFAdminList = {}
+        end
         if ATFInviterVip == nil then
             ATFInviterVip = {}
         end
