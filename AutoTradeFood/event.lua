@@ -99,6 +99,7 @@ local function execute_command(msg, author)
     elseif msg == L.cmds.stat and L.F.player_is_admin(author) then
       L.F.whisper_or_say("大水库存："..L.F.get_water_count(), author)
       L.F.whisper_or_say("面包库存："..L.F.get_bread_count(), author)
+      L.F.whisper_or_say("传送门符文库存："..GetItemCount(L.items.stone_name), author)
       local members, online = L.F.get_party_member_count()
       L.F.whisper_or_say("成员数量："..members.."，在线数量："..#online, author)
     elseif msg == L.cmds.kick_offline and L.F.player_is_admin(author) then
