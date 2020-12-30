@@ -129,15 +129,17 @@ local function should_accept_refill(trade)
         L.F.whisper_or_say("请勿交易{player}任何金币，谢谢支持", player)
         return false
     end
-    local water, bread = 0, 0
+    local water, bread, stone = 0, 0, 0
     for item_name, c in pairs(items) do
         if item_name == L.F.get_food_name_level().water.name then
             water = water + c
         elseif item_name == L.F.get_food_name_level().food.name then
             bread = bread + c
+        elseif item_name == L.items.stone_name then
+            stone = stone + c
         else
             L.F.whisper_or_say(
-                "补货模式仅仅接受大水和大面包，请勿交易其他物品或金币，感谢支持！", player
+                "补货模式仅仅接受大水、大面包和传送门符文，请勿交易其他物品或金币，感谢支持！", player
             )
             return false
         end
@@ -147,6 +149,8 @@ local function should_accept_refill(trade)
             item_too_many = L.F.get_food_name_level().food.name
         elseif refill_check_result == "water" and water > 0 then
             item_too_many = L.F.get_food_name_level().water.name
+        elseif GetItemCount(L.items.stone_name) > 30 then
+            item_too_many = L.items.stone_name
         elseif refill_check_result == "full" then
             L.F.whisper_or_say("米豪背包几乎已满，请稍后尝试补货，谢谢！", player)
             return false
