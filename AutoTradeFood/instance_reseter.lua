@@ -269,6 +269,10 @@ end
 
 
 function L.F.reset_instance_request(player, frontend)
+    if ATFClientSettings.lb_only then
+        L.F.whisper_or_say("该重置侠仅为高峰分担负载使用，请M我的主号 - 米豪重置侠: 重置，谢谢", player)
+        return
+    end
     if not (L.F.watch_dog_ok()) then
         L.F.whisper_or_say(
                 "米豪的驱动程序出现故障，重置副本功能暂时失效，请等待米豪的维修师进行修复。十分抱歉！", player)
