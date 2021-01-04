@@ -225,7 +225,9 @@ end
 
 local function ack_load_balance(player, sender)
     local pos = enqueue_player(player)
-    C_ChatInfo.SendAddonMessage('ATF', "load_balance_ack:"..player, "whisper", sender)
+    local msg = "load_balance_ack:"..player
+    C_ChatInfo.SendAddonMessage('ATF', msg, "whisper", sender)
+    print("ack to "..sender.." "..msg)
     L.F.whisper_or_say("为提高您的体验，已为您调度至新重置工具人队列。", player)
     if pos > 0 then
         L.F.whisper_or_say("队列位置："..pos, player)
@@ -478,7 +480,9 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                     local player, queue_size = string.match(target, "(.-),(.+)")
                     queue_size = tonumber(queue_size)
                     check_and_ack_load_balance(player, author, queue_size)
+
                 elseif cmd == "load_balance_ack" then
+                    print("removing player in reset queue"..target)
                     remove_player_in_queue(target)
                 end
             end
