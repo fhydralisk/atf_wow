@@ -374,7 +374,9 @@ local function statistics_reset_instance(reset_ctx)
     L.F.merge_statistics_plus_int(key_instance_class, 1)
     L.F.merge_statistics_plus_int(key_instance_instance, 1)
     L.F.merge_statistics_plus_int(key_instance_count, 1)
-    record_instance_reset(name, instance)
+    if reset_ctx.lb_sender == nil then
+        record_instance_reset(name, instance)
+    end
 end
 
 
@@ -400,6 +402,10 @@ end
 
 function L.F.say_boom_predict(to_player)
     local remain, unlock_dur = boom_predict(to_player)
+    if ATFClientSettings.lb_only then
+        L.F.whisper_or_say("本工具人仅供负载均衡使用，查询爆本情况，请M 米豪重置侠：爆本", to_player)
+        return
+    end
     L.F.whisper_or_say("【爆本预警（测试版）】如果您一直使用米豪服务重置，{player}会尝试推测您的爆本情况，数据仅供参考。M{player}的重置工具人【"..L.cmds.boom_predict.."】可以获取该信息。", to_player)
     if remain == 1 then
         L.F.whisper_or_say("【爆本预警：危险】您当前时段的下次重置副本可能导致爆本。若执行重置，您可能会被传送回炉石点。", to_player)
