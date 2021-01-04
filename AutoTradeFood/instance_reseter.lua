@@ -245,8 +245,8 @@ end
 local function remove_player_in_queue(player)
     local pos
 
-    for i, n in ipairs(InstanceResetQueue) do
-        if n == player then
+    for i, q_player in ipairs(InstanceResetQueue) do
+        if q_player.player == player then
             pos = i
             break
         end
