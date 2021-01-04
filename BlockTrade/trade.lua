@@ -66,7 +66,7 @@ local function trade_on_event(self, event, arg1, arg2)
     else
       bag_shown = 0
     end
-    if BlockTradeWhiteList[trader] == nil then
+    if BlockTradeWhiteList[trader] == nil and not (UnitInParty(trader) or UnitInRaid(trader)) then
       if level <= BlockTradeConfig.level then
         if L.p_name == trader and GetTime() - L.p_time < 10 then
           print("[BlockTrade]与小号"..trader.."的交易由您最近主动发起，允许本次交易。")

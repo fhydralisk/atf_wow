@@ -189,7 +189,7 @@ function L.F.drive_reset_instance()
 end
 
 
-local function enqueue_player(player, frontend)
+local function pre_enqueue_player(player)
     for i, q_player in ipairs(InstanceResetQueue) do
         if q_player.player == player then
             q_player.request_count = q_player.request_count + 1
@@ -197,15 +197,62 @@ local function enqueue_player(player, frontend)
                 L.F.whisper_or_say("由于您过于频繁的请求，您已被暂停使用该服务。您已被移出队列。", player)
                 table.remove(InstanceResetQueue, i)
                 block_player(player, block_duration_repeat_request)
-                return
+                return false
             else
                 L.F.whisper_or_say("您已在队列中，队列位置："..i.."。请勿重复请求，刷屏可能会被暂停使用该功能，谢谢！", player)
-                return
+                return false
             end
         end
     end
+
+    return true
+end
+
+
+local function enqueue_player(player, frontend)
     table.insert(InstanceResetQueue, { player=player, request_ts=GetTime(), request_count=1, frontend=frontend})
     return #InstanceResetQueue
+end
+
+
+local function try_load_balance(player, queue_size)
+    if #ATFClientSettings.reset_lb > 0 then
+        local lb_player = ATFClientSettings.reset_lb[math.random(1, #ATFClientSettings.reset_lb)]
+        C_ChatInfo.SendAddonMessage('ATF', "load_balance:"..player..","..queue_size, "whisper", lb_player)
+    end
+end
+
+
+local function ack_load_balance(player, sender)
+    local pos = enqueue_player(player)
+    C_ChatInfo.SendAddonMessage('ATF', "load_balance_ack:"..player, "whisper", sender)
+    L.F.whisper_or_say("为提高您的体验，已为您调度至新重置工具人队列。", player)
+    if pos > 0 then
+        L.F.whisper_or_say("队列位置："..pos, player)
+    end
+end
+
+
+local function check_and_ack_load_balance(player, sender, queue_size)
+    if #InstanceResetQueue < queue_size then
+        ack_load_balance(player, sender)
+    end
+end
+
+
+local function remove_player_in_queue(player)
+    local pos
+
+    for i, n in ipairs(InstanceResetQueue) do
+        if n == player then
+            pos = i
+            break
+        end
+    end
+
+    if pos then
+        table.remove(InstanceResetQueue, pos)
+    end
 end
 
 
@@ -253,11 +300,17 @@ function L.F.reset_instance_request(player, frontend)
         L.F.whisper_or_say("请接受组队邀请，然后立即下线。", player)
         return
     end
-
+    if not pre_enqueue_player(player) then
+        return
+    end
     local queue_pos = enqueue_player(player, frontend)
     if queue_pos > 1 or (queue_pos == 1 and reseter_context.player) then
         L.F.whisper_or_say("目前正在为其他玩家重置，已为您排队。请勿重复请求，刷屏可能会被暂停服务，谢谢支持！", player)
         L.F.whisper_or_say("队列位置："..queue_pos, player)
+    end
+
+    if queue_pos >= (ATFClientSettings.lb_queue_size or 3) then
+        try_load_balance(player, queue_pos)
     end
 end
 
@@ -417,6 +470,12 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                 if cmd == "reset" then
                     author = string.match(author, "([^-]+)") or author
                     L.F.reset_instance_request(target, author)
+                elseif cmd == "load_balance" then
+                    local player, queue_size = string.match(target, "(.-),(.+)")
+                    queue_size = tonumber(queue_size)
+                    check_and_ack_load_balance(player, author, queue_size)
+                elseif cmd == "load_balance_ack" then
+                    remove_player_in_queue(target)
                 end
             end
         end

@@ -122,7 +122,6 @@ local function eventHandler(self, event, msg)
         end
         if ATFClientSettings == nil then
             ATFClientSettings = {
-                client_types={frontend=true, backend=false, inviter=false, enlarger=false}, -- "backend", "inviter", "enlarger"
                 adv=false,
                 inviter=nil,
                 silent=true,
@@ -132,7 +131,14 @@ local function eventHandler(self, event, msg)
                 bread_55=nil,
                 raid_message=nil,
                 raid_message_interval=15,
+                lb_queue_size=3,
             }
+        end
+        if ATFClientSettings.reset_lb == nil then
+          ATFClientSettings.reset_lb={}
+        end
+        if ATFClientSettings.client_types == nil then
+          ATFClientSettings.client_types = {frontend=true, backend=false, inviter=false, enlarger=false} -- "backend", "inviter", "enlarger"
         end
         if ATFAdminList == nil then
             ATFAdminList = {}

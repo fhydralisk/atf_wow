@@ -1,6 +1,6 @@
 ## Interface: 11303
-## Title: 阻止交易助手
-## Notes: 阻止交易助手
+## Title: 阻止小号交易助手
+## Notes: 阻止小号交易助手
 ## Author: 米豪
 ## SavedVariables: BlockTradeWhiteList, BlockTradeConfig
 
