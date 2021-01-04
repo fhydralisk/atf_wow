@@ -181,6 +181,7 @@ function L.F.drive_reset_instance()
             reseter_context.player = player
             reseter_context.request_ts = GetTime()
             reseter_context.frontend = queued.frontend
+            reseter_context.lb_sender = queued.lb_sender
             LeaveParty()
             InviteUnit(player)
             L.F.whisper_or_say("请接受组队邀请，然后立即下线。请求有效期"..timeout.."秒。", player)
