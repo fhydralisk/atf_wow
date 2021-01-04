@@ -25,6 +25,7 @@ local reseter_context = {
     frontend=nil,
     instance=nil,
     queue_length=nil,
+    lb_sender=nil,
 }
 
 local last_ctx = {}
@@ -209,8 +210,8 @@ local function pre_enqueue_player(player)
 end
 
 
-local function enqueue_player(player, frontend)
-    table.insert(InstanceResetQueue, { player=player, request_ts=GetTime(), request_count=1, frontend=frontend})
+local function enqueue_player(player, frontend, lb_sender)
+    table.insert(InstanceResetQueue, { player=player, request_ts=GetTime(), request_count=1, frontend=frontend, lb_sender=lb_sender})
     return #InstanceResetQueue
 end
 
@@ -224,7 +225,7 @@ end
 
 
 local function ack_load_balance(player, sender)
-    local pos = enqueue_player(player)
+    local pos = enqueue_player(player, nil, sender)
     local msg = "load_balance_ack:"..player
     C_ChatInfo.SendAddonMessage('ATF', msg, "whisper", sender)
     print("ack to "..sender.." "..msg)
@@ -463,6 +464,14 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
             elseif may_record_success(message) then
                 -- do nothing
                 L.F.whisper_or_say("已帮["..last_ctx.player.."]重置["..last_ctx.instance.."]，需要重置服务，请M我【"..L.cmds.help_cmd.."】")
+                if last_ctx.lb_sender then
+                    C_ChatInfo.SendAddonMessage(
+                        "ATF",
+                        "load_balance_reset_success:"..last_ctx.player..","..last_ctx.instance,
+                        "whisper",
+                        last_ctx.lb_sender
+                    )
+                end
             end
         end
     elseif event == "CHAT_MSG_ADDON" and arg1 == "ATF" then
@@ -484,6 +493,10 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
                 elseif cmd == "load_balance_ack" then
                     print("removing player in reset queue"..target)
                     remove_player_in_queue(target)
+                elseif cmd == "load_balance_reset_success" then
+                    local player, instance = string.match(target, "(.-),(.+)")
+                    print("record instance reset via lb")
+                    record_instance_reset(player, instance)
                 end
             end
         end
