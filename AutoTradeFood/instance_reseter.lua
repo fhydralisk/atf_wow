@@ -38,6 +38,19 @@ local block_duration_try_block = 0
 local block_duration_repeat_request = 3600
 
 
+local function get_queue_length(before_queued)
+    local length = #InstanceResetQueue
+    if reseter_context.player then
+        length = length + 1
+    end
+    if before_queued then
+        return length
+    else
+        return length - 1
+    end
+end
+
+
 local function can_reset(player)
     return UnitInParty(player) and not UnitIsConnected(player) and reseter_context.invite_ts and GetTime() - reseter_context.invite_ts > 2
 end
@@ -226,7 +239,8 @@ end
 
 
 local function ack_load_balance(player, sender)
-    local pos = enqueue_player(player, nil, sender)
+    enqueue_player(player, nil, sender)
+    local pos = get_queue_length()
     local msg = "load_balance_ack:"..player
     C_ChatInfo.SendAddonMessage('ATF', msg, "whisper", sender)
     print("ack to "..sender.." "..msg)
@@ -238,7 +252,7 @@ end
 
 
 local function check_and_ack_load_balance(player, sender, queue_size)
-    if #InstanceResetQueue < queue_size then
+    if get_queue_length(true) < queue_size then
         ack_load_balance(player, sender)
     end
 end
@@ -311,8 +325,9 @@ function L.F.reset_instance_request(player, frontend)
     if not pre_enqueue_player(player) then
         return
     end
-    local queue_pos = enqueue_player(player, frontend)
-    if queue_pos > 1 or (queue_pos == 1 and reseter_context.player) then
+    enqueue_player(player, frontend)
+    local queue_pos = get_queue_length()
+    if queue_pos > 0 then
         L.F.whisper_or_say("目前正在为其他玩家重置，已为您排队。请勿重复请求，刷屏可能会被暂停服务，谢谢支持！", player)
         L.F.whisper_or_say("队列位置："..queue_pos, player)
     end
