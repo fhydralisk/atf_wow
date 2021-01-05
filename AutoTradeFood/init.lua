@@ -133,6 +133,7 @@ local function eventHandler(self, event, msg)
                 raid_message_interval=15,
                 lb_queue_size=3,
                 lb_only=false,
+                lb_server=nil,
             }
         end
         if ATFClientSettings.reset_lb == nil then

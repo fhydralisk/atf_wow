@@ -274,11 +274,16 @@ local function remove_player_in_queue(player)
 end
 
 
+local function forward_reset_request(player, backend)
+    C_ChatInfo.SendAddonMessage("ATF", "reset:"..player, "WHISPER", backend)
+end
+
+
 function L.F.reset_instance_request_frontend(player)
     local backend = L.F.choice_random_backend()
 
     if backend then
-        C_ChatInfo.SendAddonMessage("ATF", "reset:"..player, "WHISPER", backend)
+        forward_reset_request(player, backend)
         L.F.whisper_or_say("重置请求已转发至重置后端【"..backend.."】，请等待其回应。", player)
     else
         L.F.whisper_or_say("重置服务离线，待重置后端账号上线后可用。", player)
@@ -288,52 +293,56 @@ end
 
 function L.F.reset_instance_request(player, frontend)
     if ATFClientSettings.lb_only then
-        L.F.whisper_or_say("该重置侠仅为高峰分担负载使用，请M我的主号 - 米豪重置侠: 重置，谢谢", player)
-        return
-    end
-    if not (L.F.watch_dog_ok()) then
-        L.F.whisper_or_say(
+        if ATFClientSettings.lb_server then
+            forward_reset_request(player, ATFClientSettings.lb_server)
+        else
+            L.F.whisper_or_say("该重置侠仅为高峰分担负载使用，请M我的主号 - 米豪重置侠: 重置，谢谢", player)
+        end
+    else
+        if not (L.F.watch_dog_ok()) then
+            L.F.whisper_or_say(
                 "米豪的驱动程序出现故障，重置副本功能暂时失效，请等待米豪的维修师进行修复。十分抱歉！", player)
-        return
-    end
-    assert(L.F.is_backend())
-
-    local block_duration = get_block_duration(player)
-
-    if block_duration then
-        if block_duration > 0 then
-            L.F.whisper_or_say("由于刷屏或其他原因，您已被暂停该服务【"..math.ceil(block_duration / 60).."】分钟。请解禁后避免刷屏操作，谢谢合作！", player)
-        else
-            L.F.whisper_or_say("由于您的不当使用，该服务已向您永久关闭，请邮件联系【米豪】咨询解禁事宜，抱歉！", player)
+            return
         end
-        return
-    end
+        assert(L.F.is_backend())
 
-    pcall(L.F.say_boom_predict, player)
+        local block_duration = get_block_duration(player)
 
-    if UnitInParty(player) then
-        if reseter_context.player == player then
-            L.F.whisper_or_say("【重置流程变更】当前版本只需在【未进组】的情况下M{player}一次请求即可。无需再次请求。", player)
-        else
-            L.F.whisper_or_say("【重置流程变更】为避免高峰期重置冲突，重置流程发生变化，您务必在【未进组】的前提下想{player}发起请求。本次请求失败。", player)
+        if block_duration then
+            if block_duration > 0 then
+                L.F.whisper_or_say("由于刷屏或其他原因，您已被暂停该服务【"..math.ceil(block_duration / 60).."】分钟。请解禁后避免刷屏操作，谢谢合作！", player)
+            else
+                L.F.whisper_or_say("由于您的不当使用，该服务已向您永久关闭，请邮件联系【米豪】咨询解禁事宜，抱歉！", player)
+            end
+            return
         end
-        return
-    elseif reseter_context.player == player then
-        L.F.whisper_or_say("请接受组队邀请，然后立即下线。", player)
-        return
-    end
-    if not pre_enqueue_player(player) then
-        return
-    end
-    enqueue_player(player, frontend)
-    local queue_pos = get_queue_length()
-    if queue_pos > 0 then
-        L.F.whisper_or_say("目前正在为其他玩家重置，已为您排队。请勿重复请求，刷屏可能会被暂停服务，谢谢支持！", player)
-        L.F.whisper_or_say("队列位置："..queue_pos, player)
-    end
 
-    if queue_pos >= (ATFClientSettings.lb_queue_size or 3) then
-        try_load_balance(player, queue_pos)
+        pcall(L.F.say_boom_predict, player)
+
+        if UnitInParty(player) then
+            if reseter_context.player == player then
+                L.F.whisper_or_say("【重置流程变更】当前版本只需在【未进组】的情况下M{player}一次请求即可。无需再次请求。", player)
+            else
+                L.F.whisper_or_say("【重置流程变更】为避免高峰期重置冲突，重置流程发生变化，您务必在【未进组】的前提下想{player}发起请求。本次请求失败。", player)
+            end
+            return
+        elseif reseter_context.player == player then
+            L.F.whisper_or_say("请接受组队邀请，然后立即下线。", player)
+            return
+        end
+        if not pre_enqueue_player(player) then
+            return
+        end
+        enqueue_player(player, frontend)
+        local queue_pos = get_queue_length()
+        if queue_pos > 0 then
+            L.F.whisper_or_say("目前正在为其他玩家重置，已为您排队。请勿重复请求，刷屏可能会被暂停服务，谢谢支持！", player)
+            L.F.whisper_or_say("队列位置："..queue_pos, player)
+        end
+
+        if queue_pos >= (ATFClientSettings.lb_queue_size or 3) then
+            try_load_balance(player, queue_pos)
+        end
     end
 end
 
