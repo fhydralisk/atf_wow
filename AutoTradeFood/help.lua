@@ -74,7 +74,8 @@ function L.F.say_help(to_player)
           ..L.cmds.scale_cmd.."】，【"
           ..L.cmds.retrieve_position.."】,【"
           ..L.cmds.statistics.."】，【"
-          ..L.cmds.busy_cmd.."】", to_player)
+          ..L.cmds.busy_cmd.."】，【"
+          ..L.cmds.layer.."】", to_player)
 end
 
 

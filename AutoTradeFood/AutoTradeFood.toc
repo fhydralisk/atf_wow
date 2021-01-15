@@ -24,4 +24,5 @@ instance_reseter.lua
 event.lua
 atf.lua
 invite_helper.lua
+layer.lua
 trade_hooking.lua

@@ -83,6 +83,8 @@ local function auto_bind()
     L.F.bind_gate()
   elseif L.state == 4 then
     bind_buff()
+  elseif L.state == 5 then
+    L.F.bind_detect_layer()
   end
 end
 
@@ -95,18 +97,31 @@ local function auto_bind_backend()
 end
 
 
+local function should_detect_layer()
+  if ATFClientSettings.npc_nearby then
+    local interval = ATFClientSettings.layer_detect_interval or 600
+    if GetTime() - L.last_layer_detect_ts > interval then
+      return true
+    end
+  end
+end
+
+
 local function drive_state()
   if L.next_state then
     -- using next_state to bypass the concurrent issue.
     L.state = L.next_state
     L.next_state = nil
   end
-  if L.state == 1 then  -- working -> resting or buffing
+  if L.state == 1 then  -- working -> resting or buffing or layer detecting
     if UnitPower("player") < min_mana then
       L.state = 2
       DoEmote("drink", "none")
     elseif not ((check_buff(L.buffs.intel, 10) or check_buff("奥术光辉", 10)) and check_buff(L.buffs.armor, 10)) then
       L.state = 4
+    elseif should_detect_layer() then
+      L.layer_detected = false
+      L.state = 5
     end
   elseif L.state == 2 then  -- resting -> working
     local scale = 0.95
@@ -125,6 +140,10 @@ local function drive_state()
     end
   elseif L.state == 4 then -- buffing -> working
     if (check_buff(L.buffs.intel, 100) or check_buff("奥术光辉", 100)) and check_buff(L.buffs.armor, 100) then
+      L.state = 1
+    end
+  elseif L.state == 5 then -- detecting layer -> working
+    if L.layer_detected then
       L.state = 1
     end
   end
@@ -154,9 +173,14 @@ end
 local last_raid_warn = 0
 
 local function may_send_raid_warn()
-  if GetTime() - last_raid_warn > (ATFClientSettings.raid_message_interval or 10) and ATFClientSettings.raid_message then
+  if GetTime() - last_raid_warn > (ATFClientSettings.raid_message_interval or 10) then
     last_raid_warn = GetTime()
-    SendChatMessage(ATFClientSettings.raid_message, "raid_warning")
+    if  ATFClientSettings.raid_message then
+      SendChatMessage(ATFClientSettings.raid_message, "raid_warning")
+    end
+    if L.nwb_layer then
+      SendChatMessage("我目前位于位面【"..L.nwb_layer.."】", "raid_warning")
+    end
   end
 end
 

@@ -34,6 +34,18 @@ local function say_scale(to_player)
 end
 
 
+local function say_layer(to_player)
+  if L.nwb_layer then
+    L.F.whisper_or_say(
+        string.format("我目前为与位面%d，如需进组跨位面，请M我【%s】", L.nwb_layer, L.cmds.invite_words),
+        to_player
+    )
+  else
+    L.F.whisper_or_say("我的位面检测功能暂时不可用，或者尚未检测到位面。如需进组跨位面，请M我："..L.cmds.invite_words, to_player)
+  end
+end
+
+
 local function player_want_trade_gold(msg)
 
   msg = string.gsub(string.lower(msg), "金", "g")
@@ -107,13 +119,15 @@ local function execute_command(msg, author)
     elseif L.F.may_say_agent(msg, author) then
       -- agent speaking
     elseif msg == "3" then
-      L.F.whisper_or_say("请M{player}【"..L.cmds.invite_cmd.."】进组，而不是M{player}3，zu，组，位面，谢谢", author)
+      L.F.whisper_or_say("请M{player}【"..L.cmds.invite_cmd.."】进组，而不是M{player}3，zu，组，谢谢", author)
     elseif msg == "4" or msg == L.cmds.refill_help_cmd then
       L.F.refill_help(author)
     elseif L.F.search_str_contains(msg, {L.cmds.refill_cmd}) then
       L.F.refill_request(author)
     elseif msg == L.cmds.scale_cmd then
       say_scale(author)
+    elseif msg == L.cmds.layer then
+      say_layer(author)
     elseif msg == L.cmds.low_level_cmd then
       L.F.low_level_food_request(author)
     elseif msg == L.cmds.low_level_help_cmd or msg == "7" or L.F.search_str_contains(msg, {"45", "35", "25", "小水", "小面包"}) then
@@ -138,8 +152,8 @@ local function execute_command(msg, author)
       L.F.say_acknowledgements(author)
     elseif L.F.may_say_statistics(msg, author) then
       -- do nothing
-    elseif L.F.search_str_contains(msg, {"位面", "组", "zu"}) and not L.F.search_str_contains(msg, {"水", "面包", "吃", "喝"}) then
-      L.F.whisper_or_say("请M{player}【"..L.cmds.invite_cmd.."】进组，而不是M{player}3，zu，组，位面，谢谢", author)
+    elseif L.F.search_str_contains(msg, {"组", "zu"}) and not L.F.search_str_contains(msg, {"水", "面包", "吃", "喝"}) then
+      L.F.whisper_or_say("请M{player}【"..L.cmds.invite_cmd.."】进组，而不是M{player}3，zu，组，谢谢", author)
     elseif L.F.search_str_contains(msg, {"脚本", "外挂", "机器", "自动", "宏"}) then
       L.F.whisper_or_say("是的，{player}是纯公益机器人，请亲手下留情，爱你哦！", author)
     elseif L.F.search_str_contains(msg, {"谢", "蟹", "xie", "3q"}, "left") then
@@ -211,8 +225,12 @@ local function eventHandlerFrontend(self, event, arg1, arg2, arg3, arg4, ...)
       if inviter == ATFClientSettings.inviter then
         AcceptGroup()
       else
-        DeclineGroup()
-        L.F.whisper_or_say("请勿邀请{player}进组，您可以M{player}【"..L.cmds.invite_cmd.."】进组，谢谢！", inviter)
+        if L.F.player_is_admin(inviter) then
+          AcceptGroup()
+        else
+          DeclineGroup()
+          L.F.whisper_or_say("请勿邀请{player}进组，您可以M{player}【"..L.cmds.invite_cmd.."】进组，谢谢！", inviter)
+        end
       end
       StaticPopup_Hide("PARTY_INVITE")
     else

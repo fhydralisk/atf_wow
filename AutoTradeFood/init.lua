@@ -29,6 +29,7 @@ L.cmds.reset_instance_help = "重置帮助"
 L.cmds.reset_instance_cmd = "重置"
 L.cmds.boom_predict = "爆本"
 L.cmds.boom_record = "手动重置"
+L.cmds.layer = "位面"
 
 L.items = {}
 L.items.water_name = "魔法晶水"
@@ -134,6 +135,8 @@ local function eventHandler(self, event, msg)
                 lb_queue_size=3,
                 lb_only=false,
                 lb_server=nil,
+                npc_nearby=nil,
+                layer_detect_interval=600,
             }
         end
         if ATFClientSettings.reset_lb == nil then
@@ -151,6 +154,8 @@ local function eventHandler(self, event, msg)
         if ATFBlockList == nil then
             ATFBlockList = {}
         end
+        L.realm = GetRealmName()
+        L.faction = UnitFactionGroup("player")
     end
 end
 
