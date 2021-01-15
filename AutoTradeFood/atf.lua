@@ -179,7 +179,7 @@ local function may_send_raid_warn()
       SendChatMessage(ATFClientSettings.raid_message, "raid_warning")
     end
     if L.nwb_layer then
-      SendChatMessage("我目前位于位面【"..L.nwb_layer.."】", "raid_warning")
+      SendChatMessage("我目前位于位面【"..L.nwb_layer.."】，如需查询米豪工具人实时位面，请M命令【"..L.cmds.layer.."】", "raid_warning")
     end
   end
 end
