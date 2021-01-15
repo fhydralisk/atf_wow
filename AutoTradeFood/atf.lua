@@ -202,6 +202,9 @@ function SlashCmdList.ATFCmd(msg)
     if ATFClientSettings.inviter and not(UnitIsGroupLeader(ATFClientSettings.inviter)) and UnitInParty("player") then
       LeaveParty()
     end
+    if UnitInParty("player") and not UnitInRaid("player") and UnitIsGroupLeader("player") then
+      ConvertToRaid()
+    end
   end
 
   if L.F.is_backend() then

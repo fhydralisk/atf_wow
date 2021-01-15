@@ -109,6 +109,9 @@ local recently_invited = {}
 
 function L.F.invite_player(player)
   if L.F.is_inviter() or ATFClientSettings.inviter == nil then
+    if not UnitIsGroupLeader("player") then
+      LeaveParty()
+    end
     InviteUnit(player)
     table.insert(recently_invited, {player=player, ts=GetTime()})
   else
