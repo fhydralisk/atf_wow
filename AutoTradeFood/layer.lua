@@ -168,7 +168,7 @@ local function want_layer(requester, layer)
         L.F.invite_player(requester)
       else
         L.F.whisper_or_say("正在尝试请工具人【"..k.."】邀请您。", requester)
-        C_ChatInfo.SendAddonMessage("ATF", "invite:"..requester, "whisper", k)
+        C_ChatInfo.SendAddonMessage("ATF", "invite_by_layer:"..requester, "whisper", k)
       end
       return true
     end
@@ -202,6 +202,8 @@ local function eventHandler(self, event, arg1, arg2, arg3, arg4)
         if ack == "1" then
           send_layer_info(UnitName("player"), author, 0)
         end
+      elseif cmd == "invite_by_layer" then
+        L.F.invite_player(msg)
       end
     end
   end
