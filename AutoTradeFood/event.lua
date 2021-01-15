@@ -34,18 +34,6 @@ local function say_scale(to_player)
 end
 
 
-local function say_layer(to_player)
-  if L.nwb_layer then
-    L.F.whisper_or_say(
-        string.format("我目前为与位面%d，如需进组跨位面，请M我【%s】", L.nwb_layer, L.cmds.invite_cmd),
-        to_player
-    )
-  else
-    L.F.whisper_or_say("我的位面检测功能暂时不可用，或者尚未检测到位面。如需进组跨位面，请M我："..L.cmds.invite_cmd, to_player)
-  end
-end
-
-
 local function player_want_trade_gold(msg)
 
   msg = string.gsub(string.lower(msg), "金", "g")
@@ -126,8 +114,8 @@ local function execute_command(msg, author)
       L.F.refill_request(author)
     elseif msg == L.cmds.scale_cmd then
       say_scale(author)
-    elseif msg == L.cmds.layer then
-      say_layer(author)
+    elseif L.F.search_str_contains(msg, {L.cmds.layer}) then
+      L.F.layer_request(msg, author)
     elseif msg == L.cmds.low_level_cmd then
       L.F.low_level_food_request(author)
     elseif msg == L.cmds.low_level_help_cmd or msg == "7" or L.F.search_str_contains(msg, {"45", "35", "25", "小水", "小面包"}) then

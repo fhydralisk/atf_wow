@@ -99,7 +99,7 @@ end
 
 local function should_detect_layer()
   if ATFClientSettings.npc_nearby then
-    local interval = ATFClientSettings.layer_detect_interval or 600
+    local interval = L.F.layer_detect_interval()
     if GetTime() - L.last_layer_detect_ts > interval then
       return true
     end
