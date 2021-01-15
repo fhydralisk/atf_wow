@@ -151,10 +151,10 @@ local function say_layer(to_player)
   local player = UnitName("player")
   for k, v in pairs(L.unit_layer_map) do
     if k == player then
-      k = "【本工具人】"..k
+      k = ">>>本工具人<<<"..k
     end
     if v.expire > GetTime() then
-      L.F.whisper_or_say(k.."：位面"..v.layer, to_player)
+      L.F.whisper_or_say(k.."：【位面"..v.layer.."】", to_player)
     end
   end
   L.F.whisper_or_say("希望快速切换位面，请密我：【位面1】 或 【位面2】", to_player)
