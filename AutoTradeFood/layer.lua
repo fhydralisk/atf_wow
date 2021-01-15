@@ -147,15 +147,7 @@ end
 
 
 local function say_layer(to_player)
-  if L.nwb_layer then
-    L.F.whisper_or_say(
-        string.format("我目前为与位面%d，如需进组跨位面，请M我【%s】", L.nwb_layer, L.cmds.invite_cmd),
-        to_player
-    )
-  else
-    L.F.whisper_or_say("我的位面检测功能暂时不可用，或者尚未检测到位面。如需进组跨位面，请M我："..L.cmds.invite_cmd, to_player)
-  end
-  L.F.whisper_or_say("所有工具人位面情况：", to_player)
+  L.F.whisper_or_say("工具人位面情况：", to_player)
   local player = UnitName("player")
   for k, v in pairs(L.unit_layer_map) do
     if k == player then
