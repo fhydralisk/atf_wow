@@ -185,9 +185,33 @@ local function may_send_raid_warn()
 end
 
 
+local function clean_annoying_buffs()
+  local i = 1
+  while true do
+    local buff, _, _, _, _, _, unit = UnitBuff("player", i)
+    if buff == nil then
+      break
+    else
+      if L.buffs.annoying[buff] then
+        CancelUnitBuff("player", i)
+        local name = ""
+        if unit then
+          name = UnitName(unit)
+          name = name.."，"
+        end
+        L.F.whisper_or_say(name.."对我的变形可能导致您被米豪公益暂停服务，请立即停止该行为。")
+        break
+      end
+    end
+    i = i + 1
+  end
+end
+
+
 function SlashCmdList.ATFCmd(msg)
   L.F.watch_dog_hit()
   if L.F.is_frontend() then
+    clean_annoying_buffs()
     drive_state()
     L.F.drive_gate()
     auto_bind()

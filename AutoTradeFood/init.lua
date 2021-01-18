@@ -47,6 +47,10 @@ L.buffs.wakeup = "唤醒"
 L.buffs.drinking = "喝水"
 L.buffs.pet_debuff_name = "软泥怪的恶心光环"
 L.buffs.activate = "激活"
+L.buffs.annoying = {
+    ["蝙蝠装束"]=true,
+    ["小精灵装束"]=true,
+}
 
 L.state = 1
 -- states: 1 making, 2 watering? 3 gating, 4 buff
