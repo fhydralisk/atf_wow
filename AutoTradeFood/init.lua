@@ -144,13 +144,16 @@ local function eventHandler(self, event, msg)
             }
         end
         if ATFClientSettings.reset_lb == nil then
-          ATFClientSettings.reset_lb={}
+            ATFClientSettings.reset_lb={}
         end
         if ATFClientSettings.client_types == nil then
-          ATFClientSettings.client_types = {frontend=true, backend=false, inviter=false, enlarger=false} -- "backend", "inviter", "enlarger"
+            ATFClientSettings.client_types = {frontend=true, backend=false, inviter=false, enlarger=false} -- "backend", "inviter", "enlarger"
         end
         if ATFClientSettings.layer_units == nil then
             ATFClientSettings.layer_units = {}
+        end
+        if ATFClientSettings.annoying_buffs == nil then
+            ATFClientSettings.annoying_buffs = {}
         end
         if ATFAdminList == nil then
             ATFAdminList = {}

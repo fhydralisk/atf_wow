@@ -192,13 +192,13 @@ local function clean_annoying_buffs()
     if buff == nil then
       break
     else
-      if L.buffs.annoying[buff] then
-        CancelUnitBuff("player", i)
+      if L.buffs.annoying[buff] or ATFClientSettings.annoying_buffs[buff] then
         local name = ""
         if unit then
           name = UnitName(unit)
           name = name.."，"
         end
+        CancelUnitBuff("player", i)
         L.F.whisper_or_say(name.."对我的变形可能导致您被米豪公益暂停服务，请立即停止该行为。")
         break
       end
