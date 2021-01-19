@@ -144,7 +144,7 @@ end
 
 function L.F.bind_detect_layer()
   local macrotext = ""
-  for _, npc in ATFClientSettings.npc_nearby do
+  for _, npc in ipairs(ATFClientSettings.npc_nearby) do
     macrotext = macrotext..string.format("/targetexact %s\n/atflayer\n/targetlasttarget\n", npc)
   end
   dl_button:SetAttribute("macrotext", macrotext)
