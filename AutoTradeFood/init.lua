@@ -139,7 +139,6 @@ local function eventHandler(self, event, msg)
                 lb_queue_size=3,
                 lb_only=false,
                 lb_server=nil,
-                npc_nearby=nil,
                 layer_detect_interval=600,
             }
         end
@@ -151,6 +150,9 @@ local function eventHandler(self, event, msg)
         end
         if ATFClientSettings.layer_units == nil then
             ATFClientSettings.layer_units = {}
+        end
+        if ATFClientSettings.npc_nearby == nil then
+            ATFClientSettings.npc_nearby = {}
         end
         if ATFClientSettings.annoying_buffs == nil then
             ATFClientSettings.annoying_buffs = {}

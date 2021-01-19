@@ -116,7 +116,11 @@ end
 
 function SlashCmdList.ATF_GetLayer()
   L.last_layer_detect_ts = GetTime()
-  if UnitName("target") == ATFClientSettings.npc_nearby then
+  local npc_nearby = {}
+  for _, npc in ipairs(ATFClientSettings.npc_nearby) do
+    npc_nearby[npc] = true
+  end
+  if npc_nearby[UnitName("target")] then
     local guid = UnitGUID("target")
     local layer_id = parse_guid_layer(guid)
     local player = UnitName("player")
@@ -139,9 +143,11 @@ end
 
 
 function L.F.bind_detect_layer()
-  dl_button:SetAttribute("macrotext", string.format(
-            "/targetexact %s\n/atflayer\n/targetlasttarget", ATFClientSettings.npc_nearby
-  ))
+  local macrotext = ""
+  for _, npc in ATFClientSettings.npc_nearby do
+    macrotext = macrotext..string.format("/targetexact %s\n/atflayer\n/targetlasttarget\n", npc)
+  end
+  dl_button:SetAttribute("macrotext", macrotext)
   SetBindingClick(L.hotkeys.interact_key, "DLButton")
 end
 
