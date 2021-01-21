@@ -49,14 +49,16 @@ local function NWBGetLayerNum(zoneID, layers)
       found = true;
       break;
     else
-      for l, _ in pairs(v.layerMap) do
-        if (l == zoneID) then
-          found = true;
+      if v.layerMap then
+        for l, _ in pairs(v.layerMap) do
+          if (l == zoneID) then
+            found = true;
+            break;
+          end
+        end
+        if (found) then
           break;
         end
-      end
-      if (found) then
-        break;
       end
     end
   end
@@ -68,7 +70,7 @@ local function NWBGetLayerNum(zoneID, layers)
 end
 
 
-local function GetNWBLayer(layer_id)
+function GetNWBLayer(layer_id)
   if NWBdatabase == nil then
     return nil
   else
