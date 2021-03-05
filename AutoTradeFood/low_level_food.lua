@@ -151,11 +151,11 @@ function L.F.bind_low_level_cook()
     local count = low_level_trade_context.count
     local info = low_level_trade_context.info
     local sequence = {}
-    for _ = 1, count.water do
-        table.insert(sequence, info.spell_water)
-    end
     for _ = 1, count.bread do
         table.insert(sequence, info.spell_bread)
+    end
+    for _ = 1, count.water do
+        table.insert(sequence, info.spell_water)
     end
     local macrotext = "/castsequence "..table.concat(sequence, ",")
     cook_frame:SetAttribute("macrotext", macrotext)
@@ -207,7 +207,7 @@ end
 
 
 local function prepare_low_level_food()
-    local should_destroy = 8 - L.F.get_free_slots()
+    local should_destroy = 12 - L.F.get_free_slots()
     if should_destroy > 0 then
         destroy_some_food(should_destroy)
     end
